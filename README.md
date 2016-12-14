@@ -80,3 +80,11 @@ Last Run: Failed - short error here
 Last 10 Runs: 50% failed
 Fully idempotent? No
 ```
+
+## Upgrade chef
+
+While chef isn't running, I want to upgrade it:
+
+```
+cafe upgrade chef with: C:\temp\chef-client-12.6.9.msi
+```
