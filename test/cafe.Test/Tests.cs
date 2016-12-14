@@ -8,6 +8,7 @@ namespace Tests
         [Fact]
         public void Test1() 
         {
+        ConsoleApplication.Program.Main(null);
             Assert.True(true);
         }
     }
