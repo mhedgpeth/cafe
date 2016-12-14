@@ -5,9 +5,12 @@
       <sourceFolder url="file://$MODULE_DIR$/../../global.json" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../README.md" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/cafe" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../test/cafe.Test" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../packages" />
       <excludeFolder url="file://$MODULE_DIR$/../../src/cafe/bin" />
       <excludeFolder url="file://$MODULE_DIR$/../../src/cafe/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/../../test/cafe.Test/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../../test/cafe.Test/obj" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
