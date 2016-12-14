@@ -88,3 +88,11 @@ While chef isn't running, I want to upgrade it:
 ```
 cafe upgrade chef with: C:\temp\chef-client-12.6.9.msi
 ```
+
+# Other ideas
+
+* include ETW on chef events
+* Trigger chef to run remotely (lightweight push job), and with orchestration events
+* When chef crashes, let's retry running it to avoid downtime
+* Also run chef as a scheduled task (but still through cafe so you have the safety) - not sure about this one, should discuss more
+* Register an event with the process to say shut down if Azure needs to reconfigure the box - needs more discussion
