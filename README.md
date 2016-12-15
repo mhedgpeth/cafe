@@ -20,26 +20,56 @@ Run `chef-client`, redirecting logging to `cafe`. This currently only works on w
 cafe chef run
 ```
 
-# Coming Soon
-
 ## View chef version
 
 View the version of `chef-client` currently running:
 
 ```
 cafe chef version
-Chef: 12.17.44
+chef-client version: 12.17.44
+```
+
+# Coming Soon
+
+## Download chef-client
+
+```
+cafe chef download 12.17.44
 ```
 
 ## Upgrade chef
 
-While chef isn't running, upgrade it:
+While chef isn't running, upgrade it using a staged or downloaded MSI.:
 
 ```
-cafe chef upgrade with: C:\temp\chef-client-12.6.9.msi
+cafe chef upgrade 12.17.44
 ```
 
 # Future Use Cases
+
+## Run cafe in server mode
+
+```
+cafe server
+```
+
+All other commands will call the server, which will keep things from running into each other. The server will listen on a port and have a REST API.
+
+Server mode can output in JSON or in an easy to understand result
+
+## View status of Chef runs on a machine
+
+I want to run a simple command that will view the status of chef runs:
+
+```
+cafe status
+
+cafe version 0.1
+Running Chef every 30 minutes
+Last Run: Failed - short error here
+Last 10 Runs: 50% failed
+Fully idempotent? No
+```
 
 ## Schedule chef-client
 
@@ -89,19 +119,6 @@ When we're ready to go again, let's unpause it:
 cafe unpause chef
 ```
 
-## View status of Chef runs on a machine
-
-I want to run a simple command that will view the status of chef runs:
-
-```
-cafe status
-
-cafe version 0.1
-Running Chef every 30 minutes
-Last Run: Failed - short error here
-Last 10 Runs: 50% failed
-Fully idempotent? No
-```
 
 
 
