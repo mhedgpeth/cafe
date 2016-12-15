@@ -10,7 +10,36 @@ Finally getting status from chef isn't straightforward from a windows perspectiv
 
 So I propose a new application: cafe. This application will be a self-contained executable written in C# against the .NET Core and will provide easy maintenance of chef.
 
-# Use Cases
+# Usage
+
+## Run chef on demand
+
+Run `chef-client`, redirecting logging to `cafe`. This currently only works on windows and assumes that `chef-client` is on your `PATH` environment variable.
+
+```
+cafe chef run
+```
+
+# Coming Soon
+
+## View chef version
+
+View the version of `chef-client` currently running:
+
+```
+cafe chef version
+Chef: 12.17.44
+```
+
+## Upgrade chef
+
+While chef isn't running, upgrade it:
+
+```
+cafe chef upgrade with: C:\temp\chef-client-12.6.9.msi
+```
+
+# Future Use Cases
 
 ## Schedule chef-client
 
@@ -32,13 +61,6 @@ cafe service stop
 
 This will use the windows services mechanism in Windows, and linux service mechanism in linux.
 
-## Run chef on demand
-
-I want to be able to run chef outside of the scheduled time, but do so within the nuturing biosphere of `cafe`:
-
-```
-cafe run chef
-```
 
 ## Roll logging
 
@@ -81,13 +103,7 @@ Last 10 Runs: 50% failed
 Fully idempotent? No
 ```
 
-## Upgrade chef
 
-While chef isn't running, I want to upgrade it:
-
-```
-cafe upgrade chef with: C:\temp\chef-client-12.6.9.msi
-```
 
 # Other ideas
 
