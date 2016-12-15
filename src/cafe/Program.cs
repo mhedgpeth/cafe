@@ -26,13 +26,19 @@ namespace cafe
                     var version = runner.RetrieveVersion();
                     Logger.LogInformation($"chef-client version: {version}");
                 }
+                else if (args[1] == "download")
+                {
+                    Logger.LogInformation("Starting download of Chef");
+                    var chefDownloader = new ChefDownloader(new FileDownloader(), new FileSystem());
+                    chefDownloader.Download(args[2]);
+                    Logger.LogInformation("Finished downloading chef");
+                }
             }
         }
 
         private static ChefRunner CreateChefRunner()
         {
-            var runner = new ChefRunner(() => new ChefProcess(() => new ProcessWrapper()));
-            return runner;
+            return new ChefRunner(() => new ChefProcess(() => new ProcessWrapper(), new FileSystem(), new Environment()));
         }
     }
 }

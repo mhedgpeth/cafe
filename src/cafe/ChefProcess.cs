@@ -10,19 +10,22 @@ namespace cafe
     public class ChefProcess : IChefProcess
     {
         private readonly Func<IProcess> _processCreator;
+        private readonly IFileSystem _fileSystem;
+        private readonly IEnvironment _environment;
 
         private static ILogger Logger { get; } =
             ApplicationLogging.CreateLogger<ChefProcess>();
 
-        public ChefProcess(Func<IProcess> processCreator)
+        public ChefProcess(Func<IProcess> processCreator, IFileSystem fileSystem, IEnvironment environment)
         {
             _processCreator = processCreator;
+            _fileSystem = fileSystem;
+            _environment = environment;
         }
 
         public void Run(params string[] args)
         {
-            var chefInstallDirectory = FindChefInstallationDirectory(Environment.GetEnvironmentVariable("PATH"),
-                File.Exists);
+            var chefInstallDirectory = FindChefInstallationDirectory();
             var rubyExecutable = RubyExecutableWithin(chefInstallDirectory);
             var chefClientLoaderFile = ChefClientLoaderWithin(chefInstallDirectory);
 
@@ -81,13 +84,14 @@ namespace cafe
             }
         }
 
-        public static string FindChefInstallationDirectory(string environmentPath, Func<string, bool> fileExists)
+        public string FindChefInstallationDirectory()
         {
+            var environmentPath = _environment.GetEnvironmentVariable("PATH");
             var paths = environmentPath.Split(';');
             const string chefClientBat = "chef-client.bat";
             var batchFilePath = paths
                 .Select(x => Path.Combine(x, chefClientBat))
-                .FirstOrDefault(File.Exists);
+                .FirstOrDefault(_fileSystem.FileExists);
             if (batchFilePath == null)
             {
                 Logger.LogWarning($"Could not find {chefClientBat} in the path {environmentPath}");

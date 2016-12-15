@@ -8,7 +8,8 @@
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-rc2-build10025",
     "cafe": "*",
-    "FluentAssertions": "4.18.0"
+    "FluentAssertions": "4.18.0",
+    "Moq": "4.6.38-alpha"
   },
   "testRunner": "xunit",
   "frameworks": {

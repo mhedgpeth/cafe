@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 using FluentAssertions;
 
@@ -13,8 +14,9 @@ namespace cafe.Test
         {
             string chefPath = $@"{ChefInstallPath}\bin";
             var path = $@"C:\something;C:\else;{chefPath}";
-            Func<string, bool> fileExists = p => p == chefPath;
-            var actual = ChefProcess.FindChefInstallationDirectory(path, fileExists);
+            var actual =
+                CreateChefProcess(fileSystem: FakeFileSystem.CreateWithExistingFiles($@"{chefPath}\chef-client.bat"), environment: CreateEnvironmentWithPath(path))
+                    .FindChefInstallationDirectory();
 
             actual.Should()
                 .Be(ChefInstallPath, "because it is the parent directory of the bin path in which the batch file exists");
@@ -24,7 +26,7 @@ namespace cafe.Test
         public void FindChefInstallationDirectory_ShouldReturnNullIfNotFound()
         {
             const string path = @"C:\something";
-            var actual = ChefProcess.FindChefInstallationDirectory(path, s => false);
+            var actual = CreateChefProcess(fileSystem: new FileSystem(), environment: CreateEnvironmentWithPath(path)).FindChefInstallationDirectory();
 
             actual.Should().BeNull("because the file doesn't exist anywhere on the path");
         }
@@ -47,7 +49,7 @@ namespace cafe.Test
         public void NullOutput_ShouldNotBeSharedAsLogEntry()
         {
             var process = new FakeProcess();
-            var chefProcess = new ChefProcess(() => process);
+            var chefProcess = CreateChefProcess(() => process);
             process.OutputDataReceivedDuringWaitForExit.Add(null);
             AssertChefProcessRunShouldNotGenerateLogEntries(chefProcess);
         }
@@ -65,9 +67,56 @@ namespace cafe.Test
         public void NullErrors_ShouldNotBeSharedAsLogEntry()
         {
             var process = new FakeProcess();
-            var chefProcess = new ChefProcess(() => process);
+            var chefProcess = CreateChefProcess(() => process);
             process.ErrorDataReceivedDuringWaitForExit.Add(null);
             AssertChefProcessRunShouldNotGenerateLogEntries(chefProcess);
         }
+
+
+        private ChefProcess CreateChefProcess(Func<FakeProcess> processCreator = null, IFileSystem fileSystem = null, IEnvironment environment = null)
+        {
+            var defaultChefDirectory = @"C:\opscode\chef\bin";
+            processCreator = processCreator ?? (() => new FakeProcess());
+            fileSystem = fileSystem ?? FakeFileSystem.CreateWithExistingFiles($@"{defaultChefDirectory}\chef-client.bat");
+            environment = environment ?? CreateEnvironmentWithPath(defaultChefDirectory);
+            return new ChefProcess(processCreator, fileSystem, environment);
+        }
+
+        private FakeEnvironment CreateEnvironmentWithPath(string path)
+        {
+            var environment = new FakeEnvironment();
+            environment.EnvironmentVariables.Add("PATH", path);
+            return environment;
+        }
+    }
+
+    public class FakeFileSystem : IFileSystem
+    {
+        public void EnsureDirectoryExists(string directory)
+        {
+        }
+
+        public bool FileExists(string filename)
+        {
+            return ExistingFiles.Contains(filename);
+        }
+
+        public static FakeFileSystem CreateWithExistingFiles(params string[] files)
+        {
+            return new FakeFileSystem() {ExistingFiles = new List<string>(files)};
+        }
+
+        public List<string> ExistingFiles { get; set; } = new List<string>();
+    }
+
+    public class FakeEnvironment : IEnvironment
+    {
+        public string GetEnvironmentVariable(string key)
+        {
+            return EnvironmentVariables[key];
+        }
+
+        public IDictionary<string, string> EnvironmentVariables { get; }
+        = new Dictionary<string, string>();
     }
 }

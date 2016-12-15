@@ -29,13 +29,16 @@ cafe chef version
 chef-client version: 12.17.44
 ```
 
-# Coming Soon
-
 ## Download chef-client
+
+Downloads chef client installer for the specified version to a staging directory.
 
 ```
 cafe chef download 12.17.44
 ```
+
+# Coming Soon
+
 
 ## Upgrade chef
 
