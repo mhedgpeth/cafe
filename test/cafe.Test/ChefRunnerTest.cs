@@ -1,47 +1,25 @@
-﻿using System;
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace cafe.Test
 {
     public class ChefRunnerTest
     {
-        private const string ChefInstallPath = @"C:\opscode\chef";
-
         [Fact]
-        public void FindChefInstallationDirectory_ShouldFindChefFileThatExistsInPathEnvironmentVariable()
+        public void DetermineVersion_ShouldParseVersionFromOutput()
         {
-            string chefPath = $@"{ChefInstallPath}\bin";
-            var path = $@"C:\something;C:\else;{chefPath}";
-            Func<string, bool> fileExists = p => p == chefPath;
-            var actual = ChefRunner.FindChefInstallationDirectory(path, fileExists);
+            var process = new FakeChefProcess();
+            process.LogEntriesToReceiveDuringRun.Add(ChefLogEntry.CreateMinimalEntry("Chef: 12.17.44"));
 
-            actual.Should()
-                .Be(ChefInstallPath, "because it is the parent directory of the bin path in which the batch file exists");
+            var runner = new ChefRunner(() => process);
+
+            runner.RetrieveVersion().Should().Be(new System.Version(12, 17, 44));
         }
 
         [Fact]
-        public void FindChefInstallationDirectory_ShouldReturnNullIfNotFound()
+        public void ParseVersion_ShouldParseDifferentVersion()
         {
-            const string path = @"C:\something";
-            var actual = ChefRunner.FindChefInstallationDirectory(path, s => false);
-
-            actual.Should().BeNull("because the file doesn't exist anywhere on the path");
-        }
-
-        [Fact]
-        public void RubyExecutable_ShouldBeInEmbeddedDirectory()
-        {
-            var actual = ChefRunner.RubyExecutableWithin(ChefInstallPath);
-
-            actual.Should().Be($@"{ChefInstallPath}\embedded\bin\ruby.exe");
-        }
-
-        [Fact]
-        public void ChefClientLoaderWithin_ShouldBeInBinDirectory()
-        {
-            ChefRunner.ChefClientLoaderWithin(ChefInstallPath).Should().Be($@"{ChefInstallPath}\bin\chef-client");
+            ChefRunner.ParseVersion("Chef: 1.2.3").Should().Be(new System.Version(1, 2, 3));
         }
     }
 }

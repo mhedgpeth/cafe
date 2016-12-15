@@ -1,88 +1,46 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace cafe
 {
     public class ChefRunner
     {
+        private readonly Func<IChefProcess> _processCreator;
+
+        public ChefRunner(Func<IChefProcess> processCreator)
+        {
+            _processCreator = processCreator;
+        }
+
         private static ILogger Logger { get; } =
             ApplicationLogging.CreateLogger<ChefRunner>();
 
         public void Run()
         {
-            Logger.LogInformation("Running chef-client");
-            var chefInstallDirectory = FindChefInstallationDirectory(Environment.GetEnvironmentVariable("PATH"),
-                File.Exists);
-            var rubyExecutable = RubyExecutableWithin(chefInstallDirectory);
-            var chefClientLoaderFile = ChefClientLoaderWithin(chefInstallDirectory);
-            var process = new Process()
+            var process = _processCreator();
+            process.LogEntryReceived += (sender, entry) => entry.Log();
+            process.Run();
+        }
+
+        public Version RetrieveVersion()
+        {
+            var process = _processCreator();
+            Version version = null;
+            process.LogEntryReceived += (sender, entry) =>
             {
-                StartInfo = new ProcessStartInfo(rubyExecutable)
-                {
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    Arguments = chefClientLoaderFile
-                },
+                entry.Log();
+                version = ParseVersion(entry.Entry);
             };
-            process.OutputDataReceived += ProcessOnOutputDataReceived;
-            process.ErrorDataReceived += ProcessOnErrorDataReceived;
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            Logger.LogInformation("Chef started; waiting for exit");
-            process.WaitForExit();
-            Logger.LogInformation($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
+            process.Run("--version");
+            return version;
         }
 
-        public static string ChefClientLoaderWithin(string chefInstallDirectory)
+        public static Version ParseVersion(string entry)
         {
-            return $@"{chefInstallDirectory}\bin\chef-client";
-        }
-
-
-        private static void ProcessOnErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            Logger.LogCritical($"STANDARD ERROR: {e.Data}");
-        }
-
-        private static void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            try
-            {
-                ChefLogEntry.Parse(e.Data).Log();
-
-            }
-            catch (Exception exception)
-            {
-                Logger.LogCritical(default(EventId), exception, $"Could not parse and log {e.Data}");
-            }
-        }
-
-        public static string FindChefInstallationDirectory(string environmentPath, Func<string, bool> fileExists)
-        {
-            var paths = environmentPath.Split(';');
-            const string chefClientBat = "chef-client.bat";
-            var batchFilePath = paths
-                .Select(x => Path.Combine(x, chefClientBat))
-                .FirstOrDefault(File.Exists);
-            if (batchFilePath == null)
-            {
-                Logger.LogWarning($"Could not find {chefClientBat} in the path {environmentPath}");
-                return null;
-            }
-            var binDirectory = Directory.GetParent(batchFilePath);
-            var installDirectory = Directory.GetParent(binDirectory.FullName);
-            return installDirectory.FullName;
-        }
-
-        public static string RubyExecutableWithin(string chefInstallPath)
-        {
-            return Path.Combine(chefInstallPath, @"embedded\bin\ruby.exe");
+            var match = Regex.Match(entry, "Chef: (.*)");
+            var versionString = match.Groups[1].Value;
+            return Version.Parse(versionString);
         }
     }
 }

@@ -16,11 +16,23 @@ namespace cafe
                 if (args[1] == "run")
                 {
                     Logger.LogInformation("Running chef");
-                    var runner = new ChefRunner();
+                    var runner = CreateChefRunner();
                     runner.Run();
                     Logger.LogInformation("Finished running chef");
                 }
+                else if (args[1] == "version")
+                {
+                    var runner = CreateChefRunner();
+                    var version = runner.RetrieveVersion();
+                    Logger.LogInformation($"chef-client version: {version}");
+                }
             }
+        }
+
+        private static ChefRunner CreateChefRunner()
+        {
+            var runner = new ChefRunner(() => new ChefProcess(() => new ProcessWrapper()));
+            return runner;
         }
     }
 }

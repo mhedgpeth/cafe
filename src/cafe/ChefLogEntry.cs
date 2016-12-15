@@ -47,7 +47,7 @@ namespace cafe
             return new ChefLogEntry(level, time, entry);
         }
 
-        private static ChefLogEntry CreateMinimalEntry(string line)
+        public static ChefLogEntry CreateMinimalEntry(string line)
         {
             return new ChefLogEntry(LogLevel.Information, null, line);
         }
@@ -84,6 +84,11 @@ namespace cafe
                 default:
                     throw new InvalidOperationException($"Cannot log level {Level} because it is not supported");
             }
+        }
+
+        public static ChefLogEntry CriticalError(string line)
+        {
+            return new ChefLogEntry(LogLevel.Critical, null, line);
         }
     }
 }
