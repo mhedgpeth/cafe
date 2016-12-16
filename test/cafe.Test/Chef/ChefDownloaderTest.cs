@@ -1,10 +1,10 @@
 ﻿using cafe.Chef;
 using cafe.LocalSystem;
 using FluentAssertions;
-using Xunit;
 using Moq;
+using Xunit;
 
-namespace cafe.Test
+namespace cafe.Test.Chef
 {
     public class ChefDownloaderTest
     {

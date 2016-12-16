@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using cafe.Chef;
 using cafe.LocalSystem;
-using Xunit;
+using cafe.Test.LocalSystem;
 using FluentAssertions;
+using Xunit;
 
-namespace cafe.Test
+namespace cafe.Test.Chef
 {
     public class ChefProcessTest
     {
@@ -90,35 +90,5 @@ namespace cafe.Test
             environment.EnvironmentVariables.Add("PATH", path);
             return environment;
         }
-    }
-
-    public class FakeFileSystem : IFileSystem
-    {
-        public void EnsureDirectoryExists(string directory)
-        {
-        }
-
-        public bool FileExists(string filename)
-        {
-            return ExistingFiles.Contains(filename);
-        }
-
-        public static FakeFileSystem CreateWithExistingFiles(params string[] files)
-        {
-            return new FakeFileSystem() {ExistingFiles = new List<string>(files)};
-        }
-
-        public List<string> ExistingFiles { get; set; } = new List<string>();
-    }
-
-    public class FakeEnvironment : IEnvironment
-    {
-        public string GetEnvironmentVariable(string key)
-        {
-            return EnvironmentVariables[key];
-        }
-
-        public IDictionary<string, string> EnvironmentVariables { get; }
-        = new Dictionary<string, string>();
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using cafe.Chef;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using FluentAssertions;
 
-namespace cafe.Test
+namespace cafe.Test.Chef
 {
     public class ChefLogEntryTest
     {
@@ -40,7 +40,7 @@ namespace cafe.Test
             AssertLineCanBeParsedAndLogged(
                 "================================================================================",
                 LogLevel.Information, null,
-                @"================================================================================");
+                "================================================================================");
         }
 
         [Fact]

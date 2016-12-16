@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using cafe.Chef;
 
-namespace cafe.Test
+namespace cafe.Test.Chef
 {
     public class FakeChefProcess : IChefProcess
     {

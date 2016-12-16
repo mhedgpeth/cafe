@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace cafe.Test
+namespace cafe.Test.Chef
 {
     public class ChefRunnerTest
     {

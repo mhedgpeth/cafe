@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using cafe.LocalSystem;
 
-namespace cafe.Test
+namespace cafe.Test.LocalSystem
 {
     public class FakeProcess : IProcess
     {
