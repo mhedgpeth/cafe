@@ -21,11 +21,11 @@ namespace cafe.CommandLine
             }
             else
             {
-                RunCore();
+                RunCore(args);
             }
         }
 
-        protected abstract void RunCore();
+        protected abstract void RunCore(string[] args);
 
         public virtual void ShowHelp()
         {

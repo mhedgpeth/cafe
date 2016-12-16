@@ -8,7 +8,7 @@ namespace cafe.Test.CommandLine
         {
         }
 
-        protected override void RunCore()
+        protected override void RunCore(string[] args)
         {
             WasRun = true;
         }

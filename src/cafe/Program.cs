@@ -1,6 +1,7 @@
 ﻿using cafe.Chef;
 using cafe.CommandLine;
 using cafe.LocalSystem;
+using cafe.Options;
 using Microsoft.Extensions.Logging;
 
 namespace cafe
@@ -13,30 +14,14 @@ namespace cafe
 
         public static void Main(string[] args)
         {
-            Logger.LogInformation("Starting cafe");
-            if (args[0] == "chef")
-            {
-                if (args[1] == "run")
-                {
-                    Logger.LogInformation("Running chef");
-                    var runner = CreateChefRunner();
-                    runner.Run();
-                    Logger.LogInformation("Finished running chef");
-                }
-                else if (args[1] == "version")
-                {
-                    var runner = CreateChefRunner();
-                    var version = runner.RetrieveVersion();
-                    Logger.LogInformation($"chef-client version: {version}");
-                }
-                else if (args[1] == "download")
-                {
-                    Logger.LogInformation("Starting download of Chef");
-                    var chefDownloader = new ChefDownloader(new FileDownloader(), new FileSystem());
-                    chefDownloader.Download(args[2]);
-                    Logger.LogInformation("Finished downloading chef");
-                }
-            }
+            Logger.LogInformation($"Running cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}");
+            var chefRunner = CreateChefRunner();
+            var runner = new Runner(
+                new RunChefOption(chefRunner),
+                new ShowChefVersionOption(chefRunner),
+                new DownloadChefOption(new ChefDownloader(new FileDownloader(), new FileSystem())));
+            runner.Run(args);
+            Logger.LogDebug("Finishing cafe run");
         }
 
         private static ChefRunner CreateChefRunner()
