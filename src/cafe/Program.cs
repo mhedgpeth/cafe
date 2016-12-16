@@ -1,4 +1,5 @@
 ﻿using cafe.Chef;
+using cafe.CommandLine;
 using cafe.LocalSystem;
 using Microsoft.Extensions.Logging;
 
