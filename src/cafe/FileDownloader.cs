@@ -19,7 +19,7 @@ namespace cafe
 
         public async Task<bool> DownloadAsync(Uri downloadLink, string file)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10)})
             {
                 using (
                     var request = new HttpRequestMessage(HttpMethod.Get, downloadLink)

@@ -27,5 +27,10 @@ namespace cafe.CommandLine
         {
             return new OptionValueSpecification("[version]", new Regex(@"\d+\.\d+\.\d+"));
         }
+
+        public override string ToString()
+        {
+            return _description;
+        }
     }
 }

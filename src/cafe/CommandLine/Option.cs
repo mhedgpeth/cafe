@@ -36,5 +36,10 @@ namespace cafe.CommandLine
         {
             return _specification.IsSatisfiedBy(args);
         }
+
+        public override string ToString()
+        {
+            return $"{_specification} ({_helpText})";
+        }
     }
 }
