@@ -8,7 +8,11 @@ namespace cafe.Options
         private readonly ChefDownloader _chefDownloader;
 
         public DownloadChefOption(ChefDownloader chefDownloader)
-        : base(new OptionSpecification(OptionValueSpecification.ForExactValue("chef"), OptionValueSpecification.ForExactValue("download"), OptionValueSpecification.ForVersion()), "downloads the provided version of chef")
+            : base(
+                new OptionSpecification(OptionValueSpecification.ForExactValue("chef"),
+                    OptionValueSpecification.ForExactValue("download"),
+                    OptionValueSpecification.ForVersion()),
+                "downloads the provided version of chef")
         {
             _chefDownloader = chefDownloader;
         }

@@ -1,8 +1,11 @@
 using Microsoft.Extensions.Logging;
 
-public static class ApplicationLogging
+namespace cafe
 {
-  public static ILoggerFactory LoggerFactory {get;} = new LoggerFactory().AddConsole().AddDebug();
-  public static ILogger CreateLogger<T>() =>
-    LoggerFactory.CreateLogger<T>();
+    public static class ApplicationLogging
+    {
+        public static ILoggerFactory LoggerFactory {get;} = new LoggerFactory().AddConsole().AddDebug(LogLevel.Debug);
+        public static ILogger CreateLogger<T>() =>
+            LoggerFactory.CreateLogger<T>();
+    }
 }

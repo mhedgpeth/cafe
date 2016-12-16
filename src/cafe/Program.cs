@@ -11,17 +11,26 @@ namespace cafe
         private static ILogger Logger { get; } =
             ApplicationLogging.CreateLogger<Program>();
 
-
         public static void Main(string[] args)
         {
-            Logger.LogInformation($"Running cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}");
+            var runner = CreateRunner(args);
+            runner.Run(args);
+            Logger.LogDebug("Finishing cafe run");
+        }
+
+        public static Runner CreateRunner(string[] args)
+        {
+            Logger.LogInformation(
+                $"Running cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}");
+            Logger.LogDebug("Creating chef runner");
             var chefRunner = CreateChefRunner();
+            Logger.LogDebug("Creating runner");
             var runner = new Runner(
                 new RunChefOption(chefRunner),
                 new ShowChefVersionOption(chefRunner),
                 new DownloadChefOption(new ChefDownloader(new FileDownloader(), new FileSystem())));
-            runner.Run(args);
-            Logger.LogDebug("Finishing cafe run");
+            Logger.LogDebug("Running application");
+            return runner;
         }
 
         private static ChefRunner CreateChefRunner()
