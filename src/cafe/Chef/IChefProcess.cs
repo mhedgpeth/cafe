@@ -1,6 +1,6 @@
 using System;
 
-namespace cafe
+namespace cafe.Chef
 {
     public interface IChefProcess
     {

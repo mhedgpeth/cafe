@@ -1,4 +1,5 @@
 ﻿using System;
+using cafe.Chef;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using FluentAssertions;

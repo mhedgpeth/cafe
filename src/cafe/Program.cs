@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using cafe.Chef;
+using cafe.LocalSystem;
+using Microsoft.Extensions.Logging;
 
 namespace cafe
 {
@@ -38,7 +40,7 @@ namespace cafe
 
         private static ChefRunner CreateChefRunner()
         {
-            return new ChefRunner(() => new ChefProcess(() => new ProcessWrapper(), new FileSystem(), new Environment()));
+            return new ChefRunner(() => new ChefProcess(() => new ProcessBoundary(), new FileSystem(), new EnvironmentBoundary()));
         }
     }
 }

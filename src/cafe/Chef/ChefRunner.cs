@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
-namespace cafe
+namespace cafe.Chef
 {
     public class ChefRunner
     {

@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using cafe.Chef;
+using cafe.LocalSystem;
+using FluentAssertions;
 using Xunit;
 using Moq;
 

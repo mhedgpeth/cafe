@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using cafe.LocalSystem;
 using Microsoft.Extensions.Logging;
 
-namespace cafe
+namespace cafe.Chef
 {
     public class ChefProcess : IChefProcess
     {

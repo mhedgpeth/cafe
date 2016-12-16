@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace cafe
+namespace cafe.LocalSystem
 {
     public interface IProcess {
         void Start();

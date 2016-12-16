@@ -1,8 +1,14 @@
-﻿using System;
+﻿
+
+
+
+
+using System;
 using System.IO;
+using cafe.LocalSystem;
 using Microsoft.Extensions.Logging;
 
-namespace cafe
+namespace cafe.Chef
 {
     public class ChefDownloader
     {

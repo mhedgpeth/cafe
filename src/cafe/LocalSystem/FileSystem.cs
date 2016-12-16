@@ -1,14 +1,8 @@
 ﻿using System.IO;
 using Microsoft.Extensions.Logging;
 
-namespace cafe
+namespace cafe.LocalSystem
 {
-    public interface IFileSystem
-    {
-        void EnsureDirectoryExists(string directory);
-        bool FileExists(string filename);
-    }
-
     public class FileSystem : IFileSystem
     {
         private static ILogger Logger { get; } =
@@ -29,7 +23,9 @@ namespace cafe
 
         public bool FileExists(string filename)
         {
-            return File.Exists(filename);
+            var fileExists = File.Exists(filename);
+            Logger.LogDebug($"File {filename} exists? {fileExists}");
+            return fileExists;
         }
     }
 }
