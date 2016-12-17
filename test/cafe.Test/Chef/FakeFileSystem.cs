@@ -9,16 +9,10 @@ namespace cafe.Test.Chef
         {
         }
 
-        public bool FileExists(string filename)
+        public string FindInstallationDirectoryInPathContaining(string executable)
         {
-            return ExistingFiles.Contains(filename);
+            return executable;
         }
 
-        public static FakeFileSystem CreateWithExistingFiles(params string[] files)
-        {
-            return new FakeFileSystem() {ExistingFiles = new List<string>(files)};
-        }
-
-        public List<string> ExistingFiles { get; set; } = new List<string>();
     }
 }

@@ -3,6 +3,6 @@
     public interface IFileSystem
     {
         void EnsureDirectoryExists(string directory);
-        bool FileExists(string filename);
+        string FindInstallationDirectoryInPathContaining(string executable);
     }
 }

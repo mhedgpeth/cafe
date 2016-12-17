@@ -1,4 +1,5 @@
-﻿using cafe.Chef;
+﻿using System;
+using cafe.Chef;
 using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Options;
@@ -28,14 +29,20 @@ namespace cafe
             var runner = new Runner(
                 new RunChefOption(chefRunner),
                 new ShowChefVersionOption(chefRunner),
-                new DownloadChefOption(new ChefDownloader(new FileDownloader(), new FileSystem())));
+                new DownloadChefOption(new ChefDownloader(new FileDownloader(),
+                    new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
+                new UpgradeChefOption());
             Logger.LogDebug("Running application");
             return runner;
         }
 
         private static ChefRunner CreateChefRunner()
         {
-            return new ChefRunner(() => new ChefProcess(() => new ProcessBoundary(), new FileSystem(), new EnvironmentBoundary()));
+            return
+                new ChefRunner(
+                    () =>
+                        new ChefProcess(new ProcessExecutor(() => new ProcessBoundary()),
+                            new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary())));
         }
     }
 }

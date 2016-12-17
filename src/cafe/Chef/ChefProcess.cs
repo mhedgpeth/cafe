@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using cafe.LocalSystem;
 using Microsoft.Extensions.Logging;
 
@@ -10,23 +8,22 @@ namespace cafe.Chef
 {
     public class ChefProcess : IChefProcess
     {
-        private readonly Func<IProcess> _processCreator;
+        private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystem _fileSystem;
-        private readonly IEnvironment _environment;
 
         private static ILogger Logger { get; } =
             ApplicationLogging.CreateLogger<ChefProcess>();
 
-        public ChefProcess(Func<IProcess> processCreator, IFileSystem fileSystem, IEnvironment environment)
+        public ChefProcess(ProcessExecutor processExecutor, IFileSystem fileSystem)
         {
-            _processCreator = processCreator;
+            _processExecutor = processExecutor;
             _fileSystem = fileSystem;
-            _environment = environment;
         }
 
         public void Run(params string[] args)
         {
-            var chefInstallDirectory = FindChefInstallationDirectory();
+            var binDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("chef-client.bat");
+            var chefInstallDirectory = Directory.GetParent(binDirectory).FullName;
             var rubyExecutable = RubyExecutableWithin(chefInstallDirectory);
             var chefClientLoaderFile = ChefClientLoaderWithin(chefInstallDirectory);
 
@@ -36,24 +33,12 @@ namespace cafe.Chef
 
             Logger.LogInformation($"Running {rubyExecutable} with arguments: {processArguments}");
 
-            var process = _processCreator();
-            process.StartInfo = new ProcessStartInfo(rubyExecutable)
-            {
-                UseShellExecute = false,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                Arguments = processArguments
-            };
-            process.OutputDataReceived += ProcessOnOutputDataReceived;
-            process.ErrorDataReceived += ProcessOnErrorDataReceived;
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            Logger.LogInformation("Chef started; waiting for exit");
-            process.WaitForExit();
-            Logger.LogInformation($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
+            string filename = rubyExecutable;
+            EventHandler<string> processOnOutputDataReceived = ProcessOnOutputDataReceived;
+            EventHandler<string> processOnErrorDataReceived = ProcessOnErrorDataReceived;
+            _processExecutor.ExecuteAndWaitForExit(filename, processArguments, processOnOutputDataReceived, processOnErrorDataReceived);
         }
+
 
         public event EventHandler<ChefLogEntry> LogEntryReceived;
 
@@ -83,24 +68,6 @@ namespace cafe.Chef
                     Logger.LogCritical(default(EventId), exception, $"Could not parse and log {e}");
                 }
             }
-        }
-
-        public string FindChefInstallationDirectory()
-        {
-            var environmentPath = _environment.GetEnvironmentVariable("PATH");
-            var paths = environmentPath.Split(';');
-            const string chefClientBat = "chef-client.bat";
-            var batchFilePath = paths
-                .Select(x => Path.Combine(x, chefClientBat))
-                .FirstOrDefault(_fileSystem.FileExists);
-            if (batchFilePath == null)
-            {
-                Logger.LogWarning($"Could not find {chefClientBat} in the path {environmentPath}");
-                return null;
-            }
-            var binDirectory = Directory.GetParent(batchFilePath);
-            var installDirectory = Directory.GetParent(binDirectory.FullName);
-            return installDirectory.FullName;
         }
 
         public static string RubyExecutableWithin(string chefInstallPath)
