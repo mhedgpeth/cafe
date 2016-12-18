@@ -31,7 +31,7 @@ namespace cafe
                 new ShowChefVersionOption(chefRunner),
                 new DownloadChefOption(new ChefDownloader(new FileDownloader(),
                     new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
-                new UpgradeChefOption());
+                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(), new FileSystemCommandsBoundary())));
             Logger.LogDebug("Running application");
             return runner;
         }
@@ -41,8 +41,18 @@ namespace cafe
             return
                 new ChefRunner(
                     () =>
-                        new ChefProcess(new ProcessExecutor(() => new ProcessBoundary()),
-                            new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary())));
+                        new ChefProcess(CreateProcessExecutor(),
+                            CreateFileSystem()));
+        }
+
+        private static ProcessExecutor CreateProcessExecutor()
+        {
+            return new ProcessExecutor(() => new ProcessBoundary());
+        }
+
+        private static FileSystem CreateFileSystem()
+        {
+            return new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary());
         }
     }
 }

@@ -31,7 +31,7 @@ namespace cafe.Chef
             _fileSystem.EnsureDirectoryExists(StagingDirectory);
             var downloadLink = DownloadUriFor(version);
             var file = FilenameFor(version);
-            bool downloaded = _fileDownloader.Download(downloadLink, Path.Combine(StagingDirectory, file));
+            bool downloaded = _fileDownloader.Download(downloadLink, FullPathToStagedInstaller(version));
             var message = downloaded
                 ? $"Chef installer for {version} downloaded at {file}"
                 : $"A chef installer for {version} could not be found at link {downloadLink}";
@@ -49,6 +49,11 @@ namespace cafe.Chef
         {
             // TODO: sanitize data so it can't be injected here
             return $@"chef-client-{version}-1-x64.msi";
+        }
+
+        public static string FullPathToStagedInstaller(string version)
+        {
+            return Path.Combine(StagingDirectory, FilenameFor(version));
         }
     }
 }

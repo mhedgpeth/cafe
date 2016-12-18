@@ -7,7 +7,7 @@ Cafe exists to make managing Chef runs in a Windows environment extremely easy.
 Here are some of the things that Cafe does or will do soon:
 
 * Download the `chef-client` installer for a particular version
-* (Coming Soon) Install `chef-client` on an existing package
+* Install `chef-client` on an existing package
 * Run `chef-client` and reroute logging to a logging mechanism that is controllable by NLog
 * (Coming Soon) Schedule `chef-client` to run on an interval
 * (Coming Soon) Pause Chef runs on a node, because of emergency manual fixes or maintenance of policies
@@ -58,13 +58,21 @@ Adds cafe to the PATH environment variable, letting it run from anywhere.
 cafe init
 ```
 
-## Upgrade chef
+## Install or Upgrade chef
 
 While chef isn't running, upgrade it using a staged or downloaded MSI.:
 
 ```
+cafe chef install 12.17.44
+```
+
+or 
+
+```
 cafe chef upgrade 12.17.44
 ```
+
+Both commands do the same thing.
 
 # Future Use Cases
 

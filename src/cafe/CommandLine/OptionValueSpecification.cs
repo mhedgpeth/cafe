@@ -32,5 +32,10 @@ namespace cafe.CommandLine
         {
             return _description;
         }
+
+        public static OptionValueSpecification ForAnyValues(params string[] values)
+        {
+            return new OptionValueSpecification($"any: {string.Join(",", values)}", new Regex(string.Join("|", values)));
+        }
     }
 }
