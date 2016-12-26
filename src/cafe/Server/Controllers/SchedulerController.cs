@@ -7,12 +7,7 @@ namespace cafe.Server.Controllers
     [Route("api/[controller]")]
     public class SchedulerController : Controller
     {
-        private readonly Scheduler _scheduler;
-
-        public SchedulerController(Scheduler scheduler)
-        {
-            _scheduler = scheduler;
-        }
+        private readonly Scheduler _scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
 
         [HttpGet("status")]
         public SchedulerStatus GetStatus()

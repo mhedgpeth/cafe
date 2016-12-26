@@ -1,26 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using cafe.Chef;
+using cafe.LocalSystem;
+using cafe.Server.Scheduling;
+using Microsoft.AspNetCore.Mvc;
 
 namespace cafe.Server.Controllers
 {
     [Route("api/[controller]")]
     public class ChefController : Controller
     {
-        [HttpGet("run")]
-        public TaskStatus RunChef()
+        private readonly Scheduler _scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
+
+        [HttpPut("run")]
+        public void RunChef()
         {
-            return null;
+            ScheduleAsSoonAsPossible(StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
         }
 
-        [HttpGet("install")]
-        public TaskStatus InstallChef()
+        private void ScheduleAsSoonAsPossible(Action action)
         {
-            return null;
+            _scheduler.Schedule(new ScheduledTask(action));
         }
 
-        [HttpGet("download")]
-        public TaskStatus DownloadChef(string version)
+        [HttpPut("install")]
+        [HttpPut("upgrade")]
+        public void InstallChef(string version)
         {
-            return null;
+            ScheduleAsSoonAsPossible(() => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version));
         }
+
+        [HttpPut("download")]
+        public void DownloadChef(string version)
+        {
+            ScheduleAsSoonAsPossible(() => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version));
+        }
+
+        [HttpGet("status")]
+        public ChefStatus GetChefStatus()
+        {
+            return new ChefStatus() {Version = StructureMapResolver.Container.GetInstance<ChefRunner>().RetrieveVersion().ToString()};
+        }
+    }
+
+    public class ChefStatus
+    {
+        public string Version { get; set; }
     }
 }

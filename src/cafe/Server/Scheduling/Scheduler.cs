@@ -60,5 +60,9 @@ namespace cafe.Server.Scheduling
         {
             _recurringTasks.Add(recurringTask);
         }
+
+        public void Pause()
+        {
+        }
     }
 }

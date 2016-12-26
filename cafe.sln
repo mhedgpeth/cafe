@@ -17,6 +17,8 @@ EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "cafe.Test", "test\cafe.Test\cafe.Test.xproj", "{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "cafe.IntegrationTest", "test\cafe.IntegrationTest\cafe.IntegrationTest.xproj", "{A211CEE8-747D-4149-8CBA-385AA3F994BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A211CEE8-747D-4149-8CBA-385AA3F994BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A211CEE8-747D-4149-8CBA-385AA3F994BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A211CEE8-747D-4149-8CBA-385AA3F994BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A211CEE8-747D-4149-8CBA-385AA3F994BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CB759382-656F-4590-9EB7-EAAD5C40AFE9} = {469A828A-38A9-47E4-88B3-326A06DF91E9}
 		{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9} = {CAA87EA8-D45F-4C96-BEE5-C6AE433DBF3B}
+		{A211CEE8-747D-4149-8CBA-385AA3F994BB} = {CAA87EA8-D45F-4C96-BEE5-C6AE433DBF3B}
 	EndGlobalSection
 EndGlobal
