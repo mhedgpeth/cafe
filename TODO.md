@@ -1,16 +1,23 @@
 
 # Near Term
 
+## Better Presentation of the Basics
 * Better UI on the client side (not using logger)
-* Immediate run of chef run/etc instead of waiting on scheduled interval
-* Log to file on the server side
+* Log to file and console on the server side
 * Chef run should log to its own file (with own logger)
-* When server isn't started, start it in process (easy to adopt)
+
+## Finish client/server transition
 * Convert all client-facing Options to talk to REST API
-* Schedule chef to run every X minutes (RecurringTask implementation) with `cafe schedule chef every: 30 minutes`
 * Live view of tasks, with descriptive names, and guids for up to date status as they work through the scheduler
+
+## Make scheduler production ready
+* Immediate run of chef run/etc instead of waiting on scheduled interval
+* Schedule chef to run every X minutes (RecurringTask implementation) with `cafe schedule chef every: 30 minutes`
 * Pause just chef (not other things, like an install/upgrade) with `cafe pause chef`
 * Resume just chef (not other things) with `cafe resume chef`
+
+## Ease of use
+* When server isn't started, start it in process (to make this easy to adopt)
 
 # Long Term
 
@@ -19,3 +26,6 @@
   - Register with `cafe service register`
   - Start service with `cafe service start`
   - Stop service with `cafe service stop`
+* Bootstrap through REST API (after cafe is installed, but before chef is installed)
+* Update documentation
+* Create youtube video

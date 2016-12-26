@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/cafe" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../test/cafe.IntegrationTest" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../test/cafe.Test" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../TODO.md" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../packages" />
       <excludeFolder url="file://$MODULE_DIR$/../../src/cafe/bin" />
       <excludeFolder url="file://$MODULE_DIR$/../../src/cafe/obj" />
