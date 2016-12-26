@@ -31,7 +31,8 @@ namespace cafe
                 new ShowChefVersionOption(chefRunner),
                 new DownloadChefOption(new ChefDownloader(new FileDownloader(),
                     new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
-                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(), new FileSystemCommandsBoundary())));
+                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(), new FileSystemCommandsBoundary())),
+                new ServerOption());
             Logger.LogDebug("Running application");
             return runner;
         }
