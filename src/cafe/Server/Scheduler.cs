@@ -11,9 +11,10 @@ namespace cafe.Server
           ApplicationLogging.CreateLogger<Scheduler>();
 
         private readonly HashSet<IScheduledTask> _queuedTasks = new HashSet<IScheduledTask>();
-
+        private readonly HashSet<RecurringTask> _recurringTasks = new HashSet<RecurringTask>();
         public void ProcessTasks()
         {
+            AddAllReadyRecurringTasksToQueue();
             var readyTask = _queuedTasks.FirstOrDefault();
             if (readyTask == null)
             {
@@ -35,12 +36,28 @@ namespace cafe.Server
             }
         }
 
+        private void AddAllReadyRecurringTasksToQueue()
+        {
+            foreach (var recurringTask in _recurringTasks)
+            {
+                if (recurringTask.IsReadyToRun)
+                {
+                    Schedule(recurringTask.CreateScheduledTask());
+                }
+            }
+        }
+
         public void Schedule(params IScheduledTask[] tasks)
         {
             foreach (var task in tasks)
             {
                 _queuedTasks.Add(task);
             }
+        }
+
+        public void Add(RecurringTask recurringTask)
+        {
+            _recurringTasks.Add(recurringTask);
         }
     }
 }

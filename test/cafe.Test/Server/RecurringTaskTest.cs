@@ -13,7 +13,7 @@ namespace cafe.Test.Server
         [Fact]
         public void IsReadyToRun_ShouldBeFalseWhenNotPastCreateTime()
         {
-            var clock = new MockClock();
+            var clock = new FakeClock();
             var recurringTask = new RecurringTask(clock, FiveMinutes, CreateFakeScheduledTask);
 
             recurringTask.IsReadyToRun.Should().BeFalse();
@@ -22,7 +22,7 @@ namespace cafe.Test.Server
         [Fact]
         public void IsReadyToRun_ShouldBeTrueWhenPastCreateTime()
         {
-            var clock = new MockClock();
+            var clock = new FakeClock();
 
             var recurringTask = new RecurringTask(clock, FiveMinutes, CreateFakeScheduledTask);
 
@@ -34,7 +34,7 @@ namespace cafe.Test.Server
         [Fact]
         public void CreateScheduledTask_ShouldBeFalseAfterFirstRunButBeforeNextScheduled()
         {
-            var clock = new MockClock();
+            var clock = new FakeClock();
             var expected = new FakeScheduledTask();
             var recurringTask = new RecurringTask(clock, FiveMinutes, () => expected);
             clock.AddToCurrentInstant(FiveMinutes);
@@ -46,7 +46,7 @@ namespace cafe.Test.Server
         [Fact]
         public void CreateScheduledTask_ShouldThrowExceptionWhenNotReady()
         {
-            var recurringTask = new RecurringTask(new MockClock(), FiveMinutes, CreateFakeScheduledTask);
+            var recurringTask = new RecurringTask(new FakeClock(), FiveMinutes, CreateFakeScheduledTask);
             Assert.Throws<InvalidOperationException>(() => recurringTask.CreateScheduledTask());
         }
 
@@ -58,7 +58,7 @@ namespace cafe.Test.Server
         [Fact]
         public void IsReadyToRun_ShouldBeFalseAfterCreatingScheduleTaskBeforeNextDurationTime()
         {
-            var clock = new MockClock();
+            var clock = new FakeClock();
             var recurringTask = new RecurringTask(clock, FiveMinutes, CreateFakeScheduledTask);
             clock.AddToCurrentInstant(FiveMinutes);
 

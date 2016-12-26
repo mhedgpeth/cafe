@@ -2,6 +2,7 @@
 using cafe.Server;
 using Xunit;
 using FluentAssertions;
+using NodaTime;
 
 namespace cafe.Test.Server
 {
@@ -38,6 +39,24 @@ namespace cafe.Test.Server
             scheduler.ProcessTasks();
 
             anotherTask.WasRunCalled.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ProcessTasks_ShouldScheduleAndExecuteReadyRecurringTask()
+        {
+            var scheduledTask = new FakeScheduledTask();
+            var clock = new FakeClock();
+            var fiveMinutes = Duration.FromMinutes(5);
+            var recurringTask = new RecurringTask(clock, fiveMinutes, () => scheduledTask);
+            clock.AddToCurrentInstant(fiveMinutes);
+
+            var scheduler = new Scheduler();
+            scheduler.Add(recurringTask);
+
+            scheduler.ProcessTasks();
+            scheduler.ProcessTasks();
+
+            scheduledTask.WasRunCalled.Should().BeTrue("because the recurring task was due, it should have created a scheduled task and run it");
         }
 
         private FakeScheduledTask CreateRecurringTask()

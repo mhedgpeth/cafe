@@ -2,7 +2,7 @@
 
 namespace cafe.Test.Server
 {
-    public class MockClock : IClock
+    public class FakeClock : IClock
     {
         public Instant CurrentInstant { get; set; } = Instant.FromUtc(2017, 1, 1, 9, 0);
 
