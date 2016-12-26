@@ -1,10 +1,10 @@
 ﻿using System;
-using cafe.Server;
-using Xunit;
-using NodaTime;
+using cafe.Server.Scheduling;
 using FluentAssertions;
+using NodaTime;
+using Xunit;
 
-namespace cafe.Test.Server
+namespace cafe.Test.Server.Scheduling
 {
     public class RecurringTaskTest
     {

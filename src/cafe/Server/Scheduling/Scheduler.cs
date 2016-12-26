@@ -1,29 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace cafe.Server
+namespace cafe.Server.Scheduling
 {
     public class Scheduler
     {
         private static ILogger Logger { get; } =
           ApplicationLogging.CreateLogger<Scheduler>();
 
-        private readonly HashSet<IScheduledTask> _queuedTasks = new HashSet<IScheduledTask>();
+        public SchedulerStatus CurrentStatus => new SchedulerStatus() { QueuedTasks = _queuedTasks.Count };
+
+        private readonly Queue<IScheduledTask> _queuedTasks = new Queue<IScheduledTask>();
         private readonly HashSet<RecurringTask> _recurringTasks = new HashSet<RecurringTask>();
         public void ProcessTasks()
         {
             AddAllReadyRecurringTasksToQueue();
-            var readyTask = _queuedTasks.FirstOrDefault();
-            if (readyTask == null)
+            if (_queuedTasks.Count == 0)
             {
                 Logger.LogDebug("There is nothing to do right now");
+                return;
             }
-            else if (readyTask.IsFinishedRunning)
+            var readyTask = _queuedTasks.Peek();
+            if (readyTask.IsFinishedRunning)
             {
                 Logger.LogInformation($"Task {readyTask} has finished running, so removing it from the queue");
-                _queuedTasks.Remove(readyTask);
+                _queuedTasks.Dequeue();
             }
             else if (!readyTask.IsRunning)
             {
@@ -51,7 +52,7 @@ namespace cafe.Server
         {
             foreach (var task in tasks)
             {
-                _queuedTasks.Add(task);
+                _queuedTasks.Enqueue(task);
             }
         }
 

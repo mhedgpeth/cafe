@@ -1,6 +1,6 @@
 ﻿using NodaTime;
 
-namespace cafe.Test.Server
+namespace cafe.Test.Server.Scheduling
 {
     public class FakeClock : IClock
     {

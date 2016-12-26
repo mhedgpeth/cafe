@@ -9,7 +9,8 @@
     "dotnet-test-xunit": "1.0.0-rc2-build10025",
     "cafe": "*",
     "FluentAssertions": "4.18.0",
-    "Moq": "4.6.38-alpha"
+    "Moq": "4.6.38-alpha",
+    "Microsoft.DotNet.InternalAbstractions": "1.0.0"
   },
   "testRunner": "xunit",
   "frameworks": {

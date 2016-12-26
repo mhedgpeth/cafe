@@ -1,4 +1,4 @@
-﻿namespace cafe.Server
+﻿namespace cafe.Server.Scheduling
 {
     public interface IScheduledTask
     {

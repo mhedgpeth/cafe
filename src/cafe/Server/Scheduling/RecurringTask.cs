@@ -1,7 +1,7 @@
 ﻿using System;
 using NodaTime;
 
-namespace cafe.Server
+namespace cafe.Server.Scheduling
 {
     public class RecurringTask
     {

@@ -1,4 +1,5 @@
 using System;
+using cafe.Server.Scheduling;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafe.Server.Controllers
@@ -6,16 +7,17 @@ namespace cafe.Server.Controllers
     [Route("api/[controller]")]
     public class SchedulerController : Controller
     {
+        private readonly Scheduler _scheduler;
+
+        public SchedulerController(Scheduler scheduler)
+        {
+            _scheduler = scheduler;
+        }
+
         [HttpGet("status")]
         public SchedulerStatus GetStatus()
         {
-            return new SchedulerStatus() { QueuedTasks = 15 };
+            return _scheduler.CurrentStatus;
         }
     }
-
-    public class SchedulerStatus
-    {
-        public int QueuedTasks { get; set; }
-    }
-
 }

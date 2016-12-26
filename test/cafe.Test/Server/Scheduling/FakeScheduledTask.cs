@@ -1,6 +1,6 @@
-using cafe.Server;
+using cafe.Server.Scheduling;
 
-namespace cafe.Test.Server
+namespace cafe.Test.Server.Scheduling
 {
     public class FakeScheduledTask : IScheduledTask
     {
