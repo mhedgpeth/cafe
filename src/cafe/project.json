@@ -11,7 +11,15 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "System.Linq": "4.3.0",
     "System.Net.Http": "4.3.0",
-    "System.Threading.Tasks": "4.3.0"
+    "System.Threading.Tasks": "4.3.0",
+        "Microsoft.AspNetCore.Diagnostics": "1.1.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.1.0",
+    "NodaTime": "2.0.0-alpha20160729"
   },
   "frameworks": {
     "netcoreapp1.1": {
