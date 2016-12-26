@@ -21,6 +21,7 @@ namespace cafe.Options
                 .Build();
 
             var host = new WebHostBuilder()
+                .UseUrls("http://*:59320/")
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
