@@ -14,5 +14,11 @@ namespace cafe.Server.Controllers
         {
             return _scheduler.CurrentStatus;
         }
+
+        [HttpPut("pause")]
+        public void Pause()
+        {
+            _scheduler.Pause();
+        }
     }
 }
