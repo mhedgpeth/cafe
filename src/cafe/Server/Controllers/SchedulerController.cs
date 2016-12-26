@@ -1,5 +1,6 @@
 using System;
 using cafe.Server.Scheduling;
+using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafe.Server.Controllers

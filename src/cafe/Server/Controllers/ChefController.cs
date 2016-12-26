@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using cafe.Chef;
-using cafe.LocalSystem;
 using cafe.Server.Scheduling;
+using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafe.Server.Controllers
@@ -40,10 +41,5 @@ namespace cafe.Server.Controllers
         {
             return new ChefStatus() {Version = StructureMapResolver.Container.GetInstance<ChefRunner>().RetrieveVersion().ToString()};
         }
-    }
-
-    public class ChefStatus
-    {
-        public string Version { get; set; }
     }
 }

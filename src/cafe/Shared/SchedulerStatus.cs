@@ -1,4 +1,4 @@
-namespace cafe.Server.Scheduling
+namespace cafe.Shared
 {
     public class SchedulerStatus
     {

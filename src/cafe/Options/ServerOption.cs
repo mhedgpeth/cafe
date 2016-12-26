@@ -1,6 +1,7 @@
 ﻿using cafe.CommandLine;
 using System.IO;
 using cafe.Server;
+using cafe.Shared;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -21,7 +22,7 @@ namespace cafe.Options
                 .Build();
 
             var host = new WebHostBuilder()
-                .UseUrls("http://*:59320/")
+                .UseUrls($"http://*:{ServerSettings.Port}/")
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

@@ -82,7 +82,7 @@ Both commands do the same thing.
 cafe server
 ```
 
-All other commands will call the server, which will keep things from running into each other. The server will listen on a port and have a REST API.
+This runs cafe on port 59320 locally. All other commands will call the server, which will keep things from running into each other. The server will listen on a port and have a REST API.
 
 Server mode can output in JSON or in an easy to understand result
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using cafe.Shared;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 

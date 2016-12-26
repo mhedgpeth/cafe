@@ -1,5 +1,6 @@
 ﻿using System;
 using cafe.Chef;
+using cafe.Client;
 using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Options;
@@ -28,11 +29,12 @@ namespace cafe
             Logger.LogDebug("Creating runner");
             var runner = new Runner(
                 new RunChefOption(chefRunner),
-                new ShowChefVersionOption(chefRunner),
+                new ShowChefVersionOption(new ClientFactory()),
                 new DownloadChefOption(new ChefDownloader(new FileDownloader(),
                     new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
                 new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(), new FileSystemCommandsBoundary())),
-                new ServerOption());
+                new ServerOption(),
+                new SchedulerStatusOption(new ClientFactory()));
             Logger.LogDebug("Running application");
             return runner;
         }
