@@ -9,6 +9,8 @@ namespace cafe.Server.Scheduling
         private static ILogger Logger { get; } =
             ApplicationLogging.CreateLogger<Scheduler>();
 
+        private readonly object _processLocker = new object();
+
         public Scheduler(ITimerFactory timerFactory)
         {
             timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromMinutes(1));
@@ -26,32 +28,35 @@ namespace cafe.Server.Scheduling
 
         public void ProcessTasks()
         {
-            if (!IsRunning)
+            lock (_processLocker) // since queues are being manipulated here, don't let this happen multiple times
             {
-                Logger.LogDebug("Since scheduler is paused, not processing tasks");
-                return;
-            }
-            AddAllReadyRecurringTasksToQueue();
-            if (_queuedTasks.Count == 0)
-            {
-                Logger.LogDebug("There is nothing to do right now");
-                return;
-            }
-            var readyTask = _queuedTasks.Peek();
-            if (readyTask.IsFinishedRunning)
-            {
-                Logger.LogInformation($"Task {readyTask} has finished running, so removing it from the queue");
-                _queuedTasks.Dequeue();
-            }
-            else if (!readyTask.IsRunning)
-            {
-                Logger.LogInformation(
-                    $"Task {readyTask} is not yet run and it is the next thing to run, so running it");
-                readyTask.Run();
-            }
-            else
-            {
-                Logger.LogDebug($"Since {readyTask} is still running, waiting for it to complete");
+                if (!IsRunning)
+                {
+                    Logger.LogDebug("Since scheduler is paused, not processing tasks");
+                    return;
+                }
+                AddAllReadyRecurringTasksToQueue();
+                if (_queuedTasks.Count == 0)
+                {
+                    Logger.LogDebug("There is nothing to do right now");
+                    return;
+                }
+                var readyTask = _queuedTasks.Peek();
+                if (readyTask.IsFinishedRunning)
+                {
+                    Logger.LogInformation($"Task {readyTask} has finished running, so removing it from the queue");
+                    _queuedTasks.Dequeue();
+                }
+                else if (!readyTask.IsRunning)
+                {
+                    Logger.LogInformation(
+                        $"Task {readyTask} is not yet run and it is the next thing to run, so running it");
+                    readyTask.Run();
+                }
+                else
+                {
+                    Logger.LogDebug($"Since {readyTask} is still running, waiting for it to complete");
+                }
             }
         }
 
