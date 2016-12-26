@@ -1,5 +1,4 @@
-﻿using System;
-using cafe.Chef;
+﻿using cafe.Chef;
 using cafe.Client;
 using cafe.CommandLine;
 using cafe.LocalSystem;
