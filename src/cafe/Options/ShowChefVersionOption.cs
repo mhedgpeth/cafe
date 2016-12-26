@@ -21,7 +21,7 @@ namespace cafe.Options
         {
             var api = _clientFactory.RestClientForChefServer();
             var status = api.GetChefStatus().Result;
-            Logger.LogInformation($"chef-client version: {status.Version}");
+            Presenter.ShowMessage($"chef-client version: {status.Version}", Logger);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace cafe
 
         public static void Main(string[] args)
         {
+            Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
             runner.Run(args);
             Logger.LogDebug("Finishing cafe run");
@@ -21,8 +22,6 @@ namespace cafe
 
         public static Runner CreateRunner(string[] args)
         {
-            Logger.LogInformation(
-                $"Running cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}");
             Logger.LogDebug("Creating chef runner");
             var chefRunner = CreateChefRunner();
             Logger.LogDebug("Creating runner");
@@ -31,7 +30,8 @@ namespace cafe
                 new ShowChefVersionOption(new ClientFactory()),
                 new DownloadChefOption(new ChefDownloader(new FileDownloader(),
                     new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
-                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(), new FileSystemCommandsBoundary())),
+                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(),
+                    new FileSystemCommandsBoundary())),
                 new ServerOption(),
                 new SchedulerStatusOption(new ClientFactory()));
             Logger.LogDebug("Running application");

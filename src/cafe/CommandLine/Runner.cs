@@ -21,12 +21,13 @@ namespace cafe.CommandLine
             if (matchingOption != null)
             {
                 Logger.LogInformation($"Option {matchingOption} matches the arguments supplied, so running");
+                Presenter.ShowMessage($"Executing option {matchingOption}", Logger);
                 matchingOption.Run(args);
                 Logger.LogInformation($"Finished running option {matchingOption}");
             }
             else
             {
-                Logger.LogError("Since there are no matching options, aborting");
+                Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
             }
         }
 

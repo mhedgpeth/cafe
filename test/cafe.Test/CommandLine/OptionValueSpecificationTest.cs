@@ -23,5 +23,14 @@ namespace cafe.Test.CommandLine
                 .Should()
                 .BeFalse("because the value doesn't exactly match");
         }
+
+        [Fact]
+        public void IsSatisfiedBy_ShouldBeFalseIfExactValueDoesNotMatchButContainsOtherValue()
+        {
+            OptionValueSpecification.ForExactValue("scheduler")
+                .IsSatisfiedBy("schedulers")
+                .Should()
+                .BeFalse("because the values aren't exactly the same");
+        }
     }
 }

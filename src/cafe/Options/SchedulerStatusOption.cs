@@ -20,8 +20,8 @@ namespace cafe.Options
         protected override void RunCore(string[] args)
         {
             var status = _clientFactory.RestClientForSchedulerServer().GetStatus().Result;
-            Logger.LogInformation($"Is Running: {status.IsRunning}");
-            Logger.LogInformation($"Queued tasks: {status.QueuedTasks}");
+            Presenter.ShowMessage($"Is Running: {status.IsRunning}", Logger);
+            Presenter.ShowMessage($"Queued tasks: {status.QueuedTasks}", Logger);
         }
     }
 }

@@ -2,30 +2,25 @@ using System.Text.RegularExpressions;
 
 namespace cafe.CommandLine
 {
-    public class OptionValueSpecification
+    public abstract class OptionValueSpecification
     {
         private readonly string _description;
-        private readonly Regex _expression;
 
-        private OptionValueSpecification(string description, Regex expression)
+        protected OptionValueSpecification(string description)
         {
             _description = description;
-            _expression = expression;
         }
 
-        public bool IsSatisfiedBy(string argument)
-        {
-            return _expression.IsMatch(argument);
-        }
+        public abstract bool IsSatisfiedBy(string value);
 
         public static OptionValueSpecification ForExactValue(string value)
         {
-            return new OptionValueSpecification(value, new Regex(value));
+            return new MatchingExactValueOptionValueSpecification(value);
         }
 
         public static OptionValueSpecification ForVersion()
         {
-            return new OptionValueSpecification("[version]", new Regex(@"\d+\.\d+\.\d+"));
+            return new MatchingRegexOptionValueSpecification("[version]", new Regex(@"\d+\.\d+\.\d+"));
         }
 
         public override string ToString()
@@ -35,7 +30,7 @@ namespace cafe.CommandLine
 
         public static OptionValueSpecification ForAnyValues(params string[] values)
         {
-            return new OptionValueSpecification($"any: {string.Join(",", values)}", new Regex(string.Join("|", values)));
+            return new MatchingRegexOptionValueSpecification($"any: {string.Join(",", values)}", new Regex(string.Join("|", values)));
         }
     }
 }
