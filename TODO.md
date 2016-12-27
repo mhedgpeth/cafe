@@ -1,9 +1,13 @@
 
 # Near Term
 
-## Finish client/server transition
-* Convert all client-facing Options to talk to REST API
-* Live view of tasks, with descriptive names, and guids for up to date status as they work through the scheduler
+## Better view of what is happening
+* Tasks have start and end times in status
+* Tasks show failure with helpful text on what happened in the failure
+* Task provides current status - so users can see that something is happening
+* Include more detailed scheduler status, migrate it to simply cafe status
+* When the server is not running, handle the error gracefully
+* When the server is cut off while running, handle the error gracefully
 
 ## Make scheduler production ready
 * Immediate run of chef run/etc instead of waiting on scheduled interval
@@ -12,7 +16,7 @@
 * Resume just chef (not other things) with `cafe resume chef`
 
 ## Ease of use
-* When server isn't started, start it in process (to make this easy to adopt)
+* When server isn't started, start it in process (to make this easy to adopt) - maybe just focus on making it easy for people to run the server with below service
 
 # Long Term
 
@@ -22,5 +26,6 @@
   - Start service with `cafe service start`
   - Stop service with `cafe service stop`
 * Bootstrap through REST API (after cafe is installed, but before chef is installed)
+* Simple web page for when people locally go to localhost to view status
 * Update documentation
 * Create youtube video
