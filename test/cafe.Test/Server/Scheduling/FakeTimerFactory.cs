@@ -1,5 +1,6 @@
 ﻿using System;
 using cafe.Server.Scheduling;
+using Moq;
 using NodaTime;
 
 namespace cafe.Test.Server.Scheduling
@@ -9,14 +10,11 @@ namespace cafe.Test.Server.Scheduling
         private Action _action;
         private Duration _every;
 
-        public void Dispose()
-        {
-        }
-
-        public void ExecuteActionOnInterval(Action action, Duration every)
+        public IDisposable ExecuteActionOnInterval(Action action, Duration every)
         {
             _action = action;
             _every = every;
+            return new Mock<IDisposable>().Object;
         }
 
         public void FireTimerAction()

@@ -10,7 +10,7 @@ namespace cafe.Server.Scheduling
     public class Scheduler : IDisposable
     {
         private readonly Guid _instanceId = Guid.NewGuid();
-        private readonly ITimerFactory _timerFactory;
+        private readonly IDisposable _timer;
         private readonly IActionExecutor _scheduledTaskExecutor;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Scheduler).FullName);
 
@@ -18,9 +18,8 @@ namespace cafe.Server.Scheduling
 
         public Scheduler(ITimerFactory timerFactory, IActionExecutor scheduledTaskExecutor)
         {
-            _timerFactory = timerFactory;
             _scheduledTaskExecutor = scheduledTaskExecutor;
-            _timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromSeconds(15));
+            _timer = timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromSeconds(15));
             IsRunning = true;
             Console.Out.WriteLine(_instanceId);
         }
@@ -120,7 +119,7 @@ namespace cafe.Server.Scheduling
 
         public void Dispose()
         {
-            _timerFactory.Dispose();
+            _timer.Dispose();
         }
     }
 }

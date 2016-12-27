@@ -29,7 +29,6 @@ namespace cafe.Options
             Presenter.ShowMessage($"Finished running {finalStatus.Description}", Logger);
         }
 
-
         protected abstract Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args);
     }
 }

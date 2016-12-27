@@ -3,8 +3,8 @@ using NodaTime;
 
 namespace cafe.Server.Scheduling
 {
-    public interface ITimerFactory : IDisposable
+    public interface ITimerFactory
     {
-        void ExecuteActionOnInterval(Action action, Duration every);
+        IDisposable ExecuteActionOnInterval(Action action, Duration every);
     }
 }

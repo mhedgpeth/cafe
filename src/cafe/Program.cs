@@ -1,6 +1,7 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
 using cafe.Options;
+using cafe.Server.Scheduling;
 using NLog;
 using NLog.Config;
 
@@ -28,7 +29,7 @@ namespace cafe
         public static Runner CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory();
-            var schedulerWaiter = new SchedulerWaiter(clientFactory);
+            var schedulerWaiter = new SchedulerWaiter(() => clientFactory.RestClientForSchedulerServer(), new AutoResetEventBoundary(), new TimerFactory());
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
                 new ShowChefVersionOption(clientFactory),
