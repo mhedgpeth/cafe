@@ -125,5 +125,19 @@ namespace cafe.Test.Server.Scheduling
 
             scheduler.ToTaskStatus().CurrentMessage.Should().Be(message);
         }
+
+        [Fact]
+        public void Exceptions_ShouldBeConvertedIntoFailures()
+        {
+            var ex = new Exception("this is not expected!");
+            var task = CreateScheduledTask(presenter =>
+            {
+                throw ex;
+            });
+
+            task.Run();
+
+            task.ToTaskStatus().Result.IsSuccess.Should().BeFalse("because an exception was thrown");
+        }
     }
 }

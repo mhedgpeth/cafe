@@ -25,7 +25,15 @@ namespace cafe.Server.Scheduling
             _status.StartTime = _clock.GetCurrentInstant().ToDateTimeUtc();
             _status.State = TaskState.Running;
             ShowMessage($"Task {_status.Description} ({_status.Id}) started at {_status.StartTime}");
-            _status.Result = _action(this);
+            try
+            {
+                _status.Result = _action(this);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, $"An unexpected error occurred while runnnig {_status.Description} ({_status.Id}): {ex.Message}");
+                _status.Result = Result.Failure($"An unexpected error occurred: {ex.Message}");
+            }
             _status.State = TaskState.Finished;
             _status.CompleteTime = _clock.GetCurrentInstant().ToDateTimeUtc();
             ShowMessage($"Task {_status.Description} ({_status.Id}) completed at {_status.CompleteTime} with result: {_status.Result}");
