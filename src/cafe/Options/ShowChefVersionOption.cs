@@ -1,5 +1,6 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
+using cafe.Shared;
 using NLog;
 
 namespace cafe.Options
@@ -16,11 +17,12 @@ namespace cafe.Options
             _clientFactory = clientFactory;
         }
 
-        protected override void RunCore(string[] args)
+        protected override Result RunCore(string[] args)
         {
             var api = _clientFactory.RestClientForChefServer();
             var status = api.GetChefStatus().Result;
             Presenter.ShowMessage($"chef-client version: {status.Version}", Logger);
+            return Result.Successful();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
+using cafe.Shared;
 using NLog;
 
 namespace cafe.Options
@@ -16,11 +17,12 @@ namespace cafe.Options
             _clientFactory = clientFactory;
         }
 
-        protected override void RunCore(string[] args)
+        protected override Result RunCore(string[] args)
         {
             var status = _clientFactory.RestClientForSchedulerServer().GetStatus().Result;
             Presenter.ShowMessage($"Is Running: {status.IsRunning}", Logger);
             Presenter.ShowMessage($"Queued tasks: {status.QueuedTasks}", Logger);
+            return Result.Successful();
         }
     }
 }

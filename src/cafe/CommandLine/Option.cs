@@ -1,9 +1,14 @@
 ﻿using System;
+using cafe.Client;
+using cafe.Shared;
+using NLog;
 
 namespace cafe.CommandLine
 {
     public abstract class Option
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
+
         private readonly string _helpText;
         private readonly OptionSpecification _specification;
 
@@ -13,19 +18,25 @@ namespace cafe.CommandLine
             _helpText = helpText;
         }
 
-        public void Run(params string[] args)
+        public Result Run(params string[] args)
         {
             if (_specification.HelpRequested(args))
             {
                 ShowHelp();
+                return Result.Successful();
             }
-            else
+            try
             {
-                RunCore(args);
+                return RunCore(args);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "An unexpected error occurred while executing this option");
+                return Result.Failure($"An unexpected error occurred while executing this option: {ex.Message}");
             }
         }
 
-        protected abstract void RunCore(string[] args);
+        protected abstract Result RunCore(string[] args);
 
         public virtual void ShowHelp()
         {

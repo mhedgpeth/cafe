@@ -1,4 +1,5 @@
 using cafe.CommandLine;
+using cafe.Shared;
 
 namespace cafe.Test.CommandLine
 {
@@ -8,9 +9,10 @@ namespace cafe.Test.CommandLine
         {
         }
 
-        protected override void RunCore(string[] args)
+        protected override Result RunCore(string[] args)
         {
             WasRun = true;
+            return Result.Successful();
         }
 
         public override void ShowHelp()

@@ -21,8 +21,8 @@ namespace cafe.CommandLine
             {
                 Logger.Info($"Option {matchingOption} matches the arguments supplied, so running");
                 Presenter.ShowMessage($"Executing option {matchingOption}", Logger);
-                matchingOption.Run(args);
-                Logger.Info($"Finished running option {matchingOption}");
+                var result = matchingOption.Run(args);
+                Presenter.ShowMessage($"Finished running option {matchingOption} with result: {result}", Logger);
             }
             else
             {

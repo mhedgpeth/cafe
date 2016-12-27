@@ -21,12 +21,13 @@ namespace cafe.Options
             _schedulerWaiter = schedulerWaiter;
         }
 
-        protected override void RunCore(string[] args)
+        protected override Result RunCore(string[] args)
         {
             var client = _clientFactory.RestClientForChefServer();
             var status = RunCore(client, args).Result;
             var finalStatus = _schedulerWaiter.WaitForTaskToComplete(status);
             Presenter.ShowMessage($"Finished running {finalStatus.Description}", Logger);
+            return finalStatus.Result;
         }
 
         protected abstract Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args);

@@ -13,7 +13,7 @@ namespace cafe.Options
         {
         }
 
-        protected override void RunCore(string[] args)
+        protected override Result RunCore(string[] args)
         {
             var config = new ConfigurationBuilder()
                 // .AddCommandLine(args)
@@ -30,6 +30,7 @@ namespace cafe.Options
                 .Build();
 
             host.Run();
+            return Result.Successful();
         }
     }
 }
