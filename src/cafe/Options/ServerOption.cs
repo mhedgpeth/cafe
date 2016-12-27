@@ -32,5 +32,10 @@ namespace cafe.Options
             host.Run();
             return Result.Successful();
         }
+
+        protected override string ToDescription(string[] args)
+        {
+            return "Starting Cafe in Server Mode";
+        }
     }
 }

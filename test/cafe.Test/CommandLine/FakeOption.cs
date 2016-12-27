@@ -23,5 +23,9 @@ namespace cafe.Test.CommandLine
 
         public bool WasRun { get; private set; }
         public bool WasHelpShown { get; private set; }
+        protected override string ToDescription(string[] args)
+        {
+            return "Fake Option";
+        }
     }
 }

@@ -29,5 +29,10 @@ namespace cafe.Test.CommandLine
         {
             throw new ArgumentException("this option always throws an exception for testing");
         }
+
+        protected override string ToDescription(string[] args)
+        {
+            return "Option Throwing Exception";
+        }
     }
 }

@@ -20,9 +20,8 @@ namespace cafe.CommandLine
             if (matchingOption != null)
             {
                 Logger.Info($"Option {matchingOption} matches the arguments supplied, so running");
-                Presenter.ShowMessage($"Executing option {matchingOption}", Logger);
                 var result = matchingOption.Run(args);
-                Presenter.ShowMessage($"Finished running option {matchingOption} with result: {result}", Logger);
+                Logger.Info($"Finished executing {matchingOption} with result: {result}");
             }
             else
             {

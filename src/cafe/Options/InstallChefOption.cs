@@ -17,7 +17,12 @@ namespace cafe.Options
 
         protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
         {
-            return chefServer.InstallChef(args[2]);
+            return chefServer.InstallChef(DownloadChefOption.FindVersion(args));
+        }
+
+        protected override string ToDescription(string[] args)
+        {
+            return $"Installing Chef {DownloadChefOption.FindVersion(args)}";
         }
     }
 }

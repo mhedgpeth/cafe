@@ -32,5 +32,10 @@ namespace cafe.CommandLine
             logger.Error(message);
             WriteMessage(message, ConsoleColor.DarkRed);
         }
+
+        public static void NewLine()
+        {
+            Console.Out.WriteLine();
+        }
     }
 }

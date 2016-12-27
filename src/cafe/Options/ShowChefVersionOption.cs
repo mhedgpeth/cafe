@@ -24,5 +24,10 @@ namespace cafe.Options
             Presenter.ShowMessage($"chef-client version: {status.Version}", Logger);
             return Result.Successful();
         }
+
+        protected override string ToDescription(string[] args)
+        {
+            return $"Determining Chef Version";
+        }
     }
 }

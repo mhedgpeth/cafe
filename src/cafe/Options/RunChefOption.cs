@@ -16,5 +16,10 @@ namespace cafe.Options
         {
             return chefServer.RunChef();
         }
+
+        protected override string ToDescription(string[] args)
+        {
+            return "Running Chef";
+        }
     }
 }

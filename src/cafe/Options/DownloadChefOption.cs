@@ -23,7 +23,17 @@ namespace cafe.Options
 
         protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
         {
-            return chefServer.DownloadChef(args[2]);
+            return chefServer.DownloadChef(FindVersion(args));
+        }
+
+        public static string FindVersion(string[] args)
+        {
+            return args[2];
+        }
+
+        protected override string ToDescription(string[] args)
+        {
+            return $"Downloading Chef {FindVersion(args)}";
         }
     }
 }

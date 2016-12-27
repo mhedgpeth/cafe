@@ -29,14 +29,14 @@ namespace cafe
         public static Runner CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory();
-            var schedulerWaiter = new SchedulerWaiter(() => clientFactory.RestClientForSchedulerServer(), new AutoResetEventBoundary(), new TimerFactory());
+            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer, new AutoResetEventBoundary(), new TimerFactory());
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
                 new ShowChefVersionOption(clientFactory),
                 new DownloadChefOption(clientFactory, schedulerWaiter),
                 new InstallChefOption(clientFactory, schedulerWaiter),
                 new ServerOption(),
-                new SchedulerStatusOption(clientFactory));
+                new SchedulerStatusOption(clientFactory.RestClientForSchedulerServer));
             Logger.Debug("Running application");
             return runner;
         }
