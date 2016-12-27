@@ -1,25 +1,29 @@
-﻿using cafe.Chef;
+﻿using System.Threading.Tasks;
+using cafe.Client;
 using cafe.CommandLine;
+using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class DownloadChefOption : Option
+    public class DownloadChefOption : ChefOption
     {
-        private readonly ChefDownloader _chefDownloader;
+        private readonly ClientFactory _clientFactory;
+        private readonly SchedulerWaiter _schedulerWaiter;
 
-        public DownloadChefOption(ChefDownloader chefDownloader)
-            : base(
+        public DownloadChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter)
+            : base(clientFactory, schedulerWaiter,
                 new OptionSpecification(OptionValueSpecification.ForExactValue("chef"),
                     OptionValueSpecification.ForExactValue("download"),
                     OptionValueSpecification.ForVersion()),
                 "downloads the provided version of chef")
         {
-            _chefDownloader = chefDownloader;
+            _clientFactory = clientFactory;
+            _schedulerWaiter = schedulerWaiter;
         }
 
-        protected override void RunCore(string[] args)
+        protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
         {
-            _chefDownloader.Download(args[2]);
+            return chefServer.DownloadChef(args[2]);
         }
     }
 }

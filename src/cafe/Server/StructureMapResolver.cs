@@ -24,6 +24,7 @@ namespace cafe.Server
                 config.For<IEnvironment>().Use<EnvironmentBoundary>();
                 config.For<IFileSystemCommands>().Use<FileSystemCommandsBoundary>();
                 config.For<IProcess>().Use<ProcessBoundary>();
+                config.For<IActionExecutor>().Use<RunInBackgroundActionExecutor>();
             });
             return container;
         }

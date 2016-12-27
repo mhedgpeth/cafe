@@ -11,6 +11,6 @@ namespace cafe.Client
         Task<SchedulerStatus> GetStatus();
 
         [Get("task/{id}")]
-        Task<ScheduledTaskStatus> GetTaskStatus(Guid id);
+        Task<ScheduledTaskStatus> GetTaskStatus([Path]Guid id);
     }
 }

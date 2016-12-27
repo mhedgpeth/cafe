@@ -1,7 +1,5 @@
-﻿using cafe.Chef;
-using cafe.Client;
+﻿using cafe.Client;
 using cafe.CommandLine;
-using cafe.LocalSystem;
 using cafe.Options;
 using NLog;
 using NLog.Config;
@@ -29,39 +27,17 @@ namespace cafe
 
         public static Runner CreateRunner(string[] args)
         {
-            Logger.Debug("Creating chef runner");
-            var chefRunner = CreateChefRunner();
-            Logger.Debug("Creating runner");
+            var clientFactory = new ClientFactory();
+            var schedulerWaiter = new SchedulerWaiter(clientFactory);
             var runner = new Runner(
-                new RunChefOption(chefRunner),
-                new ShowChefVersionOption(new ClientFactory()),
-                new DownloadChefOption(new ChefDownloader(new FileDownloader(),
-                    new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary()))),
-                new InstallChefOption(new ChefInstaller(CreateFileSystem(), CreateProcessExecutor(),
-                    new FileSystemCommandsBoundary())),
+                new RunChefOption(clientFactory, schedulerWaiter),
+                new ShowChefVersionOption(clientFactory),
+                new DownloadChefOption(clientFactory, schedulerWaiter),
+                new InstallChefOption(clientFactory, schedulerWaiter),
                 new ServerOption(),
-                new SchedulerStatusOption(new ClientFactory()));
+                new SchedulerStatusOption(clientFactory));
             Logger.Debug("Running application");
             return runner;
-        }
-
-        private static ChefRunner CreateChefRunner()
-        {
-            return
-                new ChefRunner(
-                    () =>
-                        new ChefProcess(CreateProcessExecutor(),
-                            CreateFileSystem()));
-        }
-
-        private static ProcessExecutor CreateProcessExecutor()
-        {
-            return new ProcessExecutor(() => new ProcessBoundary());
-        }
-
-        private static FileSystem CreateFileSystem()
-        {
-            return new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary());
         }
     }
 }

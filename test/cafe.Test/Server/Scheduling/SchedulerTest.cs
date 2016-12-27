@@ -16,9 +16,10 @@ namespace cafe.Test.Server.Scheduling
             // nothing happened, good!
         }
 
-        private static Scheduler CreateScheduler()
+        private static Scheduler CreateScheduler(IActionExecutor actionExecutor = null)
         {
-            return new Scheduler(new FakeTimerFactory());
+            actionExecutor = actionExecutor ?? new FakeActionExecutor();
+            return new Scheduler(new FakeTimerFactory(), actionExecutor);
         }
 
         [Fact]
@@ -73,7 +74,7 @@ namespace cafe.Test.Server.Scheduling
         public void TimerAction_ShouldProcessTasks()
         {
             var timerFactory = new FakeTimerFactory();
-            var scheduler = new Scheduler(timerFactory);
+            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor());
             var task = new FakeScheduledTask();
             scheduler.Schedule(task);
 
@@ -86,7 +87,7 @@ namespace cafe.Test.Server.Scheduling
         public void Pause_ShouldPauseTimer()
         {
             var timerFactory = new FakeTimerFactory();
-            var scheduler = new Scheduler(timerFactory);
+            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor());
             var task = new FakeScheduledTask();
             scheduler.Schedule(task);
             scheduler.Pause();
@@ -144,5 +145,32 @@ namespace cafe.Test.Server.Scheduling
                 .Should()
                 .BeNull("because a task with that id hasn't yet been scheduled");
         }
+
+        [Fact]
+        public void ProcessTasks_ShouldExecuteTaskInBackground()
+        {
+            var actionExecutor = new FakeActionExecutor();
+            var scheduler = CreateScheduler(actionExecutor);
+            var scheduledTask = new FakeScheduledTask();
+
+            scheduler.Schedule(scheduledTask);
+            scheduler.ProcessTasks();
+            scheduler.ProcessTasks();
+
+            actionExecutor.WasExecuted.Should()
+                .BeTrue(
+                    "because the scheduler should use the action executor to run its tasks so in the real program they'll run in the background");
+        }
+    }
+
+    public class FakeActionExecutor : IActionExecutor
+    {
+        public void Execute(Action action)
+        {
+            WasExecuted = true;
+            action();
+        }
+
+        public bool WasExecuted { get; set; }
     }
 }

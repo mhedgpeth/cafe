@@ -7,16 +7,22 @@ using NodaTime;
 
 namespace cafe.Server.Scheduling
 {
-    public class Scheduler
+    public class Scheduler : IDisposable
     {
+        private readonly Guid _instanceId = Guid.NewGuid();
+        private readonly ITimerFactory _timerFactory;
+        private readonly IActionExecutor _scheduledTaskExecutor;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Scheduler).FullName);
 
         private readonly object _processLocker = new object();
 
-        public Scheduler(ITimerFactory timerFactory)
+        public Scheduler(ITimerFactory timerFactory, IActionExecutor scheduledTaskExecutor)
         {
-            timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromMinutes(1));
+            _timerFactory = timerFactory;
+            _scheduledTaskExecutor = scheduledTaskExecutor;
+            _timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromSeconds(15));
             IsRunning = true;
+            Console.Out.WriteLine(_instanceId);
         }
 
         public SchedulerStatus CurrentStatus => new SchedulerStatus
@@ -61,7 +67,7 @@ namespace cafe.Server.Scheduling
                 {
                     Logger.Info(
                         $"Task {readyTask} is not yet run and it is the next thing to run, so running it");
-                    readyTask.Run();
+                    _scheduledTaskExecutor.Execute(readyTask.Run);
                 }
                 else
                 {
@@ -110,6 +116,11 @@ namespace cafe.Server.Scheduling
                 return task.ToTaskStatus();
             }
             return _finishedTasks.FirstOrDefault(t => t.Id == id);
+        }
+
+        public void Dispose()
+        {
+            _timerFactory.Dispose();
         }
     }
 }

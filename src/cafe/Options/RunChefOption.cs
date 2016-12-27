@@ -1,21 +1,20 @@
-﻿using cafe.Chef;
+﻿using System.Threading.Tasks;
+using cafe.Client;
 using cafe.CommandLine;
+using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class RunChefOption : Option
+    public class RunChefOption : ChefOption
     {
-        private readonly ChefRunner _chefRunner;
-
-        public RunChefOption(ChefRunner chefRunner)
-            : base(new OptionSpecification("chef", "run"), "runs chef")
+        public RunChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter)
+            : base(clientFactory, schedulerWaiter, new OptionSpecification("chef", "run"), "runs chef")
         {
-            _chefRunner = chefRunner;
         }
 
-        protected override void RunCore(string[] args)
+        protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
         {
-            _chefRunner.Run();
+            return chefServer.RunChef();
         }
     }
 }

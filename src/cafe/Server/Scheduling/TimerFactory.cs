@@ -11,7 +11,8 @@ namespace cafe.Server.Scheduling
 
         public void ExecuteActionOnInterval(Action action, Duration every)
         {
-            _createdTimers.Add(new Timer(state => action(), new object(), every.ToTimeSpan(), every.ToTimeSpan()));
+            TimerCallback timerCallback = state => action();
+            _createdTimers.Add(new Timer(timerCallback, new object(), every.ToTimeSpan(), every.ToTimeSpan()));
         }
 
         public void Dispose()
