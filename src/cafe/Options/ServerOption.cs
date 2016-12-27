@@ -11,7 +11,6 @@ namespace cafe.Options
     {
         public ServerOption() : base(new OptionSpecification("server"), "Starts cafe in server mode")
         {
-
         }
 
         protected override void RunCore(string[] args)

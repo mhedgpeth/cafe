@@ -5,10 +5,14 @@
     "warningsAsErrors": true,
     "emitEntryPoint": true
   },
+  "publishOptions": {
+    "include": [
+        "wwwroot",
+        "appsettings.json",
+        "nlog.config"
+    ]
+  },
   "dependencies": {
-    "Microsoft.Extensions.Logging": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "System.Linq": "4.3.0",
     "System.Net.Http": "4.3.0",
     "System.Threading.Tasks": "4.3.0",
@@ -24,7 +28,13 @@
     "NodaTime": "2.0.0-alpha20160729",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
     "StructureMap.Microsoft.DependencyInjection": "1.0.1",
-    "RestEase": "1.3.1"
+    "RestEase": "1.3.1",
+    "NLog": "5.0.0-beta04",
+    "NLog.Extensions.Logging": "1.0.0-rc2-final-2016-05-21",
+    "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Microsoft.Extensions.Logging.Debug": "1.1.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.1.0"
   },
   "frameworks": {
     "netcoreapp1.1": {

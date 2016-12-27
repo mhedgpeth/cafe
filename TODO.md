@@ -2,9 +2,7 @@
 # Near Term
 
 ## Better Presentation of the Basics
-* Better UI on the client side (not using logger)
-* Log to file and console on the server side
-* Chef run should log to its own file (with own logger)
+* Write to console when running as server
 
 ## Finish client/server transition
 * Convert all client-facing Options to talk to REST API

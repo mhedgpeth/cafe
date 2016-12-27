@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using NLog;
 
 namespace cafe.CommandLine
 {
     public class OptionSpecification
     {
-        private static ILogger Logger { get; } =
-          ApplicationLogging.CreateLogger<OptionSpecification>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly string _description = string.Empty;
         private readonly OptionValueSpecification[] _valueSpecifications;
@@ -42,19 +40,19 @@ namespace cafe.CommandLine
                 {
                     var valueSpecification = _valueSpecifications[i];
                     var value = trimmedArguments[i];
-                    Logger.LogDebug($"Determining if {value} matches specification {valueSpecification}");
+                    Logger.Debug($"Determining if {value} matches specification {valueSpecification}");
                     if (!valueSpecification.IsSatisfiedBy(value))
                     {
-                        Logger.LogDebug($"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
+                        Logger.Debug($"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
                         return false;
                     }
                 }
-                Logger.LogDebug($"Since all specifications match, {this} is an option");
+                Logger.Debug($"Since all specifications match, {this} is an option");
                 return true;
             }
             else
             {
-                Logger.LogDebug($"Argument count doesn't match, so {this} isn't an option");
+                Logger.Debug($"Argument count doesn't match, so {this} isn't an option");
                 return false;
             }
         }

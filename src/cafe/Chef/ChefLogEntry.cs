@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
+using NLog;
+using LogLevel = NLog.LogLevel;
 
 namespace cafe.Chef
 {
     public class ChefLogEntry
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ChefLogEntry>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly LogLevel _level;
         private readonly DateTime? _time;
@@ -28,9 +28,9 @@ namespace cafe.Chef
         private static readonly IDictionary<string, LogLevel> LevelMappings = new Dictionary<string, LogLevel>
         {
             {"ERROR", LogLevel.Error},
-            {"FATAL", LogLevel.Critical},
-            {"INFO", LogLevel.Information},
-            {"WARN", LogLevel.Warning}
+            {"FATAL", LogLevel.Fatal},
+            {"INFO", LogLevel.Info},
+            {"WARN", LogLevel.Warn}
         };
 
         public static ChefLogEntry Parse(string line)
@@ -49,7 +49,7 @@ namespace cafe.Chef
 
         public static ChefLogEntry CreateMinimalEntry(string line)
         {
-            return new ChefLogEntry(LogLevel.Information, null, line);
+            return new ChefLogEntry(LogLevel.Info, null, line);
         }
 
         private static LogLevel ConvertToLogLevel(string lineValue)
@@ -60,35 +60,28 @@ namespace cafe.Chef
             }
             catch (KeyNotFoundException e)
             {
-                Logger.LogCritical(default(EventId), e, $"Could not convert {lineValue} into a valid level");
+                Logger.Error(e, $"Could not convert {lineValue} into a valid level");
                 throw;
             }
         }
 
         public void Log()
         {
-            switch (Level)
-            {
-                case LogLevel.Critical:
-                    Logger.LogCritical(Entry);
-                    break;
-                case LogLevel.Information:
-                    Logger.LogInformation(Entry);
-                    break;
-                case LogLevel.Warning:
-                    Logger.LogWarning(Entry);
-                    break;
-                case LogLevel.Error:
-                    Logger.LogError(Entry);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Cannot log level {Level} because it is not supported");
-            }
+            if (Level == LogLevel.Fatal)
+                Logger.Fatal(Entry);
+            else if (Level == LogLevel.Info)
+                Logger.Info(Entry);
+            else if (Level == LogLevel.Warn)
+                Logger.Warn(Entry);
+            else if (Level == LogLevel.Error)
+                Logger.Error(Entry);
+            else
+                throw new InvalidOperationException($"Cannot log level {Level} because it is not supported");
         }
 
         public static ChefLogEntry CriticalError(string line)
         {
-            return new ChefLogEntry(LogLevel.Critical, null, line);
+            return new ChefLogEntry(LogLevel.Info, null, line);
         }
     }
 }

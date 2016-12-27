@@ -7,13 +7,13 @@ using System;
 using System.IO;
 using cafe.LocalSystem;
 using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.Chef
 {
     public class ChefDownloader
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ChefDownloader>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public const string StagingDirectory = "staging";
 
@@ -35,7 +35,7 @@ namespace cafe.Chef
             var message = downloaded
                 ? $"Chef installer for {version} downloaded at {file}"
                 : $"A chef installer for {version} could not be found at link {downloadLink}";
-            Logger.LogInformation(message);
+            Logger.Info(message);
         }
 
 

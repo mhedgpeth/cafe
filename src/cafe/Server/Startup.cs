@@ -1,12 +1,13 @@
 ﻿using System;
-using cafe.LocalSystem;
-using cafe.Server.Scheduling;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StructureMap;
+using NLog;
+using NLog.Extensions.Logging;
+using NLog.Targets;
 
 
 namespace cafe.Server
@@ -20,6 +21,11 @@ namespace cafe.Server
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+            if (string.IsNullOrWhiteSpace(env.WebRootPath))
+            {
+                env.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            }
+            env.ConfigureNLog("nlog.config");
             Configuration = builder.Build();
         }
 
@@ -36,8 +42,7 @@ namespace cafe.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddNLog();
 
             app.UseMvc();
         }

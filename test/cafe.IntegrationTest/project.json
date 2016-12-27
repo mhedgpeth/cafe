@@ -9,7 +9,9 @@
         "dotnet-test-xunit": "1.0.0-rc2-192208-24",
         "cafe": "*",
         "FluentAssertions": "4.18.0",
-        "Microsoft.DotNet.InternalAbstractions": "1.0.0"
+        "Microsoft.DotNet.InternalAbstractions": "1.0.0",
+        "NLog.Extensions.Logging": "1.0.0-rc2-final-2016-05-21"
+
     },
     "testRunner": "xunit",
     "frameworks": {

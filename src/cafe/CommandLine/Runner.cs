@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using NLog;
 
 namespace cafe.CommandLine
 {
     public class Runner
     {
-        private static ILogger Logger { get; } =
-          ApplicationLogging.CreateLogger<Runner>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Option[] _options;
 
@@ -20,10 +19,10 @@ namespace cafe.CommandLine
 
             if (matchingOption != null)
             {
-                Logger.LogInformation($"Option {matchingOption} matches the arguments supplied, so running");
+                Logger.Info($"Option {matchingOption} matches the arguments supplied, so running");
                 Presenter.ShowMessage($"Executing option {matchingOption}", Logger);
                 matchingOption.Run(args);
-                Logger.LogInformation($"Finished running option {matchingOption}");
+                Logger.Info($"Finished running option {matchingOption}");
             }
             else
             {
@@ -37,12 +36,12 @@ namespace cafe.CommandLine
             {
                 if (option.IsSatisfiedBy(args))
                 {
-                    Logger.LogDebug($"Option {option} matches arguments supplied");
+                    Logger.Debug($"Option {option} matches arguments supplied");
                     return option;
                 }
                 else
                 {
-                    Logger.LogInformation($"Option {option} does not satisfy the arguments supplied");
+                    Logger.Info($"Option {option} does not satisfy the arguments supplied");
                 }
             }
             return null;

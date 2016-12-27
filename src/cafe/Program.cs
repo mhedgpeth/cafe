@@ -3,28 +3,35 @@ using cafe.Client;
 using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Options;
-using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Config;
 
 namespace cafe
 {
     public class Program
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<Program>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static void Main(string[] args)
         {
+            ConfigureLogging();
             Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
             runner.Run(args);
-            Logger.LogDebug("Finishing cafe run");
+            Logger.Debug("Finishing cafe run");
+        }
+
+        private static void ConfigureLogging()
+        {
+            LogManager.Configuration =  new XmlLoggingConfiguration("nlog.config", false);
+            Logger.Debug("Logging set up based on nlog.config");
         }
 
         public static Runner CreateRunner(string[] args)
         {
-            Logger.LogDebug("Creating chef runner");
+            Logger.Debug("Creating chef runner");
             var chefRunner = CreateChefRunner();
-            Logger.LogDebug("Creating runner");
+            Logger.Debug("Creating runner");
             var runner = new Runner(
                 new RunChefOption(chefRunner),
                 new ShowChefVersionOption(new ClientFactory()),
@@ -34,7 +41,7 @@ namespace cafe
                     new FileSystemCommandsBoundary())),
                 new ServerOption(),
                 new SchedulerStatusOption(new ClientFactory()));
-            Logger.LogDebug("Running application");
+            Logger.Debug("Running application");
             return runner;
         }
 

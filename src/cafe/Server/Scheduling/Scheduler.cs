@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using cafe.Shared;
-using Microsoft.Extensions.Logging;
+using NLog;
 using NodaTime;
 
 namespace cafe.Server.Scheduling
 {
     public class Scheduler
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<Scheduler>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly object _processLocker = new object();
 
@@ -33,30 +32,30 @@ namespace cafe.Server.Scheduling
             {
                 if (!IsRunning)
                 {
-                    Logger.LogDebug("Since scheduler is paused, not processing tasks");
+                    Logger.Debug("Since scheduler is paused, not processing tasks");
                     return;
                 }
                 AddAllReadyRecurringTasksToQueue();
                 if (_queuedTasks.Count == 0)
                 {
-                    Logger.LogDebug("There is nothing to do right now");
+                    Logger.Debug("There is nothing to do right now");
                     return;
                 }
                 var readyTask = _queuedTasks.Peek();
                 if (readyTask.IsFinishedRunning)
                 {
-                    Logger.LogInformation($"Task {readyTask} has finished running, so removing it from the queue");
+                    Logger.Info($"Task {readyTask} has finished running, so removing it from the queue");
                     _queuedTasks.Dequeue();
                 }
                 else if (!readyTask.IsRunning)
                 {
-                    Logger.LogInformation(
+                    Logger.Info(
                         $"Task {readyTask} is not yet run and it is the next thing to run, so running it");
                     readyTask.Run();
                 }
                 else
                 {
-                    Logger.LogDebug($"Since {readyTask} is still running, waiting for it to complete");
+                    Logger.Debug($"Since {readyTask} is still running, waiting for it to complete");
                 }
             }
         }

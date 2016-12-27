@@ -1,13 +1,12 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.Options
 {
     public class SchedulerStatusOption : Option
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<SchedulerStatusOption>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly ClientFactory _clientFactory;
 

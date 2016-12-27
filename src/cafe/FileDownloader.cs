@@ -3,14 +3,13 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe
 {
     public class FileDownloader : IFileDownloader
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<FileDownloader>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public bool Download(Uri downloadLink, string file)
         {
@@ -29,7 +28,7 @@ namespace cafe
                     var response = (await httpClient.SendAsync(request));
                     if (response.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Logger.LogInformation($"File at {downloadLink} doesn not exist");
+                        Logger.Info($"File at {downloadLink} doesn not exist");
                         return false;
                     }
                     using (
@@ -37,9 +36,9 @@ namespace cafe
                             stream = new FileStream(file, FileMode.Create, FileAccess.Write,
                                 FileShare.None, bufferSize, true))
                     {
-                        Logger.LogDebug("Downloading file");
+                        Logger.Debug("Downloading file");
                         await contentStream.CopyToAsync(stream);
-                        Logger.LogDebug("Finished downloading file");
+                        Logger.Debug("Finished downloading file");
                     }
                 }
             }

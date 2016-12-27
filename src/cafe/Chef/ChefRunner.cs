@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.Chef
 {
@@ -13,8 +14,7 @@ namespace cafe.Chef
             _processCreator = processCreator;
         }
 
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ChefRunner>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public void Run()
         {

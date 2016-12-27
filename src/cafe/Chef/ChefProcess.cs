@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using cafe.LocalSystem;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.Chef
 {
     public class ChefProcess : IChefProcess
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystem _fileSystem;
 
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ChefProcess>();
 
         public ChefProcess(ProcessExecutor processExecutor, IFileSystem fileSystem)
         {
@@ -31,7 +31,7 @@ namespace cafe.Chef
             arguments.AddRange(args);
             var processArguments = string.Join(" ", arguments);
 
-            Logger.LogInformation($"Running {rubyExecutable} with arguments: {processArguments}");
+            Logger.Info($"Running {rubyExecutable} with arguments: {processArguments}");
 
             string filename = rubyExecutable;
             EventHandler<string> processOnOutputDataReceived = ProcessOnOutputDataReceived;
@@ -65,7 +65,7 @@ namespace cafe.Chef
                 }
                 catch (Exception exception)
                 {
-                    Logger.LogCritical(default(EventId), exception, $"Could not parse and log {e}");
+                    Logger.Fatal(exception, $"Could not parse and log {e}");
                 }
             }
         }

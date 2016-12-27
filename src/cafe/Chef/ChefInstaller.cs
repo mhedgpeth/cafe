@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
-using cafe.LocalSystem;
-using Microsoft.Extensions.Logging;
+﻿using cafe.LocalSystem;
+using NLog;
 
 namespace cafe.Chef
 {
     public class ChefInstaller
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ChefInstaller>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IFileSystem _fileSystem;
         private readonly ProcessExecutor _processExecutor;
@@ -25,7 +23,7 @@ namespace cafe.Chef
             var fullPathToStagedInstaller = ChefDownloader.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
-                Logger.LogWarning(
+                Logger.Warn(
                     $"No file for version {version} was staged at {fullPathToStagedInstaller}. Either download it or stage it another way");
             }
 
@@ -36,12 +34,12 @@ namespace cafe.Chef
 
         private void LogError(object sender, string e)
         {
-            Logger.LogError(e);
+            Logger.Error(e);
         }
 
         private void LogInformation(object sender, string e)
         {
-            Logger.LogInformation(e);
+            Logger.Info(e);
         }
     }
 }

@@ -1,15 +1,14 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.Options
 {
     public class ShowChefVersionOption : Option
     {
-        private readonly ClientFactory _clientFactory;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static ILogger Logger { get; } =
-          ApplicationLogging.CreateLogger<ShowChefVersionOption>();
+        private readonly ClientFactory _clientFactory;
 
         public ShowChefVersionOption(ClientFactory clientFactory)
         : base(new OptionSpecification("chef", "version"), "show the current version of chef")

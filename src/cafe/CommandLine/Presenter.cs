@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.CommandLine
 {
     public sealed class Presenter
     {
-        public static void ShowApplicationHeading(ILogger logger, params string[] args)
+        public static void ShowApplicationHeading(Logger logger, params string[] args)
         {
             var message = $"cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}";
-            logger.LogInformation(message);
+            logger.Info(message);
             WriteMessage(message, ConsoleColor.DarkYellow);
             Console.Out.WriteLine(); // empty line for readability
         }
@@ -21,15 +21,15 @@ namespace cafe.CommandLine
             Console.ForegroundColor = colorBefore;
         }
 
-        public static void ShowMessage(string message, ILogger logger)
+        public static void ShowMessage(string message, Logger logger)
         {
-            logger.LogInformation(message);
+            logger.Info(message);
             WriteMessage(message, Console.ForegroundColor);
         }
 
-        public static void ShowError(string message, ILogger logger)
+        public static void ShowError(string message, Logger logger)
         {
-            logger.LogError(message);
+            logger.Error(message);
             WriteMessage(message, ConsoleColor.DarkRed);
         }
     }

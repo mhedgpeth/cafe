@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.LocalSystem
 {
     public class ProcessExecutor
     {
-        private static ILogger Logger { get; } =
-            ApplicationLogging.CreateLogger<ProcessExecutor>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Func<IProcess> _processCreator;
 
@@ -34,9 +33,9 @@ namespace cafe.LocalSystem
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            Logger.LogInformation("Chef started; waiting for exit");
+            Logger.Info("Chef started; waiting for exit");
             process.WaitForExit();
-            Logger.LogInformation($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
+            Logger.Info($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
         }
     }
 }

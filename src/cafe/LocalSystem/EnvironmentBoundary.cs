@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.LocalSystem
 {
     public class EnvironmentBoundary : IEnvironment
     {
-        private static ILogger Logger { get; } =
-          ApplicationLogging.CreateLogger<EnvironmentBoundary>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public string GetEnvironmentVariable(string key)
         {
             var value = System.Environment.GetEnvironmentVariable(key);
-            Logger.LogDebug($"Retrieved environment variable {key} with value: {value}");
+            Logger.Debug($"Retrieved environment variable {key} with value: {value}");
             return value;
         }
     }

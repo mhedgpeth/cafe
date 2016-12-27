@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace cafe.LocalSystem
 {
     public class ProcessBoundary : IProcess
     {
-        private static ILogger Logger { get; } =
-          ApplicationLogging.CreateLogger<ProcessBoundary>();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Process _process = new Process();
 
         public void Start()
         {
-            Logger.LogDebug($"Starting {this}");
+            Logger.Debug($"Starting {this}");
             _process.Start();
         }
 
@@ -53,21 +52,21 @@ namespace cafe.LocalSystem
 
         public void BeginOutputReadLine()
         {
-            Logger.LogDebug($"{this} is reading from standard output with redirection set to {StartInfo.RedirectStandardOutput}");
+            Logger.Debug($"{this} is reading from standard output with redirection set to {StartInfo.RedirectStandardOutput}");
             _process.BeginOutputReadLine();
         }
 
         public void BeginErrorReadLine()
         {
-            Logger.LogDebug($"{this} is reading from standard error with redirection set to {StartInfo.RedirectStandardError}");
+            Logger.Debug($"{this} is reading from standard error with redirection set to {StartInfo.RedirectStandardError}");
             _process.BeginErrorReadLine();
         }
 
         public void WaitForExit()
         {
-            Logger.LogDebug($"Waiting for process {this} to exit");
+            Logger.Debug($"Waiting for process {this} to exit");
             _process.WaitForExit();
-            Logger.LogDebug($"{this} has exited with exit code {_process.ExitCode}");
+            Logger.Debug($"{this} has exited with exit code {_process.ExitCode}");
         }
 
         public override string ToString()
