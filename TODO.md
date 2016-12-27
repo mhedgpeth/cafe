@@ -3,8 +3,6 @@
 
 ## Better view of what is happening
 * Include more detailed scheduler status, migrate it to simply cafe status
-* When the server is not running, handle the error gracefully
-* When the server is cut off while running, handle the error gracefully
 
 ## Make scheduler production ready
 * Immediate run of chef run/etc instead of waiting on scheduled interval
