@@ -1,4 +1,5 @@
 ﻿using cafe.LocalSystem;
+using cafe.Shared;
 using NLog;
 
 namespace cafe.Chef
@@ -18,7 +19,7 @@ namespace cafe.Chef
             _commands = commands;
         }
 
-        public void InstallOrUpgrade(string version)
+        public Result InstallOrUpgrade(string version)
         {
             var fullPathToStagedInstaller = ChefDownloader.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
@@ -28,7 +29,7 @@ namespace cafe.Chef
             }
 
             var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("msiexec.exe");
-            _processExecutor.ExecuteAndWaitForExit(msiExecDirectory, $"/qn /i \"{fullPathToStagedInstaller}\"",
+            return _processExecutor.ExecuteAndWaitForExit(msiExecDirectory, $"/qn /i \"{fullPathToStagedInstaller}\"",
                 LogInformation, LogError);
         }
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using cafe.Shared;
 
 namespace cafe
 {
     public interface IFileDownloader
     {
-        bool Download(Uri downloadLink, string file);
+        Result Download(Uri downloadLink, string file);
     }
 }

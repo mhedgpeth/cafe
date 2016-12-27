@@ -1,5 +1,7 @@
-﻿using cafe.Chef;
+﻿using System;
+using cafe.Chef;
 using cafe.LocalSystem;
+using cafe.Shared;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -47,13 +49,21 @@ namespace cafe.Test.Chef
         [Fact]
         public void Download_ShouldEnsureStagingDirectoryExists()
         {
-            var fileDownloader = new Mock<IFileDownloader>().Object;
+            var fileDownloader = new FakeFileDownloader();
             var fileSystem = new Mock<IFileSystem>();
             var chefDownloader = new ChefDownloader(fileDownloader, fileSystem.Object);
             var shareDirectory = ChefDownloader.StagingDirectory;
             chefDownloader.Download(PreviousVersion);
 
             fileSystem.Verify(f => f.EnsureDirectoryExists(shareDirectory));
+        }
+    }
+
+    public class FakeFileDownloader : IFileDownloader
+    {
+        public Result Download(Uri downloadLink, string file)
+        {
+            return Result.Successful();
         }
     }
 }

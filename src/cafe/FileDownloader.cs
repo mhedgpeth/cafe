@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using cafe.Shared;
 using NLog;
 
 namespace cafe
@@ -11,12 +12,12 @@ namespace cafe
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(FileDownloader).FullName);
 
-        public bool Download(Uri downloadLink, string file)
+        public Result Download(Uri downloadLink, string file)
         {
             return DownloadAsync(downloadLink, file).GetAwaiter().GetResult();
         }
 
-        public async Task<bool> DownloadAsync(Uri downloadLink, string file)
+        public async Task<Result> DownloadAsync(Uri downloadLink, string file)
         {
             using (var httpClient = new HttpClient {Timeout = TimeSpan.FromMinutes(10)})
             {
@@ -28,8 +29,8 @@ namespace cafe
                     var response = (await httpClient.SendAsync(request));
                     if (response.StatusCode == HttpStatusCode.NotFound)
                     {
-                        Logger.Info($"File at {downloadLink} doesn not exist");
-                        return false;
+                        Logger.Info($"File at {downloadLink} does not exist");
+                        return Result.Failure($"File at {downloadLink} does not exist");
                     }
                     using (
                         Stream contentStream = await response.Content.ReadAsStreamAsync(),
@@ -42,7 +43,7 @@ namespace cafe
                     }
                 }
             }
-            return true;
+            return Result.Successful();
         }
     }
 }

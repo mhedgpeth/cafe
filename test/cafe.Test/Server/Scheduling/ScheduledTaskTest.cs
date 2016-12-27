@@ -1,5 +1,6 @@
 ﻿using System;
 using cafe.Server.Scheduling;
+using cafe.Shared;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -23,15 +24,16 @@ namespace cafe.Test.Server.Scheduling
             _actionRan.Should().BeTrue("because the scheduled task ran");
         }
 
-        private ScheduledTask CreateScheduledTask(Action action = null, IClock clock = null)
+        private ScheduledTask CreateScheduledTask(Func<Result> action = null, IClock clock = null)
         {
             action = action ?? DoNothing;
             clock = clock ?? new FakeClock();
             return new ScheduledTask("scheduled task", action, clock);
         }
 
-        private void DoNothing()
+        private Result DoNothing()
         {
+            return Result.Successful();
         }
 
         [Fact]
@@ -56,16 +58,17 @@ namespace cafe.Test.Server.Scheduling
         public void ToString_ShouldContainDescription()
         {
             const string description = "a great task";
-            var scheduledTask = new ScheduledTask(description, () => { }, new FakeClock());
+            var scheduledTask = new ScheduledTask(description, DoNothing, new FakeClock());
 
             scheduledTask.ToString().Should().Contain(description, "because this was the description given");
         }
 
-        private void AssertIsRunning()
+        private Result AssertIsRunning()
         {
             _scheduledTask.IsRunning().Should().BeTrue("because the task is in the middle of running");
             _scheduledTask.IsFinishedRunning().Should().BeFalse("because the task is not yet finished running");
             _actionRan = true;
+            return Result.Successful();
         }
 
         [Fact]
@@ -104,11 +107,12 @@ namespace cafe.Test.Server.Scheduling
             _scheduledTask.CompleteTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
         }
 
-        private void AssertStartTimeMatchesClock()
+        private Result AssertStartTimeMatchesClock()
         {
             _scheduledTask.StartTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
             _clock.AddToCurrentInstant(Duration.FromMinutes(5));
             _actionRan = true;
+            return Result.Successful();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace cafe.Server.Controllers
             return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
         }
 
-        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Action action)
+        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<Result> action)
         {
             var scheduledTask = new ScheduledTask(description, action, SystemClock.Instance);
             _scheduler.Schedule(scheduledTask);

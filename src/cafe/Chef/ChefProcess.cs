@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using cafe.LocalSystem;
+using cafe.Shared;
 using NLog;
 
 namespace cafe.Chef
@@ -20,7 +21,7 @@ namespace cafe.Chef
             _fileSystem = fileSystem;
         }
 
-        public void Run(params string[] args)
+        public Result Run(params string[] args)
         {
             var binDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("chef-client.bat");
             var chefInstallDirectory = Directory.GetParent(binDirectory).FullName;
@@ -36,7 +37,7 @@ namespace cafe.Chef
             string filename = rubyExecutable;
             EventHandler<string> processOnOutputDataReceived = ProcessOnOutputDataReceived;
             EventHandler<string> processOnErrorDataReceived = ProcessOnErrorDataReceived;
-            _processExecutor.ExecuteAndWaitForExit(filename, processArguments, processOnOutputDataReceived,
+            return _processExecutor.ExecuteAndWaitForExit(filename, processArguments, processOnOutputDataReceived,
                 processOnErrorDataReceived);
         }
 

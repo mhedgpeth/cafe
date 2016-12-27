@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using cafe.Shared;
 using NLog;
 
 namespace cafe.LocalSystem
@@ -15,7 +16,7 @@ namespace cafe.LocalSystem
             _processCreator = processCreator;
         }
 
-        public void ExecuteAndWaitForExit(string filename, string processArguments,
+        public Result ExecuteAndWaitForExit(string filename, string processArguments,
             EventHandler<string> processOnOutputDataReceived,
             EventHandler<string> processOnErrorDataReceived)
         {
@@ -36,6 +37,7 @@ namespace cafe.LocalSystem
             Logger.Info("Chef started; waiting for exit");
             process.WaitForExit();
             Logger.Info($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
+            return process.ExitCode == 0 ? Result.Successful() : Result.Failure($"Process {process} exited with code {process.ExitCode}");
         }
     }
 }

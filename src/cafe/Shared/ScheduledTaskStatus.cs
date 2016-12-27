@@ -10,6 +10,7 @@ namespace cafe.Shared
         public TaskState State { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? CompleteTime { get; set; }
+        public Result Result { get; set; }
 
         public static ScheduledTaskStatus Create(string description)
         {
@@ -35,14 +36,16 @@ namespace cafe.Shared
                 Description = Description,
                 State = State,
                 StartTime = StartTime,
-                CompleteTime = CompleteTime
+                CompleteTime = CompleteTime,
+                Result = Result
             };
         }
 
         protected bool Equals(ScheduledTaskStatus other)
         {
             return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State &&
-                   StartTime.Equals(other.StartTime) && CompleteTime.Equals(other.CompleteTime);
+                   StartTime.Equals(other.StartTime) && CompleteTime.Equals(other.CompleteTime) &&
+                   Equals(Result, other.Result);
         }
 
         public override bool Equals(object obj)
@@ -62,6 +65,7 @@ namespace cafe.Shared
                 hashCode = (hashCode * 397) ^ (int) State;
                 hashCode = (hashCode * 397) ^ StartTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ CompleteTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Result != null ? Result.GetHashCode() : 0);
                 return hashCode;
             }
         }

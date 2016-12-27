@@ -1,10 +1,11 @@
 using System;
+using cafe.Shared;
 
 namespace cafe.Chef
 {
     public interface IChefProcess
     {
-        void Run(params string[] args);
+        Result Run(params string[] args);
         event EventHandler<ChefLogEntry> LogEntryReceived;
     }
 }

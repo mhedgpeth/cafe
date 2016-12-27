@@ -20,6 +20,7 @@ namespace cafe.Test.Shared
             copy.CompleteTime.Should().Be(status.CompleteTime);
             copy.Description.Should().Be(status.Description);
             copy.State.Should().Be(status.State);
+            copy.Result.Should().Be(status.Result);
         }
 
         [Fact]
@@ -41,6 +42,15 @@ namespace cafe.Test.Shared
         }
 
         [Fact]
+        public void Equals_ShouldBeFalseWhenResultIsDifferent()
+        {
+            var status = CreateFullStatus();
+            status.Result = Result.Successful();
+
+            status.Should().NotBe(CreateFullStatus());
+        }
+
+        [Fact]
         public void Equals_ShouldBeTrueWhenEqual()
         {
             CreateFullStatus().Should().Be(CreateFullStatus(), "because all values are equal, the two should be equal");
@@ -55,7 +65,8 @@ namespace cafe.Test.Shared
                 StartTime = startTime,
                 CompleteTime = startTime.Add(TimeSpan.FromMinutes(5)),
                 Description = "a task for testing",
-                State = TaskState.Running
+                State = TaskState.Finished,
+                Result = Result.Failure("something bad happened!")
             };
         }
     }

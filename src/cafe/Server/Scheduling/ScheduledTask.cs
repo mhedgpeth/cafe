@@ -7,10 +7,10 @@ namespace cafe.Server.Scheduling
     public class ScheduledTask : IScheduledTask
     {
         private readonly ScheduledTaskStatus _status;
-        private readonly Action _action;
+        private readonly Func<Result> _action;
         private readonly IClock _clock;
 
-        public ScheduledTask(string description, Action action, IClock clock)
+        public ScheduledTask(string description, Func<Result> action, IClock clock)
         {
             _action = action;
             _clock = clock;
@@ -21,7 +21,7 @@ namespace cafe.Server.Scheduling
         {
             _status.StartTime = _clock.GetCurrentInstant().ToDateTimeUtc();
             _status.State = TaskState.Running;
-            _action();
+            _status.Result = _action();
             _status.State = TaskState.Finished;
             _status.CompleteTime = _clock.GetCurrentInstant().ToDateTimeUtc();
         }
