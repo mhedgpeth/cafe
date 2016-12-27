@@ -21,6 +21,7 @@ namespace cafe.Test.Shared
             copy.Description.Should().Be(status.Description);
             copy.State.Should().Be(status.State);
             copy.Result.Should().Be(status.Result);
+            copy.CurrentMessage.Should().Be(status.CurrentMessage);
         }
 
         [Fact]
@@ -66,6 +67,7 @@ namespace cafe.Test.Shared
                 CompleteTime = startTime.Add(TimeSpan.FromMinutes(5)),
                 Description = "a task for testing",
                 State = TaskState.Finished,
+                CurrentMessage = "Task finisehd!",
                 Result = Result.Failure("something bad happened!")
             };
         }

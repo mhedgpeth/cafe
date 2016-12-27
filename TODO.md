@@ -2,7 +2,6 @@
 # Near Term
 
 ## Better view of what is happening
-* Task provides current status - so users can see that something is happening
 * Include more detailed scheduler status, migrate it to simply cafe status
 * When the server is not running, handle the error gracefully
 * When the server is cut off while running, handle the error gracefully

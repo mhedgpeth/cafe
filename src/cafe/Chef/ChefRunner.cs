@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using cafe.Server.Scheduling;
 using cafe.Shared;
-using Microsoft.Extensions.Logging;
 using NLog;
 
 namespace cafe.Chef
@@ -18,12 +18,18 @@ namespace cafe.Chef
         }
 
 
-        public Result Run()
+        public Result Run(IMessagePresenter presenter)
         {
-            Logger.Debug("Running chef");
+            presenter.ShowMessage("Running chef");
             var process = _processCreator();
-            process.LogEntryReceived += (sender, entry) => entry.Log();
-            return process.Run();
+            process.LogEntryReceived += (sender, entry) =>
+            {
+                presenter.ShowMessage(entry.Entry);
+                entry.Log();
+            };
+            var result = process.Run();
+            presenter.ShowMessage($"Finished running chef with result: {result}");
+            return result;
         }
 
         public Version RetrieveVersion()

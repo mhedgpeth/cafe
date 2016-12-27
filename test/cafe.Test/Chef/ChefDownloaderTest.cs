@@ -1,6 +1,7 @@
 ﻿using System;
 using cafe.Chef;
 using cafe.LocalSystem;
+using cafe.Server.Scheduling;
 using cafe.Shared;
 using FluentAssertions;
 using Moq;
@@ -53,9 +54,16 @@ namespace cafe.Test.Chef
             var fileSystem = new Mock<IFileSystem>();
             var chefDownloader = new ChefDownloader(fileDownloader, fileSystem.Object);
             var shareDirectory = ChefDownloader.StagingDirectory;
-            chefDownloader.Download(PreviousVersion);
+            chefDownloader.Download(PreviousVersion, new FakeMessagePresenter());
 
             fileSystem.Verify(f => f.EnsureDirectoryExists(shareDirectory));
+        }
+    }
+
+    public class FakeMessagePresenter : IMessagePresenter
+    {
+        public void ShowMessage(string message)
+        {
         }
     }
 

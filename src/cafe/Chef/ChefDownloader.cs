@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using cafe.LocalSystem;
+using cafe.Server.Scheduling;
 using cafe.Shared;
 using NLog;
 
@@ -21,12 +22,15 @@ namespace cafe.Chef
             _fileSystem = fileSystem;
         }
 
-        public Result Download(string version)
+        public Result Download(string version, IMessagePresenter messagePresenter)
         {
+            messagePresenter.ShowMessage("Ensuring staging directory exists");
             _fileSystem.EnsureDirectoryExists(StagingDirectory);
             var downloadLink = DownloadUriFor(version);
+            messagePresenter.ShowMessage($"Downloading Chef {version} from {downloadLink}");
             var file = FilenameFor(version);
             var result  = _fileDownloader.Download(downloadLink, FullPathToStagedInstaller(version));
+            messagePresenter.ShowMessage($"Finished downloading Chef {version} from {downloadLink}");
             Logger.Info(result);
             return result.TranslateIfFailed($"Installer for Chef {version} could not be found at {downloadLink}");
         }

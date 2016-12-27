@@ -22,7 +22,7 @@ namespace cafe.Server.Controllers
             return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
         }
 
-        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<Result> action)
+        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<IMessagePresenter, Result> action)
         {
             var scheduledTask = new ScheduledTask(description, action, SystemClock.Instance);
             _scheduler.Schedule(scheduledTask);
@@ -34,14 +34,14 @@ namespace cafe.Server.Controllers
         public ScheduledTaskStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
-            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}", () => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version));
+            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}", presenter => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version, presenter));
         }
 
         [HttpPut("download")]
         public ScheduledTaskStatus DownloadChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be downloaded");
-            return ScheduleAsSoonAsPossible($"Download Chef {version}", () => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version));
+            return ScheduleAsSoonAsPossible($"Download Chef {version}", presenter => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version, presenter));
         }
 
         [HttpGet("status")]

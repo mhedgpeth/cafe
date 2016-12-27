@@ -1,16 +1,19 @@
 ﻿using System;
 using cafe.Shared;
+using NLog;
 using NodaTime;
 
 namespace cafe.Server.Scheduling
 {
-    public class ScheduledTask : IScheduledTask
+    public class ScheduledTask : IScheduledTask, IMessagePresenter
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ScheduledTask).FullName);
+
         private readonly ScheduledTaskStatus _status;
-        private readonly Func<Result> _action;
+        private readonly Func<IMessagePresenter, Result> _action;
         private readonly IClock _clock;
 
-        public ScheduledTask(string description, Func<Result> action, IClock clock)
+        public ScheduledTask(string description, Func<IMessagePresenter, Result> action, IClock clock)
         {
             _action = action;
             _clock = clock;
@@ -21,9 +24,11 @@ namespace cafe.Server.Scheduling
         {
             _status.StartTime = _clock.GetCurrentInstant().ToDateTimeUtc();
             _status.State = TaskState.Running;
-            _status.Result = _action();
+            ShowMessage($"Task {_status.Description} ({_status.Id}) started at {_status.StartTime}");
+            _status.Result = _action(this);
             _status.State = TaskState.Finished;
             _status.CompleteTime = _clock.GetCurrentInstant().ToDateTimeUtc();
+            ShowMessage($"Task {_status.Description} ({_status.Id}) completed at {_status.CompleteTime} with result: {_status.Result}");
         }
 
         public TaskState CurrentState => _status.State;
@@ -38,6 +43,12 @@ namespace cafe.Server.Scheduling
         public ScheduledTaskStatus ToTaskStatus()
         {
             return _status.Copy();
+        }
+
+        public void ShowMessage(string message)
+        {
+            Logger.Info(message);
+            _status.CurrentMessage = message;
         }
     }
 }

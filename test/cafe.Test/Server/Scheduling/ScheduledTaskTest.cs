@@ -24,14 +24,14 @@ namespace cafe.Test.Server.Scheduling
             _actionRan.Should().BeTrue("because the scheduled task ran");
         }
 
-        private ScheduledTask CreateScheduledTask(Func<Result> action = null, IClock clock = null)
+        private ScheduledTask CreateScheduledTask(Func<IMessagePresenter, Result> action = null, IClock clock = null)
         {
             action = action ?? DoNothing;
             clock = clock ?? new FakeClock();
             return new ScheduledTask("scheduled task", action, clock);
         }
 
-        private Result DoNothing()
+        private Result DoNothing(IMessagePresenter presenter)
         {
             return Result.Successful();
         }
@@ -63,7 +63,7 @@ namespace cafe.Test.Server.Scheduling
             scheduledTask.ToString().Should().Contain(description, "because this was the description given");
         }
 
-        private Result AssertIsRunning()
+        private Result AssertIsRunning(IMessagePresenter presenter)
         {
             _scheduledTask.IsRunning().Should().BeTrue("because the task is in the middle of running");
             _scheduledTask.IsFinishedRunning().Should().BeFalse("because the task is not yet finished running");
@@ -107,12 +107,23 @@ namespace cafe.Test.Server.Scheduling
             _scheduledTask.CompleteTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
         }
 
-        private Result AssertStartTimeMatchesClock()
+        private Result AssertStartTimeMatchesClock(IMessagePresenter presenter)
         {
             _scheduledTask.StartTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
             _clock.AddToCurrentInstant(Duration.FromMinutes(5));
             _actionRan = true;
             return Result.Successful();
+        }
+
+        [Fact]
+        public void ShowMessage_ShouldUpdateCurrentMessageInStatus()
+        {
+            var scheduler = CreateScheduledTask();
+            const string message = "this is what we're currently doing!";
+
+            scheduler.ShowMessage(message);
+
+            scheduler.ToTaskStatus().CurrentMessage.Should().Be(message);
         }
     }
 }

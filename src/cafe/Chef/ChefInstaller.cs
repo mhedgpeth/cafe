@@ -1,4 +1,5 @@
 ﻿using cafe.LocalSystem;
+using cafe.Server.Scheduling;
 using cafe.Shared;
 using NLog;
 
@@ -19,18 +20,25 @@ namespace cafe.Chef
             _commands = commands;
         }
 
-        public Result InstallOrUpgrade(string version)
+        public Result InstallOrUpgrade(string version, IMessagePresenter presenter)
         {
+            presenter.ShowMessage($"Installing/Upgrading Chef to version {version}");
             var fullPathToStagedInstaller = ChefDownloader.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
                 Logger.Warn(
                     $"No file for version {version} was staged at {fullPathToStagedInstaller}. Either download it or stage it another way");
+                var failure = Result.Failure("There was no staged installer. Download the file first.");
+                presenter.ShowMessage(failure.ToString());
+                return failure;
             }
 
+            presenter.ShowMessage("Running installer");
             var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("msiexec.exe");
-            return _processExecutor.ExecuteAndWaitForExit(msiExecDirectory, $"/qn /i \"{fullPathToStagedInstaller}\"",
+            var result = _processExecutor.ExecuteAndWaitForExit(msiExecDirectory, $"/qn /i \"{fullPathToStagedInstaller}\"",
                 LogInformation, LogError);
+            presenter.ShowMessage($"Result of installing chef {version} was: {result}");
+            return result;
         }
 
         private void LogError(object sender, string e)
