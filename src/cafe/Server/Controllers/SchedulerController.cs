@@ -20,6 +20,13 @@ namespace cafe.Server.Controllers
             return _scheduler.CurrentStatus;
         }
 
+        [HttpGet("task/{id}")]
+        public ScheduledTaskStatus GetTaskStatus(Guid id)
+        {
+            Logger.Info($"Getting status of task with id {id}");
+            return _scheduler.FindStatusById(id);
+        }
+
         [HttpPut("pause")]
         public void Pause()
         {

@@ -1,9 +1,6 @@
 
 # Near Term
 
-## Better Presentation of the Basics
-* Write to console when running as server
-
 ## Finish client/server transition
 * Convert all client-facing Options to talk to REST API
 * Live view of tasks, with descriptive names, and guids for up to date status as they work through the scheduler

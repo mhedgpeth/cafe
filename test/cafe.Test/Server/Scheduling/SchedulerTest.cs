@@ -1,4 +1,5 @@
-﻿using cafe.Server.Scheduling;
+﻿using System;
+using cafe.Server.Scheduling;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -107,6 +108,41 @@ namespace cafe.Test.Server.Scheduling
             var scheduler = CreateScheduler();
             scheduler.Pause();
             scheduler.IsRunning.Should().BeFalse("because the scheduler is paused");
+        }
+
+        [Fact]
+        public void FindStatusById_ShouldFindQueuedStatus()
+        {
+            var scheduler = CreateScheduler();
+            var task = new FakeScheduledTask();
+            scheduler.Schedule(task);
+
+            var status = scheduler.FindStatusById(task.Id);
+
+            status.Should().Be(task.ToTaskStatus());
+        }
+
+        [Fact]
+        public void FindStatusById_ShouldFindFinishedTask()
+        {
+            var scheduler = CreateScheduler();
+            var task = new FakeScheduledTask();
+            scheduler.Schedule(task);
+            scheduler.ProcessTasks();
+            scheduler.ProcessTasks();
+
+            var status = scheduler.FindStatusById(task.Id);
+
+            status.Should().Be(task.ToTaskStatus());
+        }
+
+        [Fact]
+        public void FindStatusById_ShouldReturnNullIfTaskNotFound()
+        {
+            CreateScheduler()
+                .FindStatusById(Guid.NewGuid())
+                .Should()
+                .BeNull("because a task with that id hasn't yet been scheduled");
         }
     }
 }

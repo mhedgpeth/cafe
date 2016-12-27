@@ -16,29 +16,31 @@ namespace cafe.Server.Controllers
         private readonly Scheduler _scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
 
         [HttpPut("run")]
-        public void RunChef()
+        public ScheduledTaskStatus RunChef()
         {
-            ScheduleAsSoonAsPossible(StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
+            return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
         }
 
-        private void ScheduleAsSoonAsPossible(Action action)
+        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Action action)
         {
-            _scheduler.Schedule(new ScheduledTask(action));
+            var scheduledTask = new ScheduledTask(description, action);
+            _scheduler.Schedule(scheduledTask);
+            return scheduledTask.ToTaskStatus();
         }
 
         [HttpPut("install")]
         [HttpPut("upgrade")]
-        public void InstallChef(string version)
+        public ScheduledTaskStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
-            ScheduleAsSoonAsPossible(() => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version));
+            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}", () => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version));
         }
 
         [HttpPut("download")]
-        public void DownloadChef(string version)
+        public ScheduledTaskStatus DownloadChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be downloaded");
-            ScheduleAsSoonAsPossible(() => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version));
+            return ScheduleAsSoonAsPossible($"Download Chef {version}", () => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version));
         }
 
         [HttpGet("status")]
