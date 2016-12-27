@@ -5,7 +5,7 @@ namespace cafe.LocalSystem
 {
     public class EnvironmentBoundary : IEnvironment
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(EnvironmentBoundary).FullName);
 
         public string GetEnvironmentVariable(string key)
         {

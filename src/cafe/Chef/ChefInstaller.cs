@@ -5,7 +5,7 @@ namespace cafe.Chef
 {
     public class ChefInstaller
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefInstaller).FullName);
 
         private readonly IFileSystem _fileSystem;
         private readonly ProcessExecutor _processExecutor;

@@ -10,7 +10,7 @@ namespace cafe
 {
     public class Program
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Program).FullName);
 
         public static void Main(string[] args)
         {
@@ -23,7 +23,7 @@ namespace cafe
 
         private static void ConfigureLogging()
         {
-            LogManager.Configuration =  new XmlLoggingConfiguration("nlog.config", false);
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config", false);
             Logger.Debug("Logging set up based on nlog.config");
         }
 

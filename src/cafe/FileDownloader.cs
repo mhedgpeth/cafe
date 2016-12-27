@@ -9,7 +9,7 @@ namespace cafe
 {
     public class FileDownloader : IFileDownloader
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(FileDownloader).FullName);
 
         public bool Download(Uri downloadLink, string file)
         {
@@ -18,7 +18,7 @@ namespace cafe
 
         public async Task<bool> DownloadAsync(Uri downloadLink, string file)
         {
-            using (var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10)})
+            using (var httpClient = new HttpClient {Timeout = TimeSpan.FromMinutes(10)})
             {
                 using (
                     var request = new HttpRequestMessage(HttpMethod.Get, downloadLink)

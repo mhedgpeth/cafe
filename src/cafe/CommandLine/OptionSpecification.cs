@@ -5,7 +5,7 @@ namespace cafe.CommandLine
 {
     public class OptionSpecification
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(OptionSpecification).FullName);
 
         private readonly string _description = string.Empty;
         private readonly OptionValueSpecification[] _valueSpecifications;
@@ -13,7 +13,6 @@ namespace cafe.CommandLine
         public OptionSpecification(params string[] exactValues)
             : this(ConvertToExactValueSpecifications(exactValues))
         {
-
         }
 
         private static OptionValueSpecification[] ConvertToExactValueSpecifications(params string[] exactValues)
@@ -43,7 +42,8 @@ namespace cafe.CommandLine
                     Logger.Debug($"Determining if {value} matches specification {valueSpecification}");
                     if (!valueSpecification.IsSatisfiedBy(value))
                     {
-                        Logger.Debug($"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
+                        Logger.Debug(
+                            $"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
                         return false;
                     }
                 }

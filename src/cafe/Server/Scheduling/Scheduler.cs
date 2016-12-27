@@ -7,7 +7,7 @@ namespace cafe.Server.Scheduling
 {
     public class Scheduler
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Scheduler).FullName);
 
         private readonly object _processLocker = new object();
 
@@ -86,6 +86,7 @@ namespace cafe.Server.Scheduling
 
         public void Pause()
         {
+            Logger.Info("Pausing scheduler");
             IsRunning = false;
         }
 

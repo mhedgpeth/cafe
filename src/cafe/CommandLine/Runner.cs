@@ -4,7 +4,7 @@ namespace cafe.CommandLine
 {
     public class Runner
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Runner).FullName);
 
         private readonly Option[] _options;
 

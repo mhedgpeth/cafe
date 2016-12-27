@@ -7,7 +7,7 @@ namespace cafe.LocalSystem
 {
     public class ProcessBoundary : IProcess
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ProcessBoundary).FullName);
 
         private readonly Process _process = new Process();
 
@@ -52,13 +52,15 @@ namespace cafe.LocalSystem
 
         public void BeginOutputReadLine()
         {
-            Logger.Debug($"{this} is reading from standard output with redirection set to {StartInfo.RedirectStandardOutput}");
+            Logger.Debug(
+                $"{this} is reading from standard output with redirection set to {StartInfo.RedirectStandardOutput}");
             _process.BeginOutputReadLine();
         }
 
         public void BeginErrorReadLine()
         {
-            Logger.Debug($"{this} is reading from standard error with redirection set to {StartInfo.RedirectStandardError}");
+            Logger.Debug(
+                $"{this} is reading from standard error with redirection set to {StartInfo.RedirectStandardError}");
             _process.BeginErrorReadLine();
         }
 

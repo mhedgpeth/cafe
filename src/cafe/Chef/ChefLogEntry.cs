@@ -8,7 +8,7 @@ namespace cafe.Chef
 {
     public class ChefLogEntry
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefLogEntry).FullName);
 
         private readonly LogLevel _level;
         private readonly DateTime? _time;

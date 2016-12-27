@@ -6,7 +6,7 @@ namespace cafe.Options
 {
     public class SchedulerStatusOption : Option
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerStatusOption).FullName);
 
         private readonly ClientFactory _clientFactory;
 

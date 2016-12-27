@@ -6,7 +6,7 @@ namespace cafe.LocalSystem
 {
     public class ProcessExecutor
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ProcessExecutor).FullName);
 
         private readonly Func<IProcess> _processCreator;
 

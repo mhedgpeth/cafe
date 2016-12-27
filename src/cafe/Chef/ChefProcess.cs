@@ -8,7 +8,7 @@ namespace cafe.Chef
 {
     public class ChefProcess : IChefProcess
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefProcess).FullName);
 
         private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystem _fileSystem;
@@ -36,7 +36,8 @@ namespace cafe.Chef
             string filename = rubyExecutable;
             EventHandler<string> processOnOutputDataReceived = ProcessOnOutputDataReceived;
             EventHandler<string> processOnErrorDataReceived = ProcessOnErrorDataReceived;
-            _processExecutor.ExecuteAndWaitForExit(filename, processArguments, processOnOutputDataReceived, processOnErrorDataReceived);
+            _processExecutor.ExecuteAndWaitForExit(filename, processArguments, processOnOutputDataReceived,
+                processOnErrorDataReceived);
         }
 
 

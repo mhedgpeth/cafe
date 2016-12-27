@@ -1,19 +1,13 @@
-﻿
-
-
-
-
-using System;
+﻿using System;
 using System.IO;
 using cafe.LocalSystem;
-using Microsoft.Extensions.Logging;
 using NLog;
 
 namespace cafe.Chef
 {
     public class ChefDownloader
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefDownloader).FullName);
 
         public const string StagingDirectory = "staging";
 
@@ -42,7 +36,8 @@ namespace cafe.Chef
         public static Uri DownloadUriFor(string version)
         {
             // TODO: sanitize data so it can't be injected here
-            return new Uri($"https://packages.chef.io/files/stable/chef/{version}/windows/2012r2/{FilenameFor(version)}");
+            return new Uri(
+                $"https://packages.chef.io/files/stable/chef/{version}/windows/2012r2/{FilenameFor(version)}");
         }
 
         public static string FilenameFor(string version)

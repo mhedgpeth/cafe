@@ -7,6 +7,8 @@ namespace cafe.Chef
 {
     public class ChefRunner
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefRunner).FullName);
+
         private readonly Func<IChefProcess> _processCreator;
 
         public ChefRunner(Func<IChefProcess> processCreator)
@@ -14,10 +16,10 @@ namespace cafe.Chef
             _processCreator = processCreator;
         }
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public void Run()
         {
+            Logger.Debug("Running chef");
             var process = _processCreator();
             process.LogEntryReceived += (sender, entry) => entry.Log();
             process.Run();

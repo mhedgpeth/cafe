@@ -9,7 +9,7 @@ namespace cafe.LocalSystem
         private readonly IEnvironment _environment;
         private readonly IFileSystemCommands _commands;
 
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(FileSystem).FullName);
 
         public FileSystem(IEnvironment environment, IFileSystemCommands commands)
         {
@@ -46,6 +46,5 @@ namespace cafe.LocalSystem
             var binDirectory = Directory.GetParent(batchFilePath);
             return binDirectory.FullName;
         }
-
     }
 }
