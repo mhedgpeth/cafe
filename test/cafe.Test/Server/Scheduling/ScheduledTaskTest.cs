@@ -1,6 +1,7 @@
 ﻿using System;
 using cafe.Server.Scheduling;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 
 namespace cafe.Test.Server.Scheduling
@@ -9,6 +10,7 @@ namespace cafe.Test.Server.Scheduling
     {
         private ScheduledTask _scheduledTask;
         private bool _actionRan;
+        private FakeClock _clock;
 
         [Fact]
         public void Run_ShouldSetIsRunningToTrue()
@@ -21,10 +23,11 @@ namespace cafe.Test.Server.Scheduling
             _actionRan.Should().BeTrue("because the scheduled task ran");
         }
 
-        private ScheduledTask CreateScheduledTask(Action action = null)
+        private ScheduledTask CreateScheduledTask(Action action = null, IClock clock = null)
         {
             action = action ?? DoNothing;
-            return new ScheduledTask("scheduled task", action);
+            clock = clock ?? new FakeClock();
+            return new ScheduledTask("scheduled task", action, clock);
         }
 
         private void DoNothing()
@@ -53,7 +56,7 @@ namespace cafe.Test.Server.Scheduling
         public void ToString_ShouldContainDescription()
         {
             const string description = "a great task";
-            var scheduledTask = new ScheduledTask(description, () => { });
+            var scheduledTask = new ScheduledTask(description, () => { }, new FakeClock());
 
             scheduledTask.ToString().Should().Contain(description, "because this was the description given");
         }
@@ -62,6 +65,49 @@ namespace cafe.Test.Server.Scheduling
         {
             _scheduledTask.IsRunning().Should().BeTrue("because the task is in the middle of running");
             _scheduledTask.IsFinishedRunning().Should().BeFalse("because the task is not yet finished running");
+            _actionRan = true;
+        }
+
+        [Fact]
+        public void StartTime_ShouldBeNullBeforeRunningTask()
+        {
+            var scheduledTask = CreateScheduledTask();
+            scheduledTask.StartTime.Should().BeNull("because the task hasn't started yet");
+        }
+
+        [Fact]
+        public void FinishTime_ShouldBeNullBeforeFinishingTask()
+        {
+            var scheduledTask = CreateScheduledTask();
+            scheduledTask.CompleteTime.Should().BeNull("because the task has not yet finished");
+        }
+
+        [Fact]
+        public void StartTime_ShouldBeClockTimeWhenStarted()
+        {
+            _clock = new FakeClock();
+            _scheduledTask = CreateScheduledTask(AssertStartTimeMatchesClock, clock: _clock);
+
+            _scheduledTask.Run();
+
+            _actionRan.Should().BeTrue();
+        }
+
+        [Fact]
+        public void CompleteTime_ShouldBeClockTimeAfterFinished()
+        {
+            _clock = new FakeClock();
+            _scheduledTask = CreateScheduledTask(AssertStartTimeMatchesClock, clock: _clock);
+
+            _scheduledTask.Run();
+
+            _scheduledTask.CompleteTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
+        }
+
+        private void AssertStartTimeMatchesClock()
+        {
+            _scheduledTask.StartTime.Should().Be(_clock.CurrentInstant.ToDateTimeUtc());
+            _clock.AddToCurrentInstant(Duration.FromMinutes(5));
             _actionRan = true;
         }
     }

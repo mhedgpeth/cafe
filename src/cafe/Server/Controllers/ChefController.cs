@@ -5,6 +5,7 @@ using cafe.Server.Scheduling;
 using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using NodaTime;
 
 namespace cafe.Server.Controllers
 {
@@ -23,7 +24,7 @@ namespace cafe.Server.Controllers
 
         private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Action action)
         {
-            var scheduledTask = new ScheduledTask(description, action);
+            var scheduledTask = new ScheduledTask(description, action, SystemClock.Instance);
             _scheduler.Schedule(scheduledTask);
             return scheduledTask.ToTaskStatus();
         }

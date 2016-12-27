@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace cafe.Shared
 {
@@ -7,6 +8,8 @@ namespace cafe.Shared
         public Guid Id { get; set; }
         public string Description { get; set; }
         public TaskState State { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? CompleteTime { get; set; }
 
         public static ScheduledTaskStatus Create(string description)
         {
@@ -30,13 +33,16 @@ namespace cafe.Shared
             {
                 Id = Id,
                 Description = Description,
-                State = State
+                State = State,
+                StartTime = StartTime,
+                CompleteTime = CompleteTime
             };
         }
 
         protected bool Equals(ScheduledTaskStatus other)
         {
-            return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State;
+            return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State &&
+                   StartTime.Equals(other.StartTime) && CompleteTime.Equals(other.CompleteTime);
         }
 
         public override bool Equals(object obj)
@@ -49,7 +55,15 @@ namespace cafe.Shared
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            unchecked
+            {
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int) State;
+                hashCode = (hashCode * 397) ^ StartTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ CompleteTime.GetHashCode();
+                return hashCode;
+            }
         }
 
         public static bool operator ==(ScheduledTaskStatus left, ScheduledTaskStatus right)

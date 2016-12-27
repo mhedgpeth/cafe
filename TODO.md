@@ -2,7 +2,6 @@
 # Near Term
 
 ## Better view of what is happening
-* Tasks have start and end times in status
 * Tasks show failure with helpful text on what happened in the failure
 * Task provides current status - so users can see that something is happening
 * Include more detailed scheduler status, migrate it to simply cafe status

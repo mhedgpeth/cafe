@@ -23,37 +23,4 @@ namespace cafe.Server.Scheduling
             return task.CurrentState == TaskState.Running;
         }
     }
-
-
-    public class ScheduledTask : IScheduledTask
-    {
-        private readonly ScheduledTaskStatus _status;
-        private readonly Action _action;
-
-        public ScheduledTask(string description, Action action)
-        {
-            _action = action;
-            _status = ScheduledTaskStatus.Create(description);
-        }
-
-        public void Run()
-        {
-            _status.State = TaskState.Running;
-            _action();
-            _status.State = TaskState.Finished;
-        }
-
-        public TaskState CurrentState { get { return _status.State; } }
-        public Guid Id { get; } = Guid.NewGuid();
-
-        public override string ToString()
-        {
-            return _status.ToString();
-        }
-
-        public ScheduledTaskStatus ToTaskStatus()
-        {
-            return _status.Copy();
-        }
-    }
 }
