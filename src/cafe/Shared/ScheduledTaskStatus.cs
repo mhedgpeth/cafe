@@ -1,4 +1,5 @@
 ﻿using System;
+using NodaTime;
 
 namespace cafe.Shared
 {
@@ -14,6 +15,16 @@ namespace cafe.Shared
         public bool IsNotRun => State == TaskState.NotRun;
         public bool IsRunning => State == TaskState.Running;
 
+        public TimeSpan? Duration
+        {
+            get
+            {
+                if (StartTime.HasValue && CompleteTime.HasValue) return CompleteTime.Value.Subtract(StartTime.Value);
+                if (StartTime.HasValue) return SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Subtract(StartTime.Value);
+                return null;
+            }
+        }
+
         public static ScheduledTaskStatus Create(string description)
         {
             return new ScheduledTaskStatus
@@ -26,7 +37,16 @@ namespace cafe.Shared
 
         public override string ToString()
         {
-            return $"Task {Description} ({State}) - Id: {Id}";
+            var firstPart = $"Task {Description} ({Id}) - ";
+            if (IsNotRun)
+            {
+                return $"{firstPart}Not yet run";
+            }
+            if (IsRunning)
+            {
+                return $"{firstPart}Running for {(int) Duration.Value.TotalSeconds} seconds";
+            }
+            return $"{firstPart}{Result}";
         }
 
         public ScheduledTaskStatus Copy()

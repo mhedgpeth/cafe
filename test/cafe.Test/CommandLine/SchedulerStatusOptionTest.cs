@@ -16,7 +16,7 @@ namespace cafe.Test.CommandLine
             var scheduler = new Mock<ISchedulerServer>();
             scheduler.Setup(s => s.GetStatus()).Throws<HttpRequestException>();
 
-            var option = new SchedulerStatusOption(() => scheduler.Object);
+            var option = new StatusOption(() => scheduler.Object);
 
             var result = option.Run();
 
