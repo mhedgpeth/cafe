@@ -1,9 +1,5 @@
 # Near Term
 
-## Make scheduler production ready
-* Pause just chef (not other things, like an install/upgrade) with `cafe pause chef`
-* Resume just chef (not other things) with `cafe resume chef`
-
 ## Ease of use
 * When server isn't started, start it in process (to make this easy to adopt) - maybe just focus on making it easy for people to run the server with below service
 

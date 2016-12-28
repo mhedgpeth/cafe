@@ -34,7 +34,7 @@ namespace cafe.Server.Controllers
         public ScheduledTaskStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
-            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}", presenter => StructureMapResolver.Container.GetInstance<ChefInstaller>().InstallOrUpgrade(version, presenter));
+            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}", presenter => StructureMapResolver.Container.GetInstance<ChefProduct>().InstallOrUpgrade(version, presenter));
         }
 
         [HttpPut("download")]
@@ -48,7 +48,8 @@ namespace cafe.Server.Controllers
         public ChefStatus GetChefStatus()
         {
             Logger.Info("Getting chef status");
-            return new ChefStatus() {Version = StructureMapResolver.Container.GetInstance<ChefRunner>().RetrieveVersion().ToString()};
+            var product = StructureMapResolver.Container.GetInstance<ChefProduct>();
+            return product.ToChefStatus();
         }
     }
 }

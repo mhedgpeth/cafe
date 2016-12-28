@@ -1,4 +1,5 @@
 ﻿using System;
+using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Scheduling;
 using StructureMap;
@@ -21,6 +22,7 @@ namespace cafe.Server
                 });
 
                 config.For<Scheduler>().Singleton();
+                config.For<ChefProduct>().Singleton();
                 config.For<IEnvironment>().Use<EnvironmentBoundary>();
                 config.For<IFileSystemCommands>().Use<FileSystemCommandsBoundary>();
                 config.For<IProcess>().Use<ProcessBoundary>();

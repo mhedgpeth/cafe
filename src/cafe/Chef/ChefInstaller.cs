@@ -1,44 +1,58 @@
-﻿using cafe.LocalSystem;
-using cafe.Server.Scheduling;
+﻿using System.IO;
+using cafe.LocalSystem;
 using cafe.Shared;
 using NLog;
 
 namespace cafe.Chef
 {
-    public class ChefInstaller
+    public interface IProductInstaller
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefInstaller).FullName);
+        Result Uninstall(string productCode);
+        Result Install(string version);
+    }
+
+    public class ProductInstaller : IProductInstaller
+    {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ProductInstaller).FullName);
 
         private readonly IFileSystem _fileSystem;
-        private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystemCommands _commands;
+        private readonly ProcessExecutor _processExecutor;
 
-        public ChefInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands)
+        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands)
         {
             _fileSystem = fileSystem;
             _processExecutor = processExecutor;
             _commands = commands;
         }
 
-        public Result InstallOrUpgrade(string version, IMessagePresenter presenter)
+        public Result Uninstall(string productCode)
         {
-            presenter.ShowMessage($"Installing/Upgrading Chef to version {version}");
+            var msiexec = FindFullPathToMsiExec();
+            return _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
+        }
+
+        public Result Install(string version)
+        {
             var fullPathToStagedInstaller = ChefDownloader.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
                 Logger.Warn(
                     $"No file for version {version} was staged at {fullPathToStagedInstaller}. Either download it or stage it another way");
                 var failure = Result.Failure("There was no staged installer. Download the file first.");
-                presenter.ShowMessage(failure.ToString());
                 return failure;
             }
-
-            presenter.ShowMessage("Running installer");
-            var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("msiexec.exe");
-            var result = _processExecutor.ExecuteAndWaitForExit(msiExecDirectory, $"/qn /i \"{fullPathToStagedInstaller}\"",
+            var msiexec = FindFullPathToMsiExec();
+            var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /L*V \"logs/installation.log\" /i \"{fullPathToStagedInstaller}\"",
                 LogInformation, LogError);
-            presenter.ShowMessage($"Result of installing chef {version} was: {result}");
             return result;
+        }
+
+        private string FindFullPathToMsiExec()
+        {
+            const string msiexecExe = "msiexec.exe";
+            var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining(msiexecExe);
+            return Path.Combine(msiExecDirectory, msiexecExe);
         }
 
         private void LogError(object sender, string e)
@@ -50,5 +64,6 @@ namespace cafe.Chef
         {
             Logger.Info(e);
         }
+
     }
 }

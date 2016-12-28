@@ -4,6 +4,7 @@
     {
         public bool IsSuccess { get; set; }
         public string FailureDescription { get; set; }
+        public bool IsFailed => !IsSuccess;
 
         public static Result Failure(string description)
         {
