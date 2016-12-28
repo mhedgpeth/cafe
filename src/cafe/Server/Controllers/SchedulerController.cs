@@ -30,12 +30,5 @@ namespace cafe.Server.Controllers
             Logger.Debug($"Status for task {id} is {status}");
             return status;
         }
-
-        [HttpPut("pause")]
-        public void Pause()
-        {
-            Logger.Info("Pausing scheduler");
-            _scheduler.Pause();
-        }
     }
 }
