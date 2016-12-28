@@ -10,36 +10,39 @@ namespace cafe.Server.Scheduling
 {
     public class Scheduler : IDisposable
     {
-        private readonly Guid _instanceId = Guid.NewGuid();
-        private readonly IDisposable _timer;
-        private readonly IActionExecutor _scheduledTaskExecutor;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Scheduler).FullName);
 
+        private readonly IDisposable _timer;
+        private readonly IActionExecutor _scheduledTaskExecutor;
         private readonly object _processLocker = new object();
+        private readonly Queue<IScheduledTask> _queuedTasks = new Queue<IScheduledTask>();
+        private readonly IDictionary<string, RecurringTask> _recurringTasks = new Dictionary<string, RecurringTask>();
+        private readonly IList<ScheduledTaskStatus> _finishedTasks = new List<ScheduledTaskStatus>();
 
         public Scheduler(ITimerFactory timerFactory, IActionExecutor scheduledTaskExecutor)
         {
             _scheduledTaskExecutor = scheduledTaskExecutor;
             _timer = timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromSeconds(15));
             IsRunning = true;
-            Console.Out.WriteLine(_instanceId);
         }
 
         public SchedulerStatus CurrentStatus => new SchedulerStatus
         {
             IsRunning = IsRunning,
             QueuedTasks = ConvertQueuedTasksToStatuses(),
-            FinishedTasks = _finishedTasks.ToArray()
+            FinishedTasks = _finishedTasks.ToArray(),
+            RecurringTasks = ConvertRecurringTasksToStatuses()
         };
+
+        private RecurringTaskStatus[] ConvertRecurringTasksToStatuses()
+        {
+            return _recurringTasks.Values.Select(r => r.ToRecurringTaskStatus()).ToArray();
+        }
 
         private ScheduledTaskStatus[] ConvertQueuedTasksToStatuses()
         {
             return _queuedTasks.Select(task => task.ToTaskStatus()).ToArray();
         }
-
-        private readonly Queue<IScheduledTask> _queuedTasks = new Queue<IScheduledTask>();
-        private readonly HashSet<RecurringTask> _recurringTasks = new HashSet<RecurringTask>();
-        private readonly IList<ScheduledTaskStatus> _finishedTasks = new List<ScheduledTaskStatus>();
 
         public void ProcessTasks()
         {
@@ -80,7 +83,7 @@ namespace cafe.Server.Scheduling
 
         private void AddAllReadyRecurringTasksToQueue()
         {
-            foreach (var recurringTask in _recurringTasks)
+            foreach (var recurringTask in _recurringTasks.Values)
             {
                 if (recurringTask.IsReadyToRun)
                 {
@@ -104,7 +107,7 @@ namespace cafe.Server.Scheduling
         public void Add(RecurringTask recurringTask)
         {
             Logger.Debug($"Adding recurring task {recurringTask} to process");
-            _recurringTasks.Add(recurringTask);
+            _recurringTasks.Add(recurringTask.Name, recurringTask);
         }
 
         public void Pause()
@@ -138,7 +141,14 @@ namespace cafe.Server.Scheduling
             return status;
         }
 
-        public void Dispose()
+        public RecurringTask FindRecurringTaskByName(string name)
+        {
+            RecurringTask value;
+            _recurringTasks.TryGetValue(name, out value);
+            return value;
+        }
+
+    public void Dispose()
         {
             _timer.Dispose();
         }

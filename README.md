@@ -9,10 +9,10 @@ Here are some of the things that Cafe does or will do soon:
 * Download the `chef-client` installer for a particular version
 * Install `chef-client` on an existing package
 * Run `chef-client` and reroute logging to a logging mechanism that is controllable by NLog
-* (Coming Soon) Schedule `chef-client` to run on an interval
+* Provide an easy way to see a simple status of what is happening with Chef on the machine (including history)
+* Schedule `chef-client` to run on an interval
 * (Coming Soon) Pause Chef runs on a node, because of emergency manual fixes or maintenance of policies
 * (Coming Soon) Run as a service and receive operational commands through a REST API, thus enabling remote control
-* (Coming Soon) Provide an easy way to see a simple status of what is happening with Chef on the machine (including history)
 
 # Technology
 
@@ -49,33 +49,6 @@ Downloads chef client installer for the specified version to a staging directory
 cafe chef download 12.17.44
 ```
 
-# Coming Soon
-## Initialize
-
-Adds cafe to the PATH environment variable, letting it run from anywhere.
-
-```
-cafe init
-```
-
-## Install or Upgrade chef
-
-While chef isn't running, upgrade it using a staged or downloaded MSI.:
-
-```
-cafe chef install 12.17.44
-```
-
-or 
-
-```
-cafe chef upgrade 12.17.44
-```
-
-Both commands do the same thing.
-
-# Future Use Cases
-
 ## Run cafe in server mode
 
 ```
@@ -102,11 +75,34 @@ Fully idempotent? No
 
 ## Roll logging
 
-I want to log to a file and roll it every X days. To do this I should be able to provide an NLog config file:
+All logging by cafe is handled by NLog and is configured through nlog.config in the cafe installation folder.
+
+# Coming Soon
+## Initialize
+
+Adds cafe to the PATH environment variable, letting it run from anywhere.
 
 ```
-cafe config logging with: loggingConfiguration.xml
+cafe init
 ```
+
+## Install or Upgrade chef
+
+While chef isn't running, upgrade it using a staged or downloaded MSI.:
+
+```
+cafe chef install 12.17.44
+```
+
+or 
+
+```
+cafe chef upgrade 12.17.44
+```
+
+Both commands do the same thing.
+
+# Future Use Cases
 
 ## Pause chef on a machine
 

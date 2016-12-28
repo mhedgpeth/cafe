@@ -1,18 +1,24 @@
-﻿using cafe.Shared;
-using RestEase;
+﻿using RestEase;
 
 namespace cafe.Client
 {
     public class ClientFactory
     {
+        private readonly int _port;
+
+        public ClientFactory(int port)
+        {
+            _port = port;
+        }
+
         public IChefServer RestClientForChefServer()
         {
             return CreateRestClientFor<IChefServer>("chef");
         }
 
-        private static T CreateRestClientFor<T>(string serviceEndpoint)
+        private T CreateRestClientFor<T>(string serviceEndpoint)
         {
-            return RestClient.For<T>($"http://localhost:{ServerSettings.Port}/api/{serviceEndpoint}");
+            return RestClient.For<T>($"http://localhost:{_port}api/{serviceEndpoint}");
         }
 
         public ISchedulerServer RestClientForSchedulerServer()

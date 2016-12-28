@@ -1,4 +1,5 @@
 ﻿using System;
+using cafe.Shared;
 using NodaTime;
 
 namespace cafe.Server.Scheduling
@@ -6,20 +7,30 @@ namespace cafe.Server.Scheduling
     public class RecurringTask
     {
         private readonly IClock _clock;
-        private readonly Duration _every;
+        private readonly Duration _interval;
         private readonly Func<IScheduledTask> _scheduledTaskCreator;
         private readonly Instant _created;
-        private Instant _lastRun;
+        private readonly string _name;
+        private Instant? _lastRun;
 
-        public RecurringTask(IClock clock, Duration every, Func<IScheduledTask> scheduledTaskCreator)
+        public RecurringTask(string name, IClock clock, Duration interval, Func<IScheduledTask> scheduledTaskCreator)
         {
             _clock = clock;
-            _created = _lastRun = _clock.GetCurrentInstant();
-            _every = every;
+            _created = _clock.GetCurrentInstant();
+            _interval = interval;
             _scheduledTaskCreator = scheduledTaskCreator;
+            _name = name;
         }
 
-        public bool IsReadyToRun => _clock.GetCurrentInstant() >= _lastRun.Plus(_every);
+        public string Name => _name;
+
+        private Instant LastCheckpoint => _lastRun ?? _created;
+
+        public bool IsReadyToRun => _clock.GetCurrentInstant() >= ExpectedNextRun;
+
+        private Instant ExpectedNextRun => LastCheckpoint.Plus(_interval);
+
+        public Duration Interval => _interval;
 
         public IScheduledTask CreateScheduledTask()
         {
@@ -29,6 +40,18 @@ namespace cafe.Server.Scheduling
             }
             _lastRun = _clock.GetCurrentInstant();
             return _scheduledTaskCreator();
+        }
+
+        public RecurringTaskStatus ToRecurringTaskStatus()
+        {
+            return new RecurringTaskStatus()
+            {
+                Name = _name,
+                Created = _created.ToDateTimeUtc(),
+                Interval = _interval.ToTimeSpan(),
+                LastRun = _lastRun?.ToDateTimeUtc(),
+                ExpectedNextRun = ExpectedNextRun.ToDateTimeUtc()
+            };
         }
     }
 }

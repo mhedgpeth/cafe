@@ -16,7 +16,7 @@ namespace cafe.Test.Server.Scheduling
             // nothing happened, good!
         }
 
-        private static Scheduler CreateScheduler(IActionExecutor actionExecutor = null)
+        public static Scheduler CreateScheduler(IActionExecutor actionExecutor = null)
         {
             actionExecutor = actionExecutor ?? new FakeActionExecutor();
             return new Scheduler(new FakeTimerFactory(), actionExecutor);
@@ -53,7 +53,7 @@ namespace cafe.Test.Server.Scheduling
             var scheduledTask = new FakeScheduledTask();
             var clock = new FakeClock();
             var fiveMinutes = Duration.FromMinutes(5);
-            var recurringTask = new RecurringTask(clock, fiveMinutes, () => scheduledTask);
+            var recurringTask = RecurringTaskTest.CreateRecurringTask(clock, fiveMinutes, () => scheduledTask);
             clock.AddToCurrentInstant(fiveMinutes);
 
             var scheduler = CreateScheduler();
