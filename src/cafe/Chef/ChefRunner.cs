@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using cafe.Server.Scheduling;
 using cafe.Shared;
 using NLog;
 
@@ -16,7 +15,6 @@ namespace cafe.Chef
         {
             _processCreator = processCreator;
         }
-
 
         public Result Run(IMessagePresenter presenter)
         {

@@ -84,15 +84,15 @@ namespace cafe.Test.Server.Scheduling
         }
 
         [Fact]
-        public void Pause_ShouldPauseTimer()
+        public void Pause_ShouldNotProcessTasks()
         {
             var timerFactory = new FakeTimerFactory();
             var scheduler = new Scheduler(timerFactory, new FakeActionExecutor());
             var task = new FakeScheduledTask();
-            scheduler.Schedule(task);
+
             scheduler.Pause();
 
-            timerFactory.FireTimerAction();
+            scheduler.Schedule(task);
 
             task.WasRunCalled.Should().BeFalse("because the scheduler pausing not process any tasks");
         }
@@ -160,6 +160,20 @@ namespace cafe.Test.Server.Scheduling
             actionExecutor.WasExecuted.Should()
                 .BeTrue(
                     "because the scheduler should use the action executor to run its tasks so in the real program they'll run in the background");
+        }
+
+        [Fact]
+        public void Schedule_ShouldImmediatelyProcessTasks()
+        {
+            var task = new FakeScheduledTask();
+            var scheduler = CreateScheduler();
+
+            scheduler.Schedule(task);
+
+            task.WasRunCalled.Should()
+                .BeTrue(
+                    "because scheduling a scheduled task should immediately process it to make manually submitted tasks faster");
+
         }
     }
 }

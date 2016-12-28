@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using cafe.Shared;
 using NLog;
@@ -98,6 +99,7 @@ namespace cafe.Server.Scheduling
                 Logger.Debug($"Adding scheduled task {task} to the queue of tasks to process");
                 _queuedTasks.Enqueue(task);
             }
+            ProcessTasks();
         }
 
         public void Add(RecurringTask recurringTask)

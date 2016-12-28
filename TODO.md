@@ -1,9 +1,6 @@
 
 # Near Term
 
-## Better view of what is happening
-* Include more detailed scheduler status, migrate it to simply cafe status
-
 ## Make scheduler production ready
 * Immediate run of chef run/etc instead of waiting on scheduled interval
 * Schedule chef to run every X minutes (RecurringTask implementation) with `cafe schedule chef every: 30 minutes`
