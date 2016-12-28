@@ -37,7 +37,10 @@ namespace cafe
                 new DownloadChefOption(clientFactory, schedulerWaiter),
                 new InstallChefOption(clientFactory, schedulerWaiter),
                 new ServerOption(),
-                new StatusOption(clientFactory.RestClientForSchedulerServer));
+                new StatusOption(clientFactory.RestClientForSchedulerServer),
+                new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
+                ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),
+                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForSchedulerServer));
             Logger.Debug("Running application");
             return runner;
         }

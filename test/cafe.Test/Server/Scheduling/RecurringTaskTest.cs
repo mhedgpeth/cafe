@@ -19,9 +19,12 @@ namespace cafe.Test.Server.Scheduling
             recurringTask.IsReadyToRun.Should().BeFalse();
         }
 
-        public static RecurringTask CreateRecurringTask(IClock clock, Duration fiveMinutes, Func<IScheduledTask> scheduledTaskCreator)
+        public static RecurringTask CreateRecurringTask(IClock clock = null, Duration? fiveMinutes = null, Func<IScheduledTask> scheduledTaskCreator = null)
         {
-            return new RecurringTask("task", clock, fiveMinutes, scheduledTaskCreator);
+            clock = clock ?? new FakeClock();
+            Duration interval = fiveMinutes ?? FiveMinutes;
+            scheduledTaskCreator = scheduledTaskCreator ?? CreateFakeScheduledTask;
+            return new RecurringTask("task", clock, interval, scheduledTaskCreator);
         }
 
         [Fact]
@@ -103,6 +106,36 @@ namespace cafe.Test.Server.Scheduling
 
             var status = recurringTask.ToRecurringTaskStatus();
             status.ExpectedNextRun.Should().Be(status.LastRun.Value.Add(interval.ToTimeSpan()));
+        }
+
+        [Fact]
+        public void Pause_ShouldMakeTheTaskNotReadyEvenWhenItIsDue()
+        {
+            var clock = new FakeClock();
+            var interval = FiveMinutes;
+            var recurringTask = CreateRecurringTask(clock, interval, CreateFakeScheduledTask);
+
+            clock.AddToCurrentInstant(interval);
+
+            recurringTask.Pause();
+
+            recurringTask.IsReadyToRun.Should().BeFalse("because the task is paused");
+        }
+
+        [Fact]
+        public void Resume_ShouldMakeTheTaskRunnableAgain()
+        {
+            var clock = new FakeClock();
+            var interval = FiveMinutes;
+            var recurringTask = CreateRecurringTask(clock, interval, CreateFakeScheduledTask);
+
+            clock.AddToCurrentInstant(interval);
+
+            recurringTask.Pause();
+            recurringTask.Resume();
+
+            recurringTask.IsReadyToRun.Should().BeTrue("because the task resumed after pausing");
+
         }
 
     }

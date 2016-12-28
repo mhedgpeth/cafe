@@ -173,7 +173,52 @@ namespace cafe.Test.Server.Scheduling
             task.WasRunCalled.Should()
                 .BeTrue(
                     "because scheduling a scheduled task should immediately process it to make manually submitted tasks faster");
+        }
 
+        [Fact]
+        public void PauseRecurringTask_ShouldPauseRecurringTaskByName()
+        {
+            var recurringTask = RecurringTaskTest.CreateRecurringTask();
+            var scheduler = CreateScheduler();
+            scheduler.Add(recurringTask);
+
+            var status = scheduler.PauseRecurringTask(recurringTask.Name);
+
+            recurringTask.IsRunning.Should().BeFalse("because the scheduler paused it");
+            status.Should().Be(recurringTask.ToRecurringTaskStatus());
+        }
+        [Fact]
+        public void ResumeRecurringTask_ShouldResumeRecurringTaskByName()
+        {
+            var recurringTask = RecurringTaskTest.CreateRecurringTask();
+            var scheduler = CreateScheduler();
+            scheduler.Add(recurringTask);
+
+            scheduler.PauseRecurringTask(recurringTask.Name);
+            var status = scheduler.ResumeRecurringTask(recurringTask.Name);
+
+            recurringTask.IsRunning.Should().BeTrue("because the scheduler resumed it");
+            status.Should().Be(recurringTask.ToRecurringTaskStatus());
+        }
+
+        [Fact]
+        public void PauseRecurringTask_ShouldDoNothingWhenTaskDoesNotExist()
+        {
+            var scheduler = CreateScheduler();
+
+            var status = scheduler.PauseRecurringTask("does not exist");
+
+            status.Should().BeNull("because the task name doesn't exist");
+        }
+
+        [Fact]
+        public void ResumeRecurringTask_ShouldDoNothingWhenTaskDoesNotExist()
+        {
+            var scheduler = CreateScheduler();
+
+            var status = scheduler.ResumeRecurringTask("does not exist");
+
+            status.Should().BeNull("because the task name doesn't exist");
         }
     }
 }

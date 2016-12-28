@@ -1,11 +1,14 @@
 ﻿using System;
 using cafe.Shared;
+using NLog;
 using NodaTime;
 
 namespace cafe.Server.Scheduling
 {
     public class RecurringTask
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(RecurringTask).FullName);
+
         private readonly IClock _clock;
         private readonly Duration _interval;
         private readonly Func<IScheduledTask> _scheduledTaskCreator;
@@ -26,7 +29,7 @@ namespace cafe.Server.Scheduling
 
         private Instant LastCheckpoint => _lastRun ?? _created;
 
-        public bool IsReadyToRun => _clock.GetCurrentInstant() >= ExpectedNextRun;
+        public bool IsReadyToRun => IsRunning && _clock.GetCurrentInstant() >= ExpectedNextRun;
 
         private Instant ExpectedNextRun => LastCheckpoint.Plus(_interval);
 
@@ -47,11 +50,26 @@ namespace cafe.Server.Scheduling
             return new RecurringTaskStatus()
             {
                 Name = _name,
+                IsRunning = IsRunning,
                 Created = _created.ToDateTimeUtc(),
                 Interval = _interval.ToTimeSpan(),
                 LastRun = _lastRun?.ToDateTimeUtc(),
                 ExpectedNextRun = ExpectedNextRun.ToDateTimeUtc()
             };
+        }
+
+        public bool IsRunning { get; private set; } = true;
+
+        public void Pause()
+        {
+            Logger.Info($"Pausing {Name}");
+            IsRunning = false;
+        }
+
+        public void Resume()
+        {
+            Logger.Info($"Resuming {Name}");
+            IsRunning = true;
         }
     }
 }

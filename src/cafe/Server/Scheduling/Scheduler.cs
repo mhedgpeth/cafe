@@ -148,9 +148,37 @@ namespace cafe.Server.Scheduling
             return value;
         }
 
-    public void Dispose()
+        public void Dispose()
         {
             _timer.Dispose();
+        }
+
+        public RecurringTaskStatus PauseRecurringTask(string name)
+        {
+            return ExecuteActionOnRecurringTask(name, "Pause", t => t.Pause());
+        }
+
+        private RecurringTaskStatus ExecuteActionOnRecurringTask(string name, string description,
+            Action<RecurringTask> action)
+        {
+            Logger.Debug($"Executing action {description} on recurring task {name}");
+            RecurringTask task;
+            _recurringTasks.TryGetValue(name, out task);
+            if (task == null)
+            {
+                Logger.Warn($"Could not find task named {name} to execute action {description}");
+                return null;
+            }
+            Logger.Debug($"Found recurring task named {name}, executing action {description}");
+            action(task);
+            var status = task.ToRecurringTaskStatus();
+            Logger.Debug($"Action {description} executed; returning status {status}");
+            return status;
+        }
+
+        public RecurringTaskStatus ResumeRecurringTask(string name)
+        {
+            return ExecuteActionOnRecurringTask(name, "Resume", t => t.Resume());
         }
     }
 }
