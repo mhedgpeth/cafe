@@ -2,7 +2,6 @@
 # Near Term
 
 ## Make scheduler production ready
-* Immediate run of chef run/etc instead of waiting on scheduled interval
 * Schedule chef to run every X minutes (RecurringTask implementation) with `cafe schedule chef every: 30 minutes`
 * Pause just chef (not other things, like an install/upgrade) with `cafe pause chef`
 * Resume just chef (not other things) with `cafe resume chef`
