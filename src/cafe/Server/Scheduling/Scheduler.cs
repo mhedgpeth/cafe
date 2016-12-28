@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using cafe.Shared;
 using NLog;
+using NLog.Fluent;
 using NodaTime;
 
 namespace cafe.Server.Scheduling
@@ -42,6 +43,7 @@ namespace cafe.Server.Scheduling
 
         public void ProcessTasks()
         {
+            Logger.Debug("Processing tasks for scheduler");
             lock (_processLocker) // since queues are being manipulated here, don't let this happen multiple times
             {
                 if (!IsRunning)
@@ -73,6 +75,7 @@ namespace cafe.Server.Scheduling
                     Logger.Debug($"Since {readyTask} is still running, waiting for it to complete");
                 }
             }
+            Logger.Debug("Finished processing tasks for scheduler");
         }
 
         private void AddAllReadyRecurringTasksToQueue()
@@ -81,7 +84,9 @@ namespace cafe.Server.Scheduling
             {
                 if (recurringTask.IsReadyToRun)
                 {
-                    Schedule(recurringTask.CreateScheduledTask());
+                    var scheduledTask = recurringTask.CreateScheduledTask();
+                    Log.Info($"Recurring task {recurringTask} is ready to run, so adding {scheduledTask} to the queue");
+                    Schedule(scheduledTask);
                 }
             }
         }
@@ -90,12 +95,14 @@ namespace cafe.Server.Scheduling
         {
             foreach (var task in tasks)
             {
+                Logger.Debug($"Adding scheduled task {task} to the queue of tasks to process");
                 _queuedTasks.Enqueue(task);
             }
         }
 
         public void Add(RecurringTask recurringTask)
         {
+            Logger.Debug($"Adding recurring task {recurringTask} to process");
             _recurringTasks.Add(recurringTask);
         }
 
@@ -109,12 +116,25 @@ namespace cafe.Server.Scheduling
 
         public ScheduledTaskStatus FindStatusById(Guid id)
         {
+            Logger.Debug(
+                $"Searching for task {id} within {_queuedTasks.Count} queued tasks and {_finishedTasks.Count} finished tasks");
             var task = _queuedTasks.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                return task.ToTaskStatus();
+                var queuedStatus = task.ToTaskStatus();
+                Logger.Debug($"Found active status {queuedStatus} for id {id}");
+                return queuedStatus;
             }
-            return _finishedTasks.FirstOrDefault(t => t.Id == id);
+            var status = _finishedTasks.FirstOrDefault(t => t.Id == id);
+            if (status != null)
+            {
+                Logger.Debug($"Found finished status {status} for id {id}");
+            }
+            else
+            {
+                Logger.Debug($"No status for id {id} found");
+            }
+            return status;
         }
 
         public void Dispose()

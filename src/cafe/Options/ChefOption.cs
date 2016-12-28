@@ -26,7 +26,7 @@ namespace cafe.Options
             var client = _clientFactory.RestClientForChefServer();
             var status = RunCore(client, args).Result;
             var finalStatus = _schedulerWaiter.WaitForTaskToComplete(status);
-            Presenter.ShowMessage($"Finished running {finalStatus.Description}", Logger);
+            Logger.Info($"Finished running {finalStatus.Description}");
             return finalStatus.Result;
         }
 

@@ -1,4 +1,5 @@
-﻿using cafe.Client;
+﻿using System.Threading.Tasks;
+using cafe.Client;
 using cafe.CommandLine;
 using cafe.Options;
 using cafe.Server.Scheduling;
@@ -29,7 +30,7 @@ namespace cafe
         public static Runner CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory();
-            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer, new AutoResetEventBoundary(), new TimerFactory());
+            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer, new AutoResetEventBoundary(), new TimerFactory(), new TaskStatusPresenter(new PresenterMessagePresenter()));
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
                 new ShowChefVersionOption(clientFactory),

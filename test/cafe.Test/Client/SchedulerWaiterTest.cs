@@ -2,6 +2,7 @@
 using System.Net.Http;
 using cafe.Client;
 using cafe.Shared;
+using cafe.Test.Chef;
 using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using Moq;
@@ -19,7 +20,7 @@ namespace cafe.Test.Client
             var autoResetEvent = new FakeAutoResetEvent();
             var fakeTimerFactory = new FakeTimerFactory();
 
-            var waiter = new SchedulerWaiter(() => scheduler.Object, autoResetEvent, fakeTimerFactory);
+            var waiter = new SchedulerWaiter(() => scheduler.Object, autoResetEvent, fakeTimerFactory, new TaskStatusPresenter(new FakeMessagePresenter()));
             autoResetEvent.WhatToDoDuringWaitOne = () =>
             {
                 fakeTimerFactory.FireTimerAction();

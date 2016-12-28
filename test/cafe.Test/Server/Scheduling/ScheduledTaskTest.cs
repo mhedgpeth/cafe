@@ -139,5 +139,13 @@ namespace cafe.Test.Server.Scheduling
 
             task.ToTaskStatus().Result.IsSuccess.Should().BeFalse("because an exception was thrown");
         }
+
+        [Fact]
+        public void Id_ShouldBeConsistentBetweenStatusAndTask()
+        {
+            var task = CreateScheduledTask();
+
+            task.Id.Should().Be(task.ToTaskStatus().Id, "because the ids should match; they represent the same thing");
+        }
     }
 }

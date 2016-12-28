@@ -64,7 +64,18 @@ namespace cafe.Test.Chef
     {
         public void ShowMessage(string message)
         {
+            MessageShown = message;
+            WasMessageShown = true;
         }
+
+        public string MessageShown { get; set; }
+
+        public void Clear()
+        {
+            WasMessageShown = false;
+        }
+
+        public bool WasMessageShown { get; private set; }
     }
 
     public class FakeFileDownloader : IFileDownloader

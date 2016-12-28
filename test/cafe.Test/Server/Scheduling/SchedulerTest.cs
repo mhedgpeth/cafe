@@ -162,15 +162,4 @@ namespace cafe.Test.Server.Scheduling
                     "because the scheduler should use the action executor to run its tasks so in the real program they'll run in the background");
         }
     }
-
-    public class FakeActionExecutor : IActionExecutor
-    {
-        public void Execute(Action action)
-        {
-            WasExecuted = true;
-            action();
-        }
-
-        public bool WasExecuted { get; set; }
-    }
 }

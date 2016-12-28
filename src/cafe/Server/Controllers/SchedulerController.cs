@@ -17,14 +17,18 @@ namespace cafe.Server.Controllers
         public SchedulerStatus GetStatus()
         {
             Logger.Info("Getting scheduler status");
-            return _scheduler.CurrentStatus;
+            var schedulerStatus = _scheduler.CurrentStatus;
+            Logger.Debug($"Scheduler status is {schedulerStatus}");
+            return schedulerStatus;
         }
 
         [HttpGet("task/{id}")]
         public ScheduledTaskStatus GetTaskStatus(Guid id)
         {
             Logger.Info($"Getting status of task with id {id}");
-            return _scheduler.FindStatusById(id);
+            var status = _scheduler.FindStatusById(id);
+            Logger.Debug($"Status for task {id} is {status}");
+            return status;
         }
 
         [HttpPut("pause")]
