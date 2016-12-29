@@ -9,8 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NodaTime;
+using StructureMap.Building;
 
-namespace cafe.Options
+namespace cafe.Options.Server
 {
     public class CafeServerWindowsService : IWin32Service
     {

@@ -3,7 +3,7 @@ using cafe.CommandLine;
 using cafe.Shared;
 using NLog;
 
-namespace cafe.Options
+namespace cafe.Options.Server
 {
     public class ServerInteractiveOption : Option
     {

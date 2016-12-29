@@ -4,6 +4,7 @@ using System.Reflection;
 using cafe.Client;
 using cafe.CommandLine;
 using cafe.Options;
+using cafe.Options.Server;
 using cafe.Server.Scheduling;
 using NLog;
 using NLog.Config;
@@ -53,6 +54,8 @@ namespace cafe
                 new InstallChefOption(clientFactory, schedulerWaiter),
                 new ServerInteractiveOption(),
                 new ServerWindowsServiceOption(),
+                new RegisterServerWindowsServiceOption(),
+                new UnregisterServerWindowsServiceOption(),
                 new StatusOption(clientFactory.RestClientForSchedulerServer),
                 new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
                 ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),

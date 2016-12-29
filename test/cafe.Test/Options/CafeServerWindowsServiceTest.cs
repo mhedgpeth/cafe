@@ -1,4 +1,5 @@
 ﻿using cafe.Options;
+using cafe.Options.Server;
 using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using NodaTime;

@@ -2,7 +2,7 @@
 using cafe.Shared;
 using DasMulli.Win32.ServiceUtils;
 
-namespace cafe.Options
+namespace cafe.Options.Server
 {
     public class ServerWindowsServiceOption : Option
     {
