@@ -3,7 +3,10 @@
   "buildOptions": {
     "debugType": "portable",
     "warningsAsErrors": true,
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "copyToOutput": { 
+      "includeFiles": [ "nlog.config", "server.json", "appsettings.json", "cafe.nsi" ] 
+    }
   },
   "publishOptions": {
     "include": [

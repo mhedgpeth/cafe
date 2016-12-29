@@ -1,4 +1,4 @@
 {
-    "ChefInterval": 1800,
+    "ChefInterval": 0,
     "Port": 59320
 }
