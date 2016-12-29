@@ -12,5 +12,9 @@ namespace cafe.Test.Chef
 
         public IDictionary<string, string> EnvironmentVariables { get; }
         = new Dictionary<string, string>();
+
+        public void SetSystemEnvironmentVariable(string key, string value)
+        {
+        }
     }
 }

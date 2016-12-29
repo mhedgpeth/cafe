@@ -49,7 +49,8 @@ namespace cafe
             var clientFactory = new ClientFactory(settings.Port);
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer, new AutoResetEventBoundary(), new TimerFactory(), new TaskStatusPresenter(new PresenterMessagePresenter()));
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
-            var fileSystem = new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary());
+            var environment = new EnvironmentBoundary();
+            var fileSystem = new FileSystem(environment, new FileSystemCommandsBoundary());
             var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status", new AutoResetEventBoundary(), new TimerFactory(), new ServiceStatusProvider(processExecutor, fileSystem));
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
@@ -66,7 +67,8 @@ namespace cafe
                 new StatusOption(clientFactory.RestClientForSchedulerServer),
                 new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
                 ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),
-                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForSchedulerServer));
+                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForSchedulerServer),
+                new InitOption(AssemblyDirectory, environment));
             Logger.Debug("Running application");
             return runner;
         }
