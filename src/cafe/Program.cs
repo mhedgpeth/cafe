@@ -1,4 +1,7 @@
-﻿using cafe.Client;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using cafe.Client;
 using cafe.CommandLine;
 using cafe.Options;
 using cafe.Server.Scheduling;
@@ -13,11 +16,23 @@ namespace cafe
 
         public static void Main(string[] args)
         {
+            Directory.SetCurrentDirectory(AssemblyDirectory);
             ConfigureLogging();
             Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
             runner.Run(args);
             Logger.Debug("Finishing cafe run");
+        }
+
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetEntryAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
         }
 
         private static void ConfigureLogging()
@@ -36,7 +51,8 @@ namespace cafe
                 new ShowChefVersionOption(clientFactory),
                 new DownloadChefOption(clientFactory, schedulerWaiter),
                 new InstallChefOption(clientFactory, schedulerWaiter),
-                new ServerOption(),
+                new ServerInteractiveOption(),
+                new ServerWindowsServiceOption(),
                 new StatusOption(clientFactory.RestClientForSchedulerServer),
                 new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
                 ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),

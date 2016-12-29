@@ -34,7 +34,8 @@
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "Microsoft.Extensions.PlatformAbstractions": "1.1.0"
+    "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
+    "DasMulli.Win32.ServiceUtils": "1.0.1"
   },
   "frameworks": {
     "netcoreapp1.1": {

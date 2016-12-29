@@ -4,16 +4,16 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace cafe.Test.CommandLine
+namespace cafe.Test.Options
 {
-    public class ServerOptionTest
+    public class CafeServerWindowsServiceTest
     {
         [Fact]
         public void Initialize_ShouldInitializeChefRecurringTaskIfSettingExists()
         {
             const int interval = 1800;
             var scheduler = SchedulerTest.CreateScheduler();
-            ServerOption.Initialize(scheduler, interval);
+            CafeServerWindowsService.Initialize(scheduler, interval);
 
             var recurringTask = scheduler.FindRecurringTaskByName("chef");
 
@@ -37,7 +37,7 @@ namespace cafe.Test.CommandLine
         {
             var scheduler = SchedulerTest.CreateScheduler();
 
-            ServerOption.Initialize(scheduler, chefIntervalInSeconds);
+            CafeServerWindowsService.Initialize(scheduler, chefIntervalInSeconds);
 
             scheduler.FindRecurringTaskByName("chef")
                 .Should()

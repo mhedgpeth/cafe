@@ -1,35 +1,33 @@
-﻿using System.Collections.Generic;
-using cafe.CommandLine;
 using System.IO;
 using cafe.Chef;
+using cafe.CommandLine;
 using cafe.Server;
 using cafe.Server.Scheduling;
-using cafe.Shared;
+using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NodaTime;
 
 namespace cafe.Options
 {
-    public class ServerOption : Option
+    public class CafeServerWindowsService : IWin32Service
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ServerOption).FullName);
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(CafeServerWindowsService).FullName);
+        private IWebHost _webHost;
+        private bool _stopRequestedByWindows;
 
-        public ServerOption() : base(new OptionSpecification("server"), "Starts cafe in server mode")
+        public void Start(string[] startupArguments, ServiceStoppedCallback serviceStoppedCallback)
         {
-        }
-
-        protected override Result RunCore(string[] args)
-        {
+            Logger.Info("Starting service");
             var settings = ServerSettings.Read();
             var config = new ConfigurationBuilder()
                 // .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
 
-            var host = new WebHostBuilder()
+            _webHost = new WebHostBuilder()
                 .UseUrls($"http://*:{settings.Port}/")
                 .UseConfiguration(config)
                 .UseKestrel()
@@ -38,13 +36,20 @@ namespace cafe.Options
                 .UseStartup<Startup>()
                 .Build();
 
-            var configurationSettings = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("appsettings.json"));
+            _webHost.Services.GetRequiredService<IApplicationLifetime>()
+                .ApplicationStopped
+                .Register(() =>
+                {
+                    if (!_stopRequestedByWindows)
+                    {
+                        serviceStoppedCallback();
+                    }
+                });
+
             Initialize(StructureMapResolver.Container.GetInstance<Scheduler>(), settings.ChefInterval);
 
-            host.Run();
-            return Result.Successful();
+            _webHost.Start();
         }
-
 
         public static void Initialize(Scheduler scheduler, int chefIntervalInSeconds)
         {
@@ -62,9 +67,14 @@ namespace cafe.Options
             }
         }
 
-        protected override string ToDescription(string[] args)
+
+        public void Stop()
         {
-            return "Starting Cafe in Server Mode";
+            Logger.Info("Stopping service");
+            _stopRequestedByWindows = true;
+            _webHost.Dispose();
         }
+
+        public string ServiceName => "cafe";
     }
 }
