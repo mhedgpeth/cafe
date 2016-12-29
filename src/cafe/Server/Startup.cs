@@ -25,7 +25,7 @@ namespace cafe.Server
             {
                 env.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             }
-            env.ConfigureNLog("nlog.config");
+            env.ConfigureNLog("nlog-server.config");
             Configuration = builder.Build();
         }
 

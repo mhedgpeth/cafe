@@ -5,7 +5,7 @@
     "warningsAsErrors": true,
     "emitEntryPoint": true,
     "copyToOutput": { 
-      "includeFiles": [ "nlog.config", "server.json", "appsettings.json", "cafe.nsi" ] 
+      "includeFiles": [ "nlog-client.config", "nlog-server.config", "server.json", "appsettings.json", "cafe.nsi" ]
     }
   },
   "publishOptions": {

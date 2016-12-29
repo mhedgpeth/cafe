@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using cafe.Client;
 using cafe.CommandLine;
@@ -15,11 +16,13 @@ namespace cafe
     public class Program
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Program).FullName);
+        public const string ServerLoggingConfigurationFile = "nlog-server.config";
+        public const string ClientLoggingConfigurationFile = "nlog-client.config";
 
         public static void Main(string[] args)
         {
             Directory.SetCurrentDirectory(AssemblyDirectory);
-            ConfigureLogging();
+            ConfigureLogging(args);
             Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
             runner.Run(args);
@@ -37,10 +40,11 @@ namespace cafe
             }
         }
 
-        private static void ConfigureLogging()
+        private static void ConfigureLogging(params string[] args)
         {
-            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config", false);
-            Logger.Debug("Logging set up based on nlog.config");
+            var file = LoggingConfigurationFileFor(args);
+            LogManager.Configuration = new XmlLoggingConfiguration(file, false);
+            Logger.Info($"Logging set up based on {file}");
         }
 
         public static Runner CreateRunner(string[] args)
@@ -71,6 +75,11 @@ namespace cafe
                 new InitOption(AssemblyDirectory, environment));
             Logger.Debug("Running application");
             return runner;
+        }
+
+        public static string LoggingConfigurationFileFor(string[] args)
+        {
+            return args.FirstOrDefault() == "server" ? ServerLoggingConfigurationFile : ClientLoggingConfigurationFile;
         }
     }
 }
