@@ -68,7 +68,12 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File /r /x *.nsi *.*
+File /r /x *.nsi /x "$INSTALLER_NAME" *.*
+
+nsExec::Exec "$INSTDIR\cafe.exe service unregister" # in case it's there already
+nsExec::Exec "$INSTDIR\cafe.exe init"
+nsExec::Exec "$INSTDIR\cafe.exe service register"
+nsExec::Exec "$INSTDIR\cafe.exe service start"
 
 SectionEnd
 
@@ -92,6 +97,9 @@ SectionEnd
 Section Uninstall
 # uninstall for all users
 ${INSTALL_TYPE}
+
+nsExec::Exec "$INSTDIR\cafe.exe service unregister"
+
 Delete "$INSTDIR\*.*"
 Delete "$INSTDIR\logs\*.*"
 Delete "$INSTDIR\staging\*.*"
