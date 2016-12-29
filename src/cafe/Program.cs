@@ -51,11 +51,15 @@ namespace cafe
         {
             var settings = ServerSettings.Read();
             var clientFactory = new ClientFactory(settings.Port);
-            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer, new AutoResetEventBoundary(), new TimerFactory(), new TaskStatusPresenter(new PresenterMessagePresenter()));
+            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer,
+                new AutoResetEventBoundary(), new TimerFactory(),
+                new TaskStatusPresenter(new PresenterMessagePresenter()));
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
             var environment = new EnvironmentBoundary();
             var fileSystem = new FileSystem(environment, new FileSystemCommandsBoundary());
-            var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status", new AutoResetEventBoundary(), new TimerFactory(), new ServiceStatusProvider(processExecutor, fileSystem));
+            var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status",
+                new AutoResetEventBoundary(), new TimerFactory(),
+                new ServiceStatusProvider(processExecutor, fileSystem));
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
                 new ShowChefVersionOption(clientFactory),
@@ -65,8 +69,10 @@ namespace cafe
                 new ServerWindowsServiceOption(),
                 new RegisterServerWindowsServiceOption(),
                 new UnregisterServerWindowsServiceOption(),
-                ChangeStateForCafeWindowsServiceOption.StartCafeWindowsServiceOption(processExecutor, fileSystem, serviceStatusWaiter),
-                ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(processExecutor, fileSystem, serviceStatusWaiter),
+                ChangeStateForCafeWindowsServiceOption.StartCafeWindowsServiceOption(processExecutor, fileSystem,
+                    serviceStatusWaiter),
+                ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(processExecutor, fileSystem,
+                    serviceStatusWaiter),
                 new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
                 new StatusOption(clientFactory.RestClientForSchedulerServer),
                 new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
