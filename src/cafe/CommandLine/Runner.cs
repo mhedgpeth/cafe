@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using System.Linq;
+using NLog;
 
 namespace cafe.CommandLine
 {
@@ -15,6 +16,10 @@ namespace cafe.CommandLine
 
         public void Run(params string[] args)
         {
+            if (string.Equals(args.FirstOrDefault(), "-h"))
+            {
+                ShowHelpForAllOptions();
+            }
             var matchingOption = MatchingOptionFor(args);
 
             if (matchingOption != null)
@@ -26,6 +31,15 @@ namespace cafe.CommandLine
             else
             {
                 Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
+            }
+        }
+
+        private void ShowHelpForAllOptions()
+        {
+            Presenter.ShowMessage($"Showing help for all {_options.Length} options", Logger);
+            foreach (var option in _options)
+            {
+                option.ShowHelp();
             }
         }
 

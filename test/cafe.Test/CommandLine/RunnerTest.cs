@@ -22,7 +22,7 @@ namespace cafe.Test.CommandLine
             option.WasRun.Should().BeTrue();
         }
 
-        private FakeOption CreateChefVersionOption()
+        public static FakeOption CreateChefVersionOption()
         {
             return new FakeOption(OptionSpecificationTest.ChefVersionOptionSpecification, "show chef version");
         }
@@ -50,6 +50,19 @@ namespace cafe.Test.CommandLine
 
             chefRunOption.WasRun.Should().BeFalse();
             chefRunOption.WasHelpShown.Should().BeTrue();
+        }
+
+        [Fact]
+        public void DashH_ShouldShowAllOptions()
+        {
+            var option = CreateChefRunOption();
+            var another = CreateChefVersionOption();
+            var runner = new Runner(option, another);
+
+            runner.Run("-h");
+
+            option.WasHelpShown.Should().BeTrue("because help was asked for all options");
+            another.WasHelpShown.Should().BeTrue("because help was asked for all options");
         }
     }
 }

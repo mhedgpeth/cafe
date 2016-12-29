@@ -83,7 +83,7 @@ namespace cafe.CommandLine
 
         public virtual void ShowHelp()
         {
-            Console.Out.WriteLine($"Help: {_helpText}");
+            Presenter.ShowMessage(ToString(), Logger);
         }
 
         public bool IsSatisfiedBy(string[] args)
