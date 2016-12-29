@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using cafe.Client;
 using cafe.CommandLine;
+using cafe.LocalSystem;
 using cafe.Options;
 using cafe.Options.Server;
 using cafe.Server.Scheduling;
@@ -56,6 +57,7 @@ namespace cafe
                 new ServerWindowsServiceOption(),
                 new RegisterServerWindowsServiceOption(),
                 new UnregisterServerWindowsServiceOption(),
+                new CafeWindowsServiceStatusOption(new ProcessExecutor(() => new ProcessBoundary()), new FileSystem(new EnvironmentBoundary(), new FileSystemCommandsBoundary())),
                 new StatusOption(clientFactory.RestClientForSchedulerServer),
                 new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
                 ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),
