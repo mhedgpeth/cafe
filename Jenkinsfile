@@ -8,3 +8,12 @@ node {
     }
   }
 }
+
+stage('test') {
+    node {
+        dir('test/cafe.Test') {
+            bat 'dotnet restore'
+            bat 'dotnet test'
+        }
+    }
+}
