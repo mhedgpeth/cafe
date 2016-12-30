@@ -2,8 +2,6 @@
 using cafe.Chef;
 using FluentAssertions;
 using NLog;
-using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace cafe.Test.Chef
@@ -15,7 +13,7 @@ namespace cafe.Test.Chef
         {
             AssertLineCanBeParsedAndLogged("[2016-12-15T16:42:53-06:00] ERROR: Running exception handlers",
                 LogLevel.Error,
-                new DateTime(2016, 12, 15, 16, 42, 53), "Running exception handlers");
+                new DateTime(2016, 12, 15, 22, 42, 53).AsUtc(), "Running exception handlers");
         }
 
         [Fact]
