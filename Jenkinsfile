@@ -1,5 +1,5 @@
 node {
-  stage 'compile'{
+  stage('compile') {
     checkout scm
     
     dir('src/cafe') {
