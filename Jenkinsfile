@@ -35,14 +35,16 @@ stage('publish') {
     node {
         unstash 'everything'
         dir('src/cafe') {
-        bat 'dotnet publish -r win10-x64'
+          bat 'dotnet publish -r win10-x64'
+          archiveArtifacts 'bin/Debug/netcoreapp1.1/win10-x64/publish'
       }
     }
   }, centos: {
     node {
         unstash 'everything'
         dir('src/cafe') {
-        bat 'dotnet publish -r centos.7-x64'
+          bat 'dotnet publish -r centos.7-x64'
+          archiveArtifacts 'bin/Debug/netcoreapp1.1/centos.7-x64/publish'
       }
     }
   }, ubuntu: {
@@ -50,6 +52,7 @@ stage('publish') {
       unstash 'everything'
       dir('src/cafe') {
         bat 'dotnet publish -r ubuntu.16.04-x64'
+        archiveArtifacts 'bin/Debug/netcoreapp1.1/ubuntu.16.04-x64/publish'
       }
     }
   }
