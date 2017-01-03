@@ -30,6 +30,27 @@ stage('test') {
     failFast: false
 }
 
-
-
-          
+stage('publish') {
+  parallel windows: {
+    node {
+        unstash 'everything'
+        dir('src/cafe') {
+        bat 'dotnet publish -r win10-x64'
+      }
+    }
+  }, centos: {
+    node {
+        unstash 'everything'
+        dir('src/cafe') {
+        bat 'dotnet publish -r centos.7-x64'
+      }
+    }
+  }, ubuntu: {
+    node {
+      unstash 'everything'
+      dir('src/cafe') {
+        bat 'dotnet publish -r ubuntu.16.04-x64'
+      }
+    }
+  }
+}
