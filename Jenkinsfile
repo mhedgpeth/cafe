@@ -6,7 +6,7 @@ node {
     stash 'everything'
     dir('src/cafe') {
       bat 'dotnet restore'
-      bat 'dotnet build'
+      bat 'dotnet build --version-suffix ${env.BUILD_NUMBER}'
     }
   }
 }
