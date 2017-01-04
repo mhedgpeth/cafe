@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 node {
   stage('compile') {
     checkout scm
