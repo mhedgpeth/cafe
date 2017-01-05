@@ -13,23 +13,21 @@ node {
 
 stage('test') {
     parallel unitTests: {
-      node {
-        unstash 'everything'
-        dir('test/cafe.Test') {
-            bat 'dotnet restore'
-            bat 'dotnet test'
-          }
-      }
+      test('Test')
     }, integrationTests: {
-        node {
-          unstash 'everything'
-          dir('test/cafe.IntegrationTest'){
-              bat 'dotnet restore'
-              bat 'dotnet test'
-          }
-        }
+      test('IntegrationTest')
     },
     failFast: false
+}
+
+def test(type) {
+  node {
+    unstash 'everything'
+    dir("test/cafe.${type}") {
+        bat 'dotnet restore'
+        bat 'dotnet test'
+    }
+  }
 }
 
 stage('publish') {
