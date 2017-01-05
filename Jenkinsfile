@@ -34,28 +34,20 @@ stage('test') {
 
 stage('publish') {
   parallel windows: {
-    node {
-      unstash 'everything'
-      dir('src/cafe') {
-        bat 'dotnet publish -r win10-x64'
-        archiveArtifacts 'bin/Debug/netcoreapp1.1/win10-x64/publish/*.*'
-      }
-    }
+    publish('win10-x64')
   }, centos: {
-    node {
-      unstash 'everything'
-      dir('src/cafe') {
-        bat 'dotnet publish -r centos.7-x64'
-        archiveArtifacts 'bin/Debug/netcoreapp1.1/centos.7-x64/publish/*.*'
-      }
-    }
+    publish('centos.7-x64')
   }, ubuntu: {
-    node {
-      unstash 'everything'
-      dir('src/cafe') {
-        bat 'dotnet publish -r ubuntu.16.04-x64'
-        archiveArtifacts 'bin/Debug/netcoreapp1.1/ubuntu.16.04-x64/publish/*.*'
-      }
+    publish('ubuntu.16.04-x64')
+  }
+}
+
+def publish(target) {
+  node {
+    unstash 'everything'
+    dir('src/cafe') {
+      bat "dotnet publish -r ${target}"
+      archiveArtifacts "bin/Debug/netcoreapp1.1/${target}/publish/*.*"
     }
   }
 }
