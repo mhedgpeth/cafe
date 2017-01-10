@@ -44,6 +44,9 @@ namespace cafe.Server
         {
             loggerFactory.AddNLog();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseMvc();
         }
     }
