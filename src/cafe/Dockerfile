@@ -6,5 +6,5 @@ COPY bin/Debug/netcoreapp1.1/win10-x64/publish C:/cafe/
 
 EXPOSE 59320
 
-ENTRYPOINT C:\cafe\cafe.exe
-CMD server
+ENTRYPOINT ["C:/cafe/cafe.exe"]
+CMD ["server"]
