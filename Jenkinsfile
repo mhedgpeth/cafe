@@ -11,24 +11,24 @@ node {
   }
 }
 
-stage('test') {
-    parallel unitTests: {
-      test('Test')
-    }, integrationTests: {
-      test('IntegrationTest')
-    },
-    failFast: false
-}
+// stage('test') {
+//     parallel unitTests: {
+//       test('Test')
+//     }, integrationTests: {
+//       test('IntegrationTest')
+//     },
+//     failFast: false
+// }
 
-def test(type) {
-  node {
-    unstash 'everything'
-    dir("test/cafe.${type}") {
-        bat 'dotnet restore'
-        bat 'dotnet test'
-    }
-  }
-}
+// def test(type) {
+//   node {
+//     unstash 'everything'
+//     dir("test/cafe.${type}") {
+//         bat 'dotnet restore'
+//         bat 'dotnet test'
+//     }
+//   }
+// }
 
 stage('publish') {
   parallel windows: {
@@ -42,6 +42,10 @@ stage('publish') {
 
 def publish(target, imageLabel) {
   node {
+    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCreds',
+      usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']])
+    echo "Logged into DockerHub with username ${env.USERNAME}"
+    bat "docker login -u '${env.USERNAME}' -p '${env.PASSWORD}'"
     unstash 'everything'
     dir('src/cafe') {
       bat 'dotnet restore'
