@@ -32,21 +32,22 @@ def test(type) {
 
 stage('publish') {
   parallel windows: {
-    publish('win10-x64')
+    publish('win10-x64', 'windows')
   }, centos: {
-    publish('centos.7-x64')
+    publish('centos.7-x64', 'centos')
   }, ubuntu: {
-    publish('ubuntu.16.04-x64')
+    publish('ubuntu.16.04-x64', 'ubuntu')
   }
 }
 
-def publish(target) {
+def publish(target, imageLabel) {
   node {
     unstash 'everything'
     dir('src/cafe') {
       bat 'dotnet restore'
       bat "dotnet publish -r ${target}"
       archiveArtifacts "bin/Debug/netcoreapp1.1/${target}/publish/*.*"
+      bat "docker build -f Dockerfile-${imageLabel} -t cafe:${imageLabel} ."
     }
   }
 }
