@@ -48,7 +48,7 @@ def publish(target, imageLabel) {
       bat "dotnet publish -r ${target}"
       archiveArtifacts "bin/Debug/netcoreapp1.1/${target}/publish/*.*"
       bat "docker build -f Dockerfile-${imageLabel} -t cafe:${imageLabel} ."
-      withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCreds',
+      withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCredentials',
         usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
           echo "Logged into DockerHub with username ${env.USERNAME}"
           bat "docker login -u '${env.USERNAME}' -p '${env.PASSWORD}'"
