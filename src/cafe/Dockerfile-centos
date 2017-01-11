@@ -6,5 +6,5 @@ COPY bin/Debug/netcoreapp1.1/centos.7-x64/publish /usr/bin/cafe/
 
 EXPOSE 59320
 
-ENTRYPOINT /usr/bin/cafe/cafe
-CMD server
+ENTRYPOINT ["/usr/bin/cafe/cafe"]
+CMD ["server"]
