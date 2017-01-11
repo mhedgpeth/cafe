@@ -44,6 +44,7 @@ def publish(target) {
   node {
     unstash 'everything'
     dir('src/cafe') {
+      bat 'dotnet restore'
       bat "dotnet publish -r ${target}"
       archiveArtifacts "bin/Debug/netcoreapp1.1/${target}/publish/*.*"
     }
