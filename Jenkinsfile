@@ -42,18 +42,19 @@ stage('publish') {
 
 def publish(target, imageLabel) {
   node {
-    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCreds',
-      usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']])
-    echo "Logged into DockerHub with username ${env.USERNAME}"
-    bat "docker login -u '${env.USERNAME}' -p '${env.PASSWORD}'"
     unstash 'everything'
     dir('src/cafe') {
       bat 'dotnet restore'
       bat "dotnet publish -r ${target}"
       archiveArtifacts "bin/Debug/netcoreapp1.1/${target}/publish/*.*"
       bat "docker build -f Dockerfile-${imageLabel} -t cafe:${imageLabel} ."
-    }
-  }
+      withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCreds',
+        usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
+          echo "Logged into DockerHub with username ${env.USERNAME}"
+          bat "docker login -u '${env.USERNAME}' -p '${env.PASSWORD}'"
+        }
+      }
+  }  
 }
 
 // docker run -d --name ${target} microsoft/windowsservercore
