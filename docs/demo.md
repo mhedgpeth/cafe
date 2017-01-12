@@ -6,9 +6,9 @@
 
 # Problems in Windows
 
-* Windows added on after the fact, using a windows mindset
+* Windows added on after the fact, with a linux mindset that creates friction
 * Chef running Ruby updating Chef is not natural in a Ruby environment
-* Logging not natural within a windows situation - no rolling, no configuration
+* Logging not natural for windows-oriented operations - no rolling, no configuration, no specialized logging
 * Scheduling Chef is difficult - scheduled task OK, but no standard way of managing it
 * Pausing chef not standard and difficult
 * Upgrading Chef difficult as well (chef can't upgrade itself, chef should not be running)
@@ -18,7 +18,7 @@
 
 ## Starting point
 
-* Azure windows node with port X open
+* Azure windows node with port 59320 open
 * Cafe installer (or files)
 * Chef Server account (manage.chef.io)
 
@@ -42,8 +42,8 @@
 ### Install chef-client on the node 
   - Run `cafe chef version` and notice that it is not installed
   - Run `cafe chef download 12.16.42` - places it in the staging folder (this could be done by a chef cookbook as well)
-  - Run `cafe chef install 12.16.42` - now it's in add/remove programs
-  - Run `cafe chef version` and notice that it is installed
+  - Run `cafe chef install 12.16.42`
+  - Run `cafe chef version` and notice that it is installed, show add/remove programs
 ### Bootstrap the node
   - Run `cafe chef bootstrap policy: webserver group: uat validator: validator.pem`
   - Run `cafe chef run`
@@ -53,7 +53,11 @@
 
 * Chef logging to its own file, rolled
 * NLog controlling the level, pattern, etc.
-* Rest of server that is consumable by a windows-friendly log viewer, like Log4View
+* Rest of server that is consumable by a log4X log viewer, like Log4View
+* Complete history of what happened:
+  - Run `cafe chef run`
+  - Now let's restart the server with `cafe service restart`
+  - Run `cafe chef status` to see that the history of chef runs is still there with valuable statistics of what's happening
 
 ## Scheduling
 
