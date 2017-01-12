@@ -53,10 +53,10 @@ def publish(target, imageLabel) {
           echo "Logged into DockerHub with username ${env.USERNAME}"
           def user = env.USERNAME
           def password = env.PASSWORD
-          writeFile file: 'test2.txt', text: 'user: ${USERNAME} password: ${PASSWORD}'
+          writeFile file: 'test3.txt', text: "user: ${USERNAME} password: ${PASSWORD}"
           println(user)
           println(password)
-          bat 'docker login -u ${user} -p ${password}'
+          bat "docker login -u ${user} -p ${password}"
         }
       }
   }  
