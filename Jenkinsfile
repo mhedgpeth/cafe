@@ -51,7 +51,7 @@ def publish(target, imageLabel) {
       withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DockerHubCredentials',
         usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]){
           echo "Logged into DockerHub with username ${env.USERNAME}"
-          bat "docker login -u '${env.USERNAME}' -p '${env.PASSWORD}'"
+          bat "docker login -u '%USERNAME%' -p '%PASSWORD%'"
         }
       }
   }  
