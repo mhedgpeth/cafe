@@ -6,7 +6,12 @@ using NLog.Fluent;
 
 namespace cafe.Client
 {
-    public class SchedulerWaiter : StatusWaiter<ScheduledTaskStatus>
+    public interface ISchedulerWaiter
+    {
+        ScheduledTaskStatus WaitForTaskToComplete(ScheduledTaskStatus status);
+    }
+
+    public class SchedulerWaiter : StatusWaiter<ScheduledTaskStatus>, ISchedulerWaiter
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 

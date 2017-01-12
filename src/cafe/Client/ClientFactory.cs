@@ -4,7 +4,7 @@ using RestEase;
 
 namespace cafe.Client
 {
-    public class ClientFactory
+    public class ClientFactory : IClientFactory
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ClientFactory).FullName);
 

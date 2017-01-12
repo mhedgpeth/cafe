@@ -24,5 +24,15 @@ namespace cafe.LocalSystem
             return fileExists;
         }
 
+        public void WriteFileText(string filename, string contents)
+        {
+            Logger.Debug($"Writing contents to #{filename}");
+            File.WriteAllText(filename, contents);
+        }
+
+        public string ReadAllText(string filename)
+        {
+            return File.ReadAllText(filename);
+        }
     }
 }

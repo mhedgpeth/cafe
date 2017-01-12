@@ -62,7 +62,7 @@ namespace cafe.Test.CommandLine
         public void IsSatisfiedBy_ShouldBeTrueWhenTwoOptionsExist()
         {
             var specification = new OptionSpecification(OptionValueSpecification.ForExactValue("chef"),
-                OptionValueSpecification.ForAnyValues("install", "upgrade"), OptionValueSpecification.ForVersion());
+                OptionValueSpecification.ForExactValues("install", "upgrade"), OptionValueSpecification.ForVersion());
 
             specification.IsSatisfiedBy("chef", "install", "1.2.3").Should().BeTrue("because install is in the list");
             specification.IsSatisfiedBy("chef", "upgrade", "1.2.3").Should().BeTrue("because upgrade is in the list");

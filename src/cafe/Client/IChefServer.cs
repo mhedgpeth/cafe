@@ -17,5 +17,11 @@ namespace cafe.Client
 
         [Put("install")]
         Task<ScheduledTaskStatus> InstallChef(string version);
+
+        [Put("bootstrap/policy")]
+        Task<ScheduledTaskStatus> BootstrapChef(string config, string validator, string policyName, string policyGroup);
+
+        [Put("bootstrap/runList")]
+        Task<ScheduledTaskStatus> BootstrapChef(string config, string validator, string runList);
     }
 }

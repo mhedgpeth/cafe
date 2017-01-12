@@ -86,7 +86,7 @@ namespace cafe.CommandLine
             Presenter.ShowMessage(ToString(), Logger);
         }
 
-        public bool IsSatisfiedBy(string[] args)
+        public bool IsSatisfiedBy(params string[] args)
         {
             return _specification.IsSatisfiedBy(args);
         }

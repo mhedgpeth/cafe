@@ -32,5 +32,11 @@ namespace cafe.Test.CommandLine
                 .Should()
                 .BeFalse("because the values aren't exactly the same");
         }
+
+        [Fact]
+        public void IsSatisfiedBy_ShouldBeTrueForAnyValue()
+        {
+            OptionValueSpecification.ForAnyValue("any value").IsSatisfiedBy("policy").Should().BeTrue();
+        }
     }
 }

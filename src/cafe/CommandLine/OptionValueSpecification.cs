@@ -28,9 +28,14 @@ namespace cafe.CommandLine
             return _description;
         }
 
-        public static OptionValueSpecification ForAnyValues(params string[] values)
+        public static OptionValueSpecification ForExactValues(params string[] values)
         {
             return new MatchingRegexOptionValueSpecification($"any: {string.Join(",", values)}", new Regex(string.Join("|", values)));
+        }
+
+        public static OptionValueSpecification ForAnyValue(string description)
+        {
+            return new MatchingRegexOptionValueSpecification(description, new Regex(".*"));
         }
     }
 }

@@ -10,10 +10,10 @@ namespace cafe.Options
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefOption).FullName);
 
-        private readonly ClientFactory _clientFactory;
-        private readonly SchedulerWaiter _schedulerWaiter;
+        private readonly IClientFactory _clientFactory;
+        private readonly ISchedulerWaiter _schedulerWaiter;
 
-        protected ChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter,
+        protected ChefOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
             OptionSpecification optionSpecification, string helpText)
             : base(optionSpecification, helpText)
         {

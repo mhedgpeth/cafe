@@ -56,12 +56,15 @@ namespace cafe
                 new TaskStatusPresenter(new PresenterMessagePresenter()));
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
             var environment = new EnvironmentBoundary();
-            var fileSystem = new FileSystem(environment, new FileSystemCommandsBoundary());
+            var fileSystemCommands = new FileSystemCommandsBoundary();
+            var fileSystem = new FileSystem(environment, fileSystemCommands);
             var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status",
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new ServiceStatusProvider(processExecutor, fileSystem));
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
+                new BootstrapChefRunListOption(clientFactory, schedulerWaiter, fileSystemCommands),
+                new BootstrapChefPolicyOption(clientFactory, schedulerWaiter, fileSystemCommands),
                 new ShowChefVersionOption(clientFactory),
                 new DownloadChefOption(clientFactory, schedulerWaiter),
                 new InstallChefOption(clientFactory, schedulerWaiter),
