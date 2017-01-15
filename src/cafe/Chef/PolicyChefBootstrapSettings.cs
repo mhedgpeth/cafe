@@ -11,7 +11,7 @@ namespace cafe.Chef
 
         public override string ToString()
         {
-            return $"policy #{PolicyName} and group #{PolicyGroup}";
+            return $"policy {PolicyName} and group {PolicyGroup}";
         }
     }
 }

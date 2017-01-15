@@ -9,7 +9,7 @@ namespace cafe.Chef
 
         public override string ToString()
         {
-            return $"run list: #{RunList}";
+            return $"run list: {RunList}";
         }
     }
 }

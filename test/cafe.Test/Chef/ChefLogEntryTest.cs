@@ -13,7 +13,7 @@ namespace cafe.Test.Chef
         {
             AssertLineCanBeParsedAndLogged("[2016-12-15T16:42:53-06:00] ERROR: Running exception handlers",
                 LogLevel.Error,
-                new DateTime(2016, 12, 15, 22, 42, 53).AsUtc(), "Running exception handlers");
+                CreateCentralTimeDate(2016, 12, 15, 16, 42, 53), "Running exception handlers");
         }
 
         [Fact]
@@ -21,7 +21,7 @@ namespace cafe.Test.Chef
         {
             AssertLineCanBeParsedAndLogged(
                 "[2016-12-15T16:42:53-06:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report",
-                LogLevel.Fatal, new DateTime(2016, 12, 15, 22, 42, 53).AsUtc(),
+                LogLevel.Fatal, CreateCentralTimeDate(2016, 12, 15, 16, 42, 53),
                 "Please provide the contents of the stacktrace.out file if you file a bug report");
         }
 
@@ -31,7 +31,7 @@ namespace cafe.Test.Chef
             AssertLineCanBeParsedAndLogged(
                 @"[2016-12-15T16:42:53-06:00] INFO: Client key C:\chef\client.pem is not present - registering",
                 LogLevel.Info,
-                new DateTime(2016, 12, 15, 22, 42, 53).AsUtc(), @"Client key C:\chef\client.pem is not present - registering");
+                CreateCentralTimeDate(2016, 12, 15, 16, 42, 53), @"Client key C:\chef\client.pem is not present - registering");
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace cafe.Test.Chef
         {
             AssertLineCanBeParsedAndLogged(
                 "[2016-12-15T16:42:49-06:00] WARN: Did not find config file: C:/chef/client.rb, using command line options.",
-                LogLevel.Warn, new DateTime(2016, 12, 15, 22, 42, 49).AsUtc(),
+                LogLevel.Warn, CreateCentralTimeDate(2016, 12, 15, 16, 42, 49),
                 @"Did not find config file: C:/chef/client.rb, using command line options.");
         }
 
@@ -70,7 +70,12 @@ namespace cafe.Test.Chef
         public void Parse_ShouldDealWithError()
         {
             AssertLineCanBeParsedAndLogged("[2016-12-15T16:04:56-06:00] ERROR: Exception handlers complete",
-                LogLevel.Error, new DateTime(2016, 12, 15, 22, 04, 56).AsUtc(), @"Exception handlers complete");
+                LogLevel.Error, CreateCentralTimeDate(2016, 12, 15, 16, 04, 56), @"Exception handlers complete");
+        }
+
+        private static DateTime CreateCentralTimeDate(int year, int month, int day, int hour, int minute, int second)
+        {
+            return new DateTimeOffset(year, month, day, hour, minute, second, TimeSpan.FromHours(-6)).DateTime;
         }
 
         [Fact]

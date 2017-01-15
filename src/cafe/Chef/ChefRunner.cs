@@ -23,7 +23,7 @@ namespace cafe.Chef
 
         public Result Run(IMessagePresenter presenter, IChefBootstrapper chefBootstrapper)
         {
-            presenter.ShowMessage($"Running chef #{chefBootstrapper}");
+            presenter.ShowMessage($"Running chef {chefBootstrapper}");
             chefBootstrapper.PrepareEnvironmentForChefRun();
             var process = _processCreator();
             process.LogEntryReceived += (sender, entry) =>
@@ -31,11 +31,11 @@ namespace cafe.Chef
                 presenter.ShowMessage(entry.Entry);
                 entry.Log();
             };
-            var result = process.Run(chefBootstrapper.ArgumentsForChefRun());
+            var argumentsForChefRun = chefBootstrapper.ArgumentsForChefRun();
+            var result = process.Run(argumentsForChefRun);
             presenter.ShowMessage($"Finished running chef with result: {result}");
             return result;
         }
-
 
         public static RunListChefBootstrapSettings ParseRunList(string runList)
         {

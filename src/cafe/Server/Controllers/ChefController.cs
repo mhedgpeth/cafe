@@ -58,8 +58,8 @@ namespace cafe.Server.Controllers
         [HttpPut("bootstrap/policy")]
         public ScheduledTaskStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
         {
-            Logger.Info($"Bootstrapping chef with policy #{policyName} and group: #{policyGroup}");
-            return ScheduleBootstrap($"Bootstrapping Chef Policy #{policyName} Group #{policyGroup}",
+            Logger.Info($"Bootstrapping chef with policy {policyName} and group: {policyGroup}");
+            return ScheduleBootstrap($"Bootstrapping Chef Policy {policyName} Group {policyGroup}",
                 CreateChefBootstrapper(config, validator,
                     new PolicyChefBootstrapSettings {PolicyGroup = policyGroup, PolicyName = policyName}));
         }
@@ -74,7 +74,7 @@ namespace cafe.Server.Controllers
         [HttpPut("bootstrap/runList")]
         public ScheduledTaskStatus BootstrapChef(string config, string validator, string runList)
         {
-            var description = $"Bootstrapping chef with run list #{runList}";
+            var description = $"Bootstrapping chef with run list {runList}";
             Logger.Info(description);
             return ScheduleBootstrap(description,
                 CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));

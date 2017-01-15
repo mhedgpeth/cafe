@@ -29,7 +29,7 @@ namespace cafe.Options
 
         protected override string ToDescription(string[] args)
         {
-            return $"Bootstrapping Chef with Run List #{FindRunList(args)}";
+            return $"Bootstrapping Chef with Run List {FindRunList(args)}";
         }
 
         private static string FindRunList(IReadOnlyList<string> args)
@@ -39,6 +39,7 @@ namespace cafe.Options
 
         protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
         {
+
             var config = _fileSystemCommands.ReadAllText(args[5]);
             var validator = _fileSystemCommands.ReadAllText(args[7]);
             return chefServer.BootstrapChef(config, validator, FindRunList(args));

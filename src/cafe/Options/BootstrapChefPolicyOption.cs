@@ -3,12 +3,16 @@ using System.Threading.Tasks;
 using cafe.Client;
 using cafe.CommandLine;
 using cafe.LocalSystem;
+using cafe.Server.Controllers;
 using cafe.Shared;
+using NLog;
 
 namespace cafe.Options
 {
     public class BootstrapChefPolicyOption : ChefOption
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefController).FullName);
+
         private readonly IFileSystemCommands _fileSystemCommands;
 
         public BootstrapChefPolicyOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
@@ -31,7 +35,7 @@ namespace cafe.Options
 
         protected override string ToDescription(string[] args)
         {
-            return $"Bootstrapping Chef to Policy #{FindPolicyName(args)} and Group #{FindPolicyGroup(args)}";
+            return $"Bootstrapping Chef to Policy {FindPolicyName(args)} and Group {FindPolicyGroup(args)}";
         }
 
         private static string FindPolicyName(IReadOnlyList<string> args)
