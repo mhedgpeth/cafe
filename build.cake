@@ -123,40 +123,38 @@ Task("RunChef")
 
 
 Task("RunServer")
-//    .IsDependentOn("IncrementalBuild")
     .Does(() => {
-        var processSettings =  new ProcessSettings().WithArguments(b => b.Append("server")).UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe("server"); 
     });
+
+var oldVersion = "12.16.42";
 
 Task("DownloadOldVersion")
     .Does(() =>
     {
-        var processSettings =  new ProcessSettings().WithArguments(b => b.Append("chef").Append("download").Append("12.16.42")).UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe("chef download {0}", oldVersion);
     });
 
 Task("InstallOldVersion")
     .Does(() =>
     {
-        var processSettings =  new ProcessSettings().WithArguments(b => b.Append("chef").Append("install").Append("12.16.42")).UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe("chef install {0}", oldVersion);
     });
 
 Task("BootstrapPolicy")
     .Does(() =>
     {
-        var processSettings =  new ProcessSettings().WithArguments(b => b.Append("chef").Append("install").Append("12.16.42")).UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe(@"chef bootstrap policy: webserver group: production config: C:\Users\mhedg\.chef\client.rb validator: C:\Users\mhedg\.chef\cafe-demo-validator.pem");
     });
+
+public void RunCafe(string argument, params string[] formatParameters) 
+{
+  var arguments = string.Format(argument, formatParameters);
+  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(cafeWindowsPublishDirectory);
+  Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
+  var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
+  Information("Exit code: {0}", exitCode);
+}
 
 
 //////////////////////////////////////////////////////////////////////
