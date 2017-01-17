@@ -21,7 +21,8 @@ namespace cafe.Options
         {
             var api = _clientFactory.RestClientForChefServer();
             var status = api.GetChefStatus().Result;
-            Presenter.ShowMessage($"chef-client version: {status.Version}", Logger);
+            var versionStatus = status.Version ?? "not installed";
+            Presenter.ShowMessage($"chef-client version: {versionStatus}", Logger);
             return Result.Successful();
         }
 

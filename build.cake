@@ -110,6 +110,12 @@ Task("ShowChefStatus")
         RunCafe("chef status");
     });
 
+Task("ShowChefVersion")
+    .Does(() => {
+        RunCafe("chef version");
+    });
+
+
 Task("ShowStatus")
     .Does(() => {
         var processSettings =  new ProcessSettings() { Arguments = "status" }.UseWorkingDirectory(cafeWindowsPublishDirectory);
