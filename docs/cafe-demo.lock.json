@@ -1,0 +1,102 @@
+{
+  "revision_id": "ef545e19d8375d3a1752d3cfb4522d95564034fd3b5fb41db9a34d2ad71d98bc",
+  "name": "cafe-demo",
+  "run_list": [
+    "recipe[chocolatey::default]"
+  ],
+  "cookbook_locks": {
+    "chocolatey": {
+      "version": "1.1.0",
+      "identifier": "91ecf992b04f241a2cc3a1937964c5bb1d63ba6b",
+      "dotted_decimal_identifier": "41074428275085092.7367568135518564.217407442631275",
+      "cache_key": "chocolatey-1.1.0-supermarket.chef.io",
+      "origin": "https://supermarket.chef.io:443/api/v1/cookbooks/chocolatey/versions/1.1.0/download",
+      "source_options": {
+        "artifactserver": "https://supermarket.chef.io:443/api/v1/cookbooks/chocolatey/versions/1.1.0/download",
+        "version": "1.1.0"
+      }
+    },
+    "windows": {
+      "version": "2.1.1",
+      "identifier": "a303fabd4290e471f52e27ca38494a2babcce611",
+      "dotted_decimal_identifier": "45884796655800548.32076250953168969.81551426381329",
+      "cache_key": "windows-2.1.1-supermarket.chef.io",
+      "origin": "https://supermarket.chef.io:443/api/v1/cookbooks/windows/versions/2.1.1/download",
+      "source_options": {
+        "artifactserver": "https://supermarket.chef.io:443/api/v1/cookbooks/windows/versions/2.1.1/download",
+        "version": "2.1.1"
+      }
+    },
+    "ohai": {
+      "version": "4.2.3",
+      "identifier": "20d9cd82c42bf449a33c37673a7f3e0b71ad6f35",
+      "dotted_decimal_identifier": "9246675940158452.20727152322755199.68218872753973",
+      "cache_key": "ohai-4.2.3-supermarket.chef.io",
+      "origin": "https://supermarket.chef.io:443/api/v1/cookbooks/ohai/versions/4.2.3/download",
+      "source_options": {
+        "artifactserver": "https://supermarket.chef.io:443/api/v1/cookbooks/ohai/versions/4.2.3/download",
+        "version": "4.2.3"
+      }
+    },
+    "compat_resource": {
+      "version": "12.16.3",
+      "identifier": "ee0005d802b7faad3584425961e9937962c8d65e",
+      "dotted_decimal_identifier": "66991069556029434.48754013136052713.162149557655134",
+      "cache_key": "compat_resource-12.16.3-supermarket.chef.io",
+      "origin": "https://supermarket.chef.io:443/api/v1/cookbooks/compat_resource/versions/12.16.3/download",
+      "source_options": {
+        "artifactserver": "https://supermarket.chef.io:443/api/v1/cookbooks/compat_resource/versions/12.16.3/download",
+        "version": "12.16.3"
+      }
+    }
+  },
+  "default_attributes": {
+
+  },
+  "override_attributes": {
+
+  },
+  "solution_dependencies": {
+    "Policyfile": [
+      [
+        "chocolatey",
+        "= 1.1.0"
+      ],
+      [
+        "windows",
+        "= 2.1.1"
+      ],
+      [
+        "ohai",
+        "= 4.2.3"
+      ],
+      [
+        "compat_resource",
+        "= 12.16.3"
+      ]
+    ],
+    "dependencies": {
+      "chocolatey (1.1.0)": [
+        [
+          "windows",
+          ">= 1.38.0"
+        ]
+      ],
+      "windows (2.1.1)": [
+        [
+          "ohai",
+          ">= 4.0.0"
+        ]
+      ],
+      "ohai (4.2.3)": [
+        [
+          "compat_resource",
+          ">= 12.14.7"
+        ]
+      ],
+      "compat_resource (12.16.3)": [
+
+      ]
+    }
+  }
+}

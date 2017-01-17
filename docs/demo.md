@@ -18,6 +18,7 @@
 ## Starting point
 
 * Local VM running Windows 2016
+* chrome, log4view, code installed
 * Zip file of cafe build
 * Chef Server account (manage.chef.io), client.rb, and validator for bootstrapping
 
@@ -30,10 +31,10 @@
   - Run `cafe service register` which adds cafe to services
   - Run `cafe service start` which starts the Server
   - Run `cafe status` to see output
-  - View `http://localhost:59320`
-  - Review architecture diagram to show roles
+  - View `http://localhost:59320/api/scheduler/status` - it's the same thing
 
 ### Control your node remotely
+  * Won't demonstrate, but talk about:
   - update `client.json` on another machine to point at your node over port `59320`
 
 ### Install chef-client on the node 
@@ -43,25 +44,26 @@
   - Run `cafe chef version` and notice that it is installed, show add/remove programs
 
 ### Bootstrap the node
-  - Run `cafe chef bootstrap policy: webserver group: uat config: C:\users\mhedg\.chef\client.rb validator: C:\users\mhedg\validator.pem`
+  - Run `cafe chef bootstrap policy: cafe-demo group: qa config: C:\temp\client.rb validator: C:\temp\validator.pem`
   - Run `cafe chef run`
     - view the chef-specific run on the Server
 
 ## Logging
 
+* View `nlog-server.config` as context
 * Chef logging to its own file, rolled
 * NLog controlling the level, pattern, etc.
 * Rest of server that is consumable by a log4X log viewer, like Log4View
-* Complete history of what happened:
-  - Run `cafe chef run`
-  - Now let's restart the server with `cafe service restart`
-  - Run `cafe chef status` to see that the history of chef runs is still there with valuable statistics of what's happening
+* Run `cafe status` and notice that the runs are in the history
 
 ## Scheduling
 
-* Schedule Chef to run every X minutes, defined in `server.json`
+* Schedule Chef to run every 30 seconds, defined in `server.json`
+* Run `cafe service stop`
+* Run `cafe service start`
 * Easily view the schedule through the `cafe status` command
 * Everything scheduled, including the ad-hoc things, are run **serially**. That means no conflicts!
+* Keep running `cafe status` and notice what's happening. View the logs for a deeper view.
 
 ## Pausing
 
