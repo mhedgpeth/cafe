@@ -40,4 +40,4 @@ jsconfig.json
 ## File-based project format:
 *.iws
 
-tools/*
+archive/*
