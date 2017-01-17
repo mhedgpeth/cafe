@@ -1,13 +1,12 @@
-# Warning
-
-**For those following the checkins, some elements below are not real. I'm starting with the demo as a means of validating my use cases. I'm not sure I'll know what will exist for Tuesday's demo and will likely drop elements below**
-
 # Introduction
+
+* Michael Hedgpeth - as myself, not an NCR employee - this is my lunch hour
+* Summit opportunity for improving windows
 
 # Problems in Windows
 
 * Windows added on after the fact, with a linux mindset that creates friction
-* Chef running Ruby updating Chef is not natural in a Ruby environment
+* Chef running Ruby updating Chef is not natural in a Windows environment
 * Logging not natural for windows-oriented operations - no rolling, no configuration, no specialized logging
 * Scheduling Chef is difficult - scheduled task OK, but no standard way of managing it
 * Pausing chef not standard and difficult
@@ -18,34 +17,33 @@
 
 ## Starting point
 
-* Azure windows node with port 59320 open
-* Cafe installer (or files)
-* Chef Server account (manage.chef.io)
+* Local VM running Windows 2016
+* Zip file of cafe build
+* Chef Server account (manage.chef.io), client.rb, and validator for bootstrapping
 
 ## Bootstrapping
 
 ### Install Cafe on the node
-  - The manual way
-    - Copy files to a folder
-    - No ruby, no .NET Framework, **no prerequisites**, can be targeted to any of [these targets](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog#using-rids).
-    - Run `cafe init` and reboot to add to PATH variable
-    - Run `cafe service register` which adds cafe to services
-    - Run `cafe service start` which starts the Server
-    - Run `cafe status` to see output
-    - View `http://localhost:59320`
-    - Review architecture diagram to show roles
-  - Or use the installer!
-  - Alternatives: PS remoting, system center, chef
+  - Copy files to a folder
+  - No ruby, no .NET Framework, **no prerequisites**, can be targeted to any of [these targets](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog#using-rids).
+  - Run `cafe init` and reboot to add to PATH variable
+  - Run `cafe service register` which adds cafe to services
+  - Run `cafe service start` which starts the Server
+  - Run `cafe status` to see output
+  - View `http://localhost:59320`
+  - Review architecture diagram to show roles
+
 ### Control your node remotely
-  - set CAFE_NODE to machine
-  - all commands go off of CAFE_NODE and you can see the status
+  - update `client.json` on another machine to point at your node over port `59320`
+
 ### Install chef-client on the node 
   - Run `cafe chef version` and notice that it is not installed
   - Run `cafe chef download 12.16.42` - places it in the staging folder (this could be done by a chef cookbook as well)
   - Run `cafe chef install 12.16.42`
   - Run `cafe chef version` and notice that it is installed, show add/remove programs
+
 ### Bootstrap the node
-  - Run `cafe chef bootstrap policy: webserver group: uat validator: validator.pem`
+  - Run `cafe chef bootstrap policy: webserver group: uat config: C:\users\mhedg\.chef\client.rb validator: C:\users\mhedg\validator.pem`
   - Run `cafe chef run`
     - view the chef-specific run on the Server
 
@@ -75,31 +73,27 @@ People are going to pause Chef. Why not give them an easy way to do it so you ca
 * Go to `http://localhost:59320` and see that it is paused
 * Run `cafe chef resume` and see that chef starts running
 
-## Configuration
+## Some other ideas
+
+### Configuration
 
 Through a chef cookbook, how else would we do it?
 
-## Change Cafe configuration through Chef
+### Change Cafe configuration through Chef
 * Change the port cafe should listen on to port 80
 * Update policy and push to chef server
 * Run chef
 * Show that the port change was scheduled to not interrupt anything
 * Go to `http://localhost` and see cafe running
 
-## Upgrade Chef Client in Chef
+### Upgrade Chef Client in Chef
 * Change the chef client version to `12.17.44`
 * Update policy and push to chef server
 * Run chef
 * Show that the upgrade was scheduled after chef and proceeded just fine
 
-## One more thing
+# Conclusion
 
-* Let's do this on an ubuntu node as well
-* Copy files to ubuntu or run a packager
-* cafe daemon starts cafe server
-* From windows machine, change `CAFE_NODE` to another value
-* Run `cafe download 12.17.44`
-* Run `cafe install 12.17.44`
-* Run `cafe chef bootstrap policy: linux group: uat validator: validator.pem`
-* Show `http://localhost` that a website was installed
-
+* What do you like?
+* What did I miss?
+* What would it take for you to use this?
