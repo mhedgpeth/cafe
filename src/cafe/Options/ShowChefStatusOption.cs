@@ -24,7 +24,8 @@ namespace cafe.Options
         {
             var status = server.GetRecurringTaskStatus("chef").Result;
 
-            Presenter.ShowMessage(status.ToString(), Logger);
+            var message = status != null ? status.ToString() : "Chef is not scheduled to regularly run";
+            Presenter.ShowMessage(message, Logger);
             return Result.Successful();
         }
     }

@@ -91,7 +91,8 @@ Task("Run-CafeServerDockerContainer")
 Task("IncrementalBuild")
     .IsDependentOn("Build")
     .IsDependentOn("UnitTest")
-    .IsDependentOn("IntegrationTest");
+    .IsDependentOn("IntegrationTest")
+    .IsDependentOn("Publish");
 
 Task("FullBuild")
     .IsDependentOn("Clean")
@@ -104,6 +105,10 @@ Task("FullBuild")
 
 var cafeWindowsPublishDirectory = buildDir + Directory("netcoreapp1.1/win10-x64/publish");
 
+Task("ShowChefStatus")
+    .Does(() => {
+        RunCafe("chef status");
+    });
 
 Task("ShowStatus")
     .Does(() => {
@@ -156,6 +161,15 @@ public void RunCafe(string argument, params string[] formatParameters)
   Information("Exit code: {0}", exitCode);
 }
 
+Task("RunServerInDocker")
+    .Does(() => {
+        var settings = new DockerRunSettings
+        {
+            Interactive = true,
+            Rm = true
+        };
+        DockerRun(settings, "cafe:windows", string.Empty, new string[0]);
+    });
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
