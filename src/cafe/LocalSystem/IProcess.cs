@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace cafe.LocalSystem
 {
-    public interface IProcess {
+    public interface IProcess : IDisposable {
         void Start();
         event EventHandler<string> ErrorDataReceived;
         ProcessStartInfo StartInfo { get; set; }

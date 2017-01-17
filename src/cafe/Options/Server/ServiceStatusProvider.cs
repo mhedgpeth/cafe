@@ -45,7 +45,7 @@ namespace cafe.Options.Server
         public ServiceStatus DetermineStatus(string serviceName)
         {
             _cachedOutput.Clear();
-            var fullPath = _fileSystem.FindInstallationDirectoryInPathContaining(ServiceControllerExecutable);
+            var fullPath = _fileSystem.FindInstallationDirectoryInPathContaining(ServiceControllerExecutable, @"C:\windows\System32");
             _processExecutor.ExecuteAndWaitForExit(Path.Combine(fullPath, ServiceControllerExecutable),
                 $"query {serviceName}",
                 CacheLog, LogError);

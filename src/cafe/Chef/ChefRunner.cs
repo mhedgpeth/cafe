@@ -1,5 +1,4 @@
 ﻿using System;
-using cafe.LocalSystem;
 using cafe.Shared;
 
 namespace cafe.Chef
@@ -7,19 +6,16 @@ namespace cafe.Chef
     public class ChefRunner
     {
         private readonly Func<IChefProcess> _processCreator;
-        private readonly IFileSystemCommands _fileSystemCommands;
 
-        public ChefRunner(Func<IChefProcess> processCreator, IFileSystemCommands fileSystemCommands)
+        public ChefRunner(Func<IChefProcess> processCreator)
         {
             _processCreator = processCreator;
-            _fileSystemCommands = fileSystemCommands;
         }
 
         public Result Run(IMessagePresenter presenter)
         {
             return Run(presenter, new NullBootstrapper());
         }
-
 
         public Result Run(IMessagePresenter presenter, IChefBootstrapper chefBootstrapper)
         {

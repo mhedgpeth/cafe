@@ -30,6 +30,7 @@ namespace cafe.LocalSystem
             remove { _process.ErrorDataReceived -= _delegates[value]; }
         }
 
+
         public ProcessStartInfo StartInfo
         {
             get { return _process.StartInfo; }
@@ -74,6 +75,12 @@ namespace cafe.LocalSystem
         public override string ToString()
         {
             return $"Process from file {_process.StartInfo.FileName} with arguments {StartInfo.Arguments}";
+        }
+
+        public void Dispose()
+        {
+            Logger.Debug($"Disposing of {this}");
+            _process.Dispose();
         }
     }
 }

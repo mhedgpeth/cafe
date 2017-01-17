@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NLog;
 
@@ -31,10 +32,11 @@ namespace cafe.LocalSystem
         }
 
 
-        public string FindInstallationDirectoryInPathContaining(string executable)
+        public string FindInstallationDirectoryInPathContaining(string executable, string defaultPath)
         {
+            var paths = new List<string>() { defaultPath };
             var environmentPath = _environment.GetEnvironmentVariable("PATH");
-            var paths = environmentPath.Split(';');
+            paths.AddRange(environmentPath.Split(';'));
             var batchFilePath = paths
                 .Select(x => Path.Combine(x, executable))
                 .FirstOrDefault(_commands.FileExists);

@@ -43,5 +43,9 @@ namespace cafe.Test.LocalSystem
         {
             ErrorDataReceived?.Invoke(this, e);
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

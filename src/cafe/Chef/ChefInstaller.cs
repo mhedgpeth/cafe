@@ -51,7 +51,7 @@ namespace cafe.Chef
         private string FindFullPathToMsiExec()
         {
             const string msiexecExe = "msiexec.exe";
-            var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining(msiexecExe);
+            var msiExecDirectory = _fileSystem.FindInstallationDirectoryInPathContaining(msiexecExe, @"C:\windows\System32");
             return Path.Combine(msiExecDirectory, msiexecExe);
         }
 

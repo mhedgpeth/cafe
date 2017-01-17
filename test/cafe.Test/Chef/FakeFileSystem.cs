@@ -9,7 +9,7 @@ namespace cafe.Test.Chef
         {
         }
 
-        public string FindInstallationDirectoryInPathContaining(string executable)
+        public string FindInstallationDirectoryInPathContaining(string executable, string defaultPath)
         {
             return executable;
         }

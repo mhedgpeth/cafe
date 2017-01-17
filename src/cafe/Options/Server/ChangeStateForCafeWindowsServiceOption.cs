@@ -41,7 +41,7 @@ namespace cafe.Options.Server
             string serviceName = CafeServerWindowsServiceOptions.ServiceName;
             var fullPath =
                 _fileSystem.FindInstallationDirectoryInPathContaining(ServiceStatusProvider
-                    .ServiceControllerExecutable);
+                    .ServiceControllerExecutable, @"C:\windows\System32");
             Presenter.ShowMessage($"Executing command to {_command} the service {serviceName}", Logger);
             _processExecutor.ExecuteAndWaitForExit(
                 Path.Combine(fullPath, ServiceStatusProvider.ServiceControllerExecutable),

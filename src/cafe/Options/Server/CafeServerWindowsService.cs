@@ -21,14 +21,13 @@ namespace cafe.Options.Server
         public void Start(string[] startupArguments, ServiceStoppedCallback serviceStoppedCallback)
         {
             Logger.Info("Starting service");
-            var settings = ServerSettings.Read();
             var config = new ConfigurationBuilder()
                 // .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
 
             _webHost = new WebHostBuilder()
-                .UseUrls($"http://*:{settings.Port}/")
+                .UseUrls($"http://*:{ServerSettings.Instance.Port}/")
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -46,7 +45,7 @@ namespace cafe.Options.Server
                     }
                 });
 
-            Initialize(StructureMapResolver.Container.GetInstance<Scheduler>(), settings.ChefInterval);
+            Initialize(StructureMapResolver.Container.GetInstance<Scheduler>(), ServerSettings.Instance.ChefInterval);
 
             _webHost.Start();
         }

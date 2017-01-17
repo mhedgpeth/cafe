@@ -14,7 +14,8 @@
         "appsettings.json",
         "nlog-client.config",
         "nlog-server.config",
-        "server.json"
+        "server.json",
+        "client.json"
     ]
   },
   "dependencies": {

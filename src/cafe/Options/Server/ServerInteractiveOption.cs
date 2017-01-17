@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using cafe.CommandLine;
 using cafe.Shared;
 using NLog;
@@ -17,8 +18,11 @@ namespace cafe.Options.Server
         {
             var cafeServerWindowsService = new CafeServerWindowsService();
             cafeServerWindowsService.Start(new string[0], () => { });
-            Presenter.ShowMessage("Running interactively, press enter to stop", Logger);
-            Console.ReadLine();
+            Presenter.ShowMessage("Running interactively, press ctrl+c to stop", Logger);
+            // don't use Console.ReadLine because it interferes with
+            // console redirection done to keep an eye on processes
+            // that this kicks off
+            new AutoResetEvent(false).WaitOne();
             cafeServerWindowsService.Stop();
             return Result.Successful();
         }

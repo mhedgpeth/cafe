@@ -49,8 +49,7 @@ namespace cafe
 
         public static Runner CreateRunner(string[] args)
         {
-            var settings = ServerSettings.Read();
-            var clientFactory = new ClientFactory(settings.Port);
+            var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer,
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new TaskStatusPresenter(new PresenterMessagePresenter()));
