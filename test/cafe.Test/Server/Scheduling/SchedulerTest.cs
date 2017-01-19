@@ -19,7 +19,7 @@ namespace cafe.Test.Server.Scheduling
         public static Scheduler CreateScheduler(IActionExecutor actionExecutor = null)
         {
             actionExecutor = actionExecutor ?? new FakeActionExecutor();
-            return new Scheduler(new FakeTimerFactory(), actionExecutor);
+            return new Scheduler(new FakeTimerFactory(), actionExecutor, new FakeClock());
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace cafe.Test.Server.Scheduling
             var scheduledTask = new FakeScheduledTask();
             var clock = new FakeClock();
             var fiveMinutes = Duration.FromMinutes(5);
-            var recurringTask = RecurringTaskTest.CreateRecurringTask(clock, fiveMinutes, () => scheduledTask);
+            var recurringTask = RecurringTaskTest.CreateRecurringTask(clock, fiveMinutes, task => scheduledTask);
             clock.AddToCurrentInstant(fiveMinutes);
 
             var scheduler = CreateScheduler();
@@ -65,16 +65,11 @@ namespace cafe.Test.Server.Scheduling
             scheduledTask.WasRunCalled.Should().BeTrue("because the recurring task was due, it should have created a scheduled task and run it");
         }
 
-        private FakeScheduledTask CreateRecurringTask()
-        {
-            return new FakeScheduledTask();
-        }
-
         [Fact]
         public void TimerAction_ShouldProcessTasks()
         {
             var timerFactory = new FakeTimerFactory();
-            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor());
+            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor(), new FakeClock());
             var task = new FakeScheduledTask();
             scheduler.Schedule(task);
 
@@ -87,7 +82,7 @@ namespace cafe.Test.Server.Scheduling
         public void Pause_ShouldNotProcessTasks()
         {
             var timerFactory = new FakeTimerFactory();
-            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor());
+            var scheduler = new Scheduler(timerFactory, new FakeActionExecutor(), new FakeClock());
             var task = new FakeScheduledTask();
 
             scheduler.Pause();
@@ -227,7 +222,7 @@ namespace cafe.Test.Server.Scheduling
             var scheduler = CreateScheduler();
             var recurringTask = RecurringTaskTest.CreateRecurringTask();
             scheduler.Add(recurringTask);
-            var fakeScheduledTask = new FakeScheduledTask { RecurringTaskKey = recurringTask.Name };
+            var fakeScheduledTask = new FakeScheduledTask { RecurringTask = recurringTask };
             bool scheduledTaskReadyCalled = false;
             recurringTask.ScheduledTaskReady += (sender, args) => scheduledTaskReadyCalled = true;
             scheduler.Schedule(fakeScheduledTask);

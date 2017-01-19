@@ -58,7 +58,7 @@ namespace cafe.Options.Server
                 var interval = Duration.FromSeconds(chefIntervalInSeconds);
                 Presenter.ShowMessage($"Scheduling chef to run every {(int)interval.TotalSeconds} seconds", Logger);
                 scheduler.Add(new RecurringTask(RecurringTask.RunChefKey, SystemClock.Instance, interval,
-                    () => new ScheduledTask("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run, RecurringTask.RunChefKey, SystemClock.Instance)));
+                    recurringTask => new ScheduledTask("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run, recurringTask, SystemClock.Instance)));
             }
             else
             {

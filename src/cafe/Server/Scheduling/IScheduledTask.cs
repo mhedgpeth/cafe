@@ -7,7 +7,7 @@ namespace cafe.Server.Scheduling
     {
         Guid Id { get; }
         TaskState CurrentState { get; }
-        string RecurringTaskKey { get; }
+        RecurringTask RecurringTask { get; }
         void Run();
         ScheduledTaskStatus ToTaskStatus();
     }

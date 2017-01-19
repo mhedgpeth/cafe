@@ -11,23 +11,39 @@ namespace cafe.Server.Scheduling
 
         private ScheduledTaskStatus _status;
         private readonly Func<IMessagePresenter, Result> _action;
-        private readonly string _recurringTaskKey;
+        private readonly RecurringTask _parentTask;
         private readonly IClock _clock;
 
-        public ScheduledTask(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey, IClock clock)
+        public ScheduledTask(string description, Func<IMessagePresenter, Result> action, RecurringTask parentTask,
+            IClock clock)
         {
             _action = action;
-            _recurringTaskKey = recurringTaskKey;
+            _parentTask = parentTask;
             _clock = clock;
             _status = ScheduledTaskStatus.Create(description);
         }
 
-        public string RecurringTaskKey => _recurringTaskKey;
+        public RecurringTask RecurringTask => _parentTask;
 
         public void Run()
         {
             _status = _status.ToRunningState(_clock.GetCurrentInstant().ToDateTimeUtc());
             ShowMessage($"Task {_status.Description} ({_status.Id}) started at {_status.StartTime}");
+            var result = IsParentTaskPaused()
+                ? Result.Inconclusive($"Task will not run because {_parentTask} is paused")
+                : RunCore();
+            _status = _status.ToFinishedState(result, _clock.GetCurrentInstant().ToDateTimeUtc());
+            ShowMessage(
+                $"Task {_status.Description} ({_status.Id}) completed at {_status.CompleteTime} with result: {_status.Result}");
+        }
+
+        private bool IsParentTaskPaused()
+        {
+            return _parentTask != null && !_parentTask.IsRunning;
+        }
+
+        private Result RunCore()
+        {
             Result result;
             try
             {
@@ -35,17 +51,18 @@ namespace cafe.Server.Scheduling
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, $"An unexpected error occurred while runnnig {_status.Description} ({_status.Id}): {ex.Message}");
+                Logger.Error(ex,
+                    $"An unexpected error occurred while runnnig {_status.Description} ({_status.Id}): {ex.Message}");
                 result = Result.Failure($"An unexpected error occurred: {ex.Message}");
             }
-            _status = _status.ToFinishedState(result, _clock.GetCurrentInstant().ToDateTimeUtc());
-            ShowMessage($"Task {_status.Description} ({_status.Id}) completed at {_status.CompleteTime} with result: {_status.Result}");
+            return result;
         }
 
         public TaskState CurrentState => _status.State;
         public Guid Id => _status.Id;
         public DateTime? StartTime => _status.StartTime;
         public DateTime? CompleteTime => _status.CompleteTime;
+
         public override string ToString()
         {
             return _status.ToString();

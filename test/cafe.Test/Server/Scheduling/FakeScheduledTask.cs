@@ -10,7 +10,7 @@ namespace cafe.Test.Server.Scheduling
 
         public bool FinishTaskImmediately { get; set; } = true;
 
-        public string RecurringTaskKey { get; set; }
+        public RecurringTask RecurringTask { get; set; }
 
         public void Run()
         {

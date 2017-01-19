@@ -19,7 +19,7 @@ namespace cafe.Test.Server.Scheduling
             recurringTask.IsReadyToRun.Should().BeFalse();
         }
 
-        public static RecurringTask CreateRecurringTask(IClock clock = null, Duration? fiveMinutes = null, Func<IScheduledTask> scheduledTaskCreator = null)
+        public static RecurringTask CreateRecurringTask(IClock clock = null, Duration? fiveMinutes = null, Func<RecurringTask, IScheduledTask> scheduledTaskCreator = null)
         {
             clock = clock ?? new FakeClock();
             Duration interval = fiveMinutes ?? FiveMinutes;
@@ -44,7 +44,7 @@ namespace cafe.Test.Server.Scheduling
         {
             var clock = new FakeClock();
             var expected = new FakeScheduledTask();
-            var recurringTask = CreateRecurringTask(clock, FiveMinutes, () => expected);
+            var recurringTask = CreateRecurringTask(clock, FiveMinutes, task => expected);
             clock.AddToCurrentInstant(FiveMinutes);
             var actual = recurringTask.ProvideNextScheduledTask();
 
@@ -58,9 +58,9 @@ namespace cafe.Test.Server.Scheduling
             Assert.Throws<InvalidOperationException>(() => recurringTask.ProvideNextScheduledTask());
         }
 
-        private static IScheduledTask CreateFakeScheduledTask()
+        private static IScheduledTask CreateFakeScheduledTask(RecurringTask recurringTask)
         {
-            return new FakeScheduledTask();
+            return new FakeScheduledTask() { RecurringTask = recurringTask };
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace cafe.Test.Server.Scheduling
         {
             var newTask = new FakeScheduledTask();
             var clock = new FakeClock();
-            var recurringTask = CreateRecurringTask(clock, FiveMinutes, () => newTask);
+            var recurringTask = CreateRecurringTask(clock, FiveMinutes, task => newTask);
 
             recurringTask.RunTaskImmediately(new FakeScheduledTask());
             recurringTask.ProvideNextScheduledTask();

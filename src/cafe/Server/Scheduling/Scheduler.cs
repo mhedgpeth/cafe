@@ -15,14 +15,16 @@ namespace cafe.Server.Scheduling
 
         private readonly IDisposable _timer;
         private readonly IActionExecutor _scheduledTaskExecutor;
+        private readonly IClock _clock;
         private readonly object _processLocker = new object();
         private readonly Queue<IScheduledTask> _queuedTasks = new Queue<IScheduledTask>();
         private readonly IDictionary<string, RecurringTask> _recurringTasks = new Dictionary<string, RecurringTask>();
         private readonly IList<ScheduledTaskStatus> _finishedTasks = new List<ScheduledTaskStatus>();
 
-        public Scheduler(ITimerFactory timerFactory, IActionExecutor scheduledTaskExecutor)
+        public Scheduler(ITimerFactory timerFactory, IActionExecutor scheduledTaskExecutor, IClock clock)
         {
             _scheduledTaskExecutor = scheduledTaskExecutor;
+            _clock = clock;
             _timer = timerFactory.ExecuteActionOnInterval(ProcessTasks, Duration.FromSeconds(15));
             IsRunning = true;
         }
@@ -95,17 +97,28 @@ namespace cafe.Server.Scheduling
             }
         }
 
+        public ScheduledTaskStatus Schedule(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey = null)
+        {
+            RecurringTask recurringTask = null;
+            if (recurringTaskKey != null)
+            {
+                _recurringTasks.TryGetValue(recurringTaskKey, out recurringTask);
+            }
+            var scheduledTask = new ScheduledTask(description, action, recurringTask, _clock);
+            Schedule(scheduledTask);
+            return scheduledTask.ToTaskStatus();
+        }
+
         public void Schedule(params IScheduledTask[] tasks)
         {
             foreach (var task in tasks)
             {
                 Logger.Debug($"Adding scheduled task {task} to the queue of tasks to process");
-                RecurringTask recurringTask;
-                if (task.RecurringTaskKey != null && _recurringTasks.TryGetValue(task.RecurringTaskKey, out recurringTask))
+                if (task.RecurringTask != null)
                 {
                     Logger.Info(
-                        $"Since {task} is connected to the recurring task {recurringTask}, running it through the recurring task");
-                    recurringTask.RunTaskImmediately(task);
+                        $"Since {task} is connected to the recurring task {task.RecurringTask}, running it through the recurring task");
+                    task.RecurringTask.RunTaskImmediately(task);
                 }
                 else
                 {

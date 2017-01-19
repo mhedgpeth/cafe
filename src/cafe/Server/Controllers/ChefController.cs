@@ -1,12 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Scheduling;
 using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
-using NodaTime;
 
 namespace cafe.Server.Controllers
 {
@@ -25,9 +23,7 @@ namespace cafe.Server.Controllers
 
         private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey = null)
         {
-            var scheduledTask = new ScheduledTask(description, action, recurringTaskKey, SystemClock.Instance);
-            _scheduler.Schedule(scheduledTask);
-            return scheduledTask.ToTaskStatus();
+            return _scheduler.Schedule(description, action, recurringTaskKey);
         }
 
         [HttpPut("install")]

@@ -24,11 +24,12 @@ namespace cafe.Test.Server.Scheduling
             _actionRan.Should().BeTrue("because the scheduled task ran");
         }
 
-        private ScheduledTask CreateScheduledTask(Func<IMessagePresenter, Result> action = null, IClock clock = null)
+        private ScheduledTask CreateScheduledTask(Func<IMessagePresenter, Result> action = null, IClock clock = null,
+        RecurringTask recurringTask = null)
         {
             action = action ?? DoNothing;
             clock = clock ?? new FakeClock();
-            return new ScheduledTask("scheduled task", action, null, clock);
+            return new ScheduledTask("scheduled task", action, recurringTask, clock);
         }
 
         private Result DoNothing(IMessagePresenter presenter)
@@ -146,6 +147,35 @@ namespace cafe.Test.Server.Scheduling
             var task = CreateScheduledTask();
 
             task.Id.Should().Be(task.ToTaskStatus().Id, "because the ids should match; they represent the same thing");
+        }
+
+        [Fact]
+        public void Run_ShouldBeInconclusiveIfRecurringTaskIsPaused()
+        {
+            var recurringTask = RecurringTaskTest.CreateRecurringTask();
+            var scheduledTask = CreateScheduledTask(recurringTask: recurringTask);
+
+            recurringTask.Pause();
+            scheduledTask.Run();
+
+            scheduledTask.ToTaskStatus()
+                .Result.IsInconclusive.Should()
+                .BeTrue("because the parent recurring task is paused, results should be inconclusive");
+
+        }
+
+        [Fact]
+        public void Run_ShouldPassWhenRecurringTaskIsRunning()
+        {
+            var recurringTask = RecurringTaskTest.CreateRecurringTask();
+            var scheduledTask = CreateScheduledTask(recurringTask: recurringTask);
+
+            scheduledTask.Run();
+
+            scheduledTask.ToTaskStatus()
+                .Result.IsSuccess.Should()
+                .BeTrue("because the parent recurring task is not paused, results should be passed");
+
         }
     }
 }

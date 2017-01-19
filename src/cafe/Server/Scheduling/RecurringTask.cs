@@ -13,13 +13,13 @@ namespace cafe.Server.Scheduling
 
         private readonly IClock _clock;
         private readonly Duration _interval;
-        private readonly Func<IScheduledTask> _scheduledTaskCreator;
+        private readonly Func<RecurringTask, IScheduledTask> _scheduledTaskCreator;
         private readonly Instant _created;
         private readonly string _name;
         private Instant? _lastRun;
         private IScheduledTask _nextScheduledTask;
 
-        public RecurringTask(string name, IClock clock, Duration interval, Func<IScheduledTask> scheduledTaskCreator)
+        public RecurringTask(string name, IClock clock, Duration interval, Func<RecurringTask, IScheduledTask> scheduledTaskCreator)
         {
             _clock = clock;
             _created = _clock.GetCurrentInstant();
@@ -45,7 +45,7 @@ namespace cafe.Server.Scheduling
                 throw new InvalidOperationException("Cannot schedule a task that is not yet ready to run");
             }
             _lastRun = _clock.GetCurrentInstant();
-            var next = _nextScheduledTask ?? _scheduledTaskCreator();
+            var next = _nextScheduledTask ?? _scheduledTaskCreator(this);
             Logger.Debug($"Providing {next} as the next scheduled task with immediate task: {_nextScheduledTask}");
             _nextScheduledTask = null;
             return next;
