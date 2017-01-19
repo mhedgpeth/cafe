@@ -28,7 +28,7 @@ namespace cafe.Test.Server.Scheduling
         {
             action = action ?? DoNothing;
             clock = clock ?? new FakeClock();
-            return new ScheduledTask("scheduled task", action, clock);
+            return new ScheduledTask("scheduled task", action, null, clock);
         }
 
         private Result DoNothing(IMessagePresenter presenter)
@@ -58,7 +58,7 @@ namespace cafe.Test.Server.Scheduling
         public void ToString_ShouldContainDescription()
         {
             const string description = "a great task";
-            var scheduledTask = new ScheduledTask(description, DoNothing, new FakeClock());
+            var scheduledTask = new ScheduledTask(description, DoNothing, null, new FakeClock());
 
             scheduledTask.ToString().Should().Contain(description, "because this was the description given");
         }

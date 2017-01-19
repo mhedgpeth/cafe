@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using cafe.Shared;
 using NLog;
 using NLog.Fluent;
@@ -87,9 +88,9 @@ namespace cafe.Server.Scheduling
             {
                 if (recurringTask.IsReadyToRun)
                 {
-                    var scheduledTask = recurringTask.CreateScheduledTask();
+                    var scheduledTask = recurringTask.ProvideNextScheduledTask();
                     Log.Info($"Recurring task {recurringTask} is ready to run, so adding {scheduledTask} to the queue");
-                    Schedule(scheduledTask);
+                    EnqueueScheduledTask(scheduledTask);
                 }
             }
         }
@@ -99,8 +100,24 @@ namespace cafe.Server.Scheduling
             foreach (var task in tasks)
             {
                 Logger.Debug($"Adding scheduled task {task} to the queue of tasks to process");
-                _queuedTasks.Enqueue(task);
+                RecurringTask recurringTask;
+                if (task.RecurringTaskKey != null && _recurringTasks.TryGetValue(task.RecurringTaskKey, out recurringTask))
+                {
+                    Logger.Info(
+                        $"Since {task} is connected to the recurring task {recurringTask}, running it through the recurring task");
+                    recurringTask.RunTaskImmediately(task);
+                }
+                else
+                {
+                    EnqueueScheduledTask(task);
+                }
             }
+        }
+
+        private void EnqueueScheduledTask(IScheduledTask task)
+        {
+            Logger.Info($"Enqueuing {task}");
+            _queuedTasks.Enqueue(task);
             ProcessTasks();
         }
 
@@ -108,6 +125,12 @@ namespace cafe.Server.Scheduling
         {
             Logger.Debug($"Adding recurring task {recurringTask} to process");
             _recurringTasks.Add(recurringTask.Name, recurringTask);
+            recurringTask.ScheduledTaskReady += OnRecurringTaskOnScheduledTaskReady;
+        }
+
+        private void OnRecurringTaskOnScheduledTaskReady(object sender, EventArgs args)
+        {
+            ProcessTasks();
         }
 
         public void Pause()

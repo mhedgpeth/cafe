@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Scheduling;
@@ -19,12 +20,12 @@ namespace cafe.Server.Controllers
         [HttpPut("run")]
         public ScheduledTaskStatus RunChef()
         {
-            return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run);
+            return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run, RecurringTask.RunChefKey);
         }
 
-        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<IMessagePresenter, Result> action)
+        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey = null)
         {
-            var scheduledTask = new ScheduledTask(description, action, SystemClock.Instance);
+            var scheduledTask = new ScheduledTask(description, action, recurringTaskKey, SystemClock.Instance);
             _scheduler.Schedule(scheduledTask);
             return scheduledTask.ToTaskStatus();
         }
@@ -68,7 +69,7 @@ namespace cafe.Server.Controllers
         {
             return ScheduleAsSoonAsPossible(description,
                 presenter => StructureMapResolver.Container.GetInstance<ChefRunner>()
-                    .Run(presenter, chefBootstrapper));
+                    .Run(presenter, chefBootstrapper), RecurringTask.RunChefKey);
         }
 
         [HttpPut("bootstrap/runList")]

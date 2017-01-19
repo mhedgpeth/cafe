@@ -11,14 +11,18 @@ namespace cafe.Server.Scheduling
 
         private ScheduledTaskStatus _status;
         private readonly Func<IMessagePresenter, Result> _action;
+        private readonly string _recurringTaskKey;
         private readonly IClock _clock;
 
-        public ScheduledTask(string description, Func<IMessagePresenter, Result> action, IClock clock)
+        public ScheduledTask(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey, IClock clock)
         {
             _action = action;
+            _recurringTaskKey = recurringTaskKey;
             _clock = clock;
             _status = ScheduledTaskStatus.Create(description);
         }
+
+        public string RecurringTaskKey => _recurringTaskKey;
 
         public void Run()
         {
@@ -37,7 +41,6 @@ namespace cafe.Server.Scheduling
             _status = _status.ToFinishedState(result, _clock.GetCurrentInstant().ToDateTimeUtc());
             ShowMessage($"Task {_status.Description} ({_status.Id}) completed at {_status.CompleteTime} with result: {_status.Result}");
         }
-
 
         public TaskState CurrentState => _status.State;
         public Guid Id => _status.Id;

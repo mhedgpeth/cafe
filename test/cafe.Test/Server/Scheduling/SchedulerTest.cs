@@ -220,5 +220,23 @@ namespace cafe.Test.Server.Scheduling
 
             status.Should().BeNull("because the task name doesn't exist");
         }
+
+        [Fact]
+        public void ScheduledTaskReady_ShouldImmediatelyProcess()
+        {
+            var scheduler = CreateScheduler();
+            var recurringTask = RecurringTaskTest.CreateRecurringTask();
+            scheduler.Add(recurringTask);
+            var fakeScheduledTask = new FakeScheduledTask { RecurringTaskKey = recurringTask.Name };
+            bool scheduledTaskReadyCalled = false;
+            recurringTask.ScheduledTaskReady += (sender, args) => scheduledTaskReadyCalled = true;
+            scheduler.Schedule(fakeScheduledTask);
+
+            scheduledTaskReadyCalled.Should()
+                .BeTrue(
+                    "because the scheduler should have the recurring task handle adding the task if the recurring task exists with the same key");
+            fakeScheduledTask.WasRunCalled.Should().BeTrue("because when running a task immediately, the scheduler should process it");
+            scheduler.CurrentStatus.QueuedTasks.Length.Should().Be(0);
+        }
     }
 }

@@ -46,7 +46,7 @@ namespace cafe.Test.Server.Scheduling
             var expected = new FakeScheduledTask();
             var recurringTask = CreateRecurringTask(clock, FiveMinutes, () => expected);
             clock.AddToCurrentInstant(FiveMinutes);
-            var actual = recurringTask.CreateScheduledTask();
+            var actual = recurringTask.ProvideNextScheduledTask();
 
             actual.Should().BeSameAs(expected);
         }
@@ -55,7 +55,7 @@ namespace cafe.Test.Server.Scheduling
         public void CreateScheduledTask_ShouldThrowExceptionWhenNotReady()
         {
             var recurringTask = CreateRecurringTask(new FakeClock(), FiveMinutes, CreateFakeScheduledTask);
-            Assert.Throws<InvalidOperationException>(() => recurringTask.CreateScheduledTask());
+            Assert.Throws<InvalidOperationException>(() => recurringTask.ProvideNextScheduledTask());
         }
 
         private static IScheduledTask CreateFakeScheduledTask()
@@ -70,7 +70,7 @@ namespace cafe.Test.Server.Scheduling
             var recurringTask = CreateRecurringTask(clock, FiveMinutes, CreateFakeScheduledTask);
             clock.AddToCurrentInstant(FiveMinutes);
 
-            recurringTask.CreateScheduledTask();
+            recurringTask.ProvideNextScheduledTask();
 
             recurringTask.IsReadyToRun.Should()
                 .BeFalse(
@@ -102,7 +102,7 @@ namespace cafe.Test.Server.Scheduling
             var recurringTask = CreateRecurringTask(clock, interval, CreateFakeScheduledTask);
 
             clock.AddToCurrentInstant(FiveMinutes);
-            recurringTask.CreateScheduledTask();
+            recurringTask.ProvideNextScheduledTask();
 
             var status = recurringTask.ToRecurringTaskStatus();
             status.ExpectedNextRun.Should().Be(status.LastRun.Value.Add(interval.ToTimeSpan()));
@@ -135,7 +135,39 @@ namespace cafe.Test.Server.Scheduling
             recurringTask.Resume();
 
             recurringTask.IsReadyToRun.Should().BeTrue("because the task resumed after pausing");
+        }
 
+        [Fact]
+        public void RunTaskImmediately_ShouldMakeItReady()
+        {
+            var recurringTask = CreateRecurringTask(new FakeClock(), FiveMinutes, CreateFakeScheduledTask);
+            var task = new FakeScheduledTask();
+            recurringTask.RunTaskImmediately(task);
+
+            recurringTask.IsReadyToRun.Should().BeTrue("there is a task that is supposed to run immediately");
+            recurringTask.ProvideNextScheduledTask()
+                .Should()
+                .BeSameAs(task, "because this is the task that should run immediately");
+        }
+
+        [Fact]
+        public void ProvideNextScheduledTask_ShouldProvideNewScheduledTaskAfterRunningImmediately()
+        {
+            var newTask = new FakeScheduledTask();
+            var clock = new FakeClock();
+            var recurringTask = CreateRecurringTask(clock, FiveMinutes, () => newTask);
+
+            recurringTask.RunTaskImmediately(new FakeScheduledTask());
+            recurringTask.ProvideNextScheduledTask();
+
+            recurringTask.IsReadyToRun.Should().BeFalse("because the clock hasn't moved and we are not yet ready");
+
+            clock.AddToCurrentInstant(FiveMinutes);
+
+            recurringTask.IsReadyToRun.Should().BeTrue("because five minutes have passed");
+            recurringTask.ProvideNextScheduledTask()
+                .Should()
+                .BeSameAs(newTask, "because we should be creating new tasks after a task was run immediately.");
         }
 
     }
