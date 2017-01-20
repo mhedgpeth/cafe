@@ -14,7 +14,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void DownloadUriFor_ShouldProduceDownloadLinkForLatestVersion()
         {
-            ChefDownloader.DownloadUriFor(LatestVersion).AbsoluteUri
+            Downloader.DownloadUriFor(LatestVersion).AbsoluteUri
                 .Should()
                 .Be("https://packages.chef.io/files/stable/chef/12.17.44/windows/2012r2/chef-client-12.17.44-1-x64.msi");
         }
@@ -22,7 +22,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void DownloadUriFor_ShouldProduceDownloadLinkForPreviousVersion()
         {
-            ChefDownloader.DownloadUriFor(PreviousVersion).AbsoluteUri
+            Downloader.DownloadUriFor(PreviousVersion).AbsoluteUri
                 .Should()
                 .Be("https://packages.chef.io/files/stable/chef/12.14.77/windows/2012r2/chef-client-12.14.77-1-x64.msi");
         }
@@ -32,7 +32,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void FilenameFor_ShouldProduceFilenameForLatestVersion()
         {
-            ChefDownloader.FilenameFor(LatestVersion)
+            Downloader.FilenameFor(LatestVersion)
                 .Should()
                 .Be("chef-client-12.17.44-1-x64.msi");
         }
@@ -40,7 +40,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void FilenameFor_ShouldProduceFilenameForPreviousVersion()
         {
-            ChefDownloader.FilenameFor(PreviousVersion)
+            Downloader.FilenameFor(PreviousVersion)
                 .Should()
                 .Be("chef-client-12.14.77-1-x64.msi");
         }
@@ -52,8 +52,8 @@ namespace cafe.Test.Chef
         {
             var fileDownloader = new FakeFileDownloader();
             var fileSystem = new Mock<IFileSystem>();
-            var chefDownloader = new ChefDownloader(fileDownloader, fileSystem.Object);
-            var shareDirectory = ChefDownloader.StagingDirectory;
+            var chefDownloader = new Downloader(fileDownloader, fileSystem.Object);
+            var shareDirectory = Downloader.StagingDirectory;
             chefDownloader.Download(PreviousVersion, new FakeMessagePresenter());
 
             fileSystem.Verify(f => f.EnsureDirectoryExists(shareDirectory));

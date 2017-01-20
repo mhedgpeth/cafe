@@ -7,16 +7,21 @@ using NLog;
 
 namespace cafe.Chef
 {
-    public class ChefDownloader
+    public interface IDownloader
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefDownloader).FullName);
+        Result Download(string version, IMessagePresenter messagePresenter);
+    }
+
+    public class Downloader : IDownloader
+    {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Downloader).FullName);
 
         public const string StagingDirectory = "staging";
 
         private readonly IFileDownloader _fileDownloader;
         private readonly IFileSystem _fileSystem;
 
-        public ChefDownloader(IFileDownloader fileDownloader, IFileSystem fileSystem)
+        public Downloader(IFileDownloader fileDownloader, IFileSystem fileSystem)
         {
             _fileDownloader = fileDownloader;
             _fileSystem = fileSystem;
@@ -26,10 +31,16 @@ namespace cafe.Chef
         {
             messagePresenter.ShowMessage("Ensuring staging directory exists");
             _fileSystem.EnsureDirectoryExists(StagingDirectory);
+            var destination = FullPathToStagedInstaller(version);
+            if (_fileSystem.FileExists(destination))
+            {
+                messagePresenter.ShowMessage($"Download msi already exists, so not downloading again");
+                return Result.Successful();
+            }
             var downloadLink = DownloadUriFor(version);
             messagePresenter.ShowMessage($"Downloading Chef {version} from {downloadLink}");
             var file = FilenameFor(version);
-            var result  = _fileDownloader.Download(downloadLink, FullPathToStagedInstaller(version));
+            var result  = _fileDownloader.Download(downloadLink, destination);
             messagePresenter.ShowMessage($"Finished downloading Chef {version} from {downloadLink}");
             Logger.Info(result);
             return result.TranslateIfFailed($"Installer for Chef {version} could not be found at {downloadLink}");

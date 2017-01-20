@@ -29,10 +29,5 @@ namespace cafe.Client
             Logger.Debug($"Creating rest client for {typeof(T).FullName} at endpoint {endpoint}");
             return RestClient.For<T>(endpoint);
         }
-
-        public ISchedulerServer RestClientForSchedulerServer()
-        {
-            return CreateRestClientFor<ISchedulerServer>("scheduler");
-        }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using cafe.LocalSystem;
 
 namespace cafe.Test.Chef
@@ -14,5 +13,9 @@ namespace cafe.Test.Chef
             return executable;
         }
 
+        public bool FileExists(string destination)
+        {
+            return false;
+        }
     }
 }

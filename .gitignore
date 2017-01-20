@@ -41,3 +41,4 @@ jsconfig.json
 *.iws
 
 archive/*
+tools/*

@@ -14,7 +14,7 @@ namespace cafe.CommandLine
             _options = options;
         }
 
-        public void Run(params string[] args)
+        public int Run(params string[] args)
         {
             if (string.Equals(args.FirstOrDefault(), "-h"))
             {
@@ -27,10 +27,12 @@ namespace cafe.CommandLine
                 Logger.Info($"Option {matchingOption} matches the arguments supplied, so running");
                 var result = matchingOption.Run(args);
                 Logger.Info($"Finished executing {matchingOption} with result: {result}");
+                return result.IsSuccess ? 0 : -1;
             }
             else
             {
                 Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
+                return -2;
             }
         }
 

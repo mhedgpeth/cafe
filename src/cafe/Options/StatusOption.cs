@@ -10,37 +10,25 @@ namespace cafe.Options
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(StatusOption).FullName);
 
-        public StatusOption(Func<ISchedulerServer> schedulerServerProvider) : base(schedulerServerProvider,
+        public StatusOption(Func<IChefServer> schedulerServerProvider) : base(schedulerServerProvider,
             new OptionSpecification("status"),
             "Gets the status of the cafe server")
         {
         }
 
-        protected override Result RunCore(ISchedulerServer schedulerServer, string[] args)
+        protected override Result RunCore(IChefServer schedulerServer, string[] args)
         {
             var status = schedulerServer.GetStatus().Result;
-            Presenter.ShowMessage($"Is Running: {status.IsRunning}", Logger);
             ShowQueuedTasks(status);
             ShowFinishedTasks(status);
-            ShowRecurringTasks(status);
+            ShowChefStatus(status);
             return Result.Successful();
         }
 
-        private void ShowRecurringTasks(SchedulerStatus status)
+        private void ShowChefStatus(SchedulerStatus status)
         {
             Presenter.NewLine();
-            if (status.RecurringTasks.Length > 0)
-            {
-                Presenter.ShowMessage($"Recurring tasks ({status.RecurringTasks.Length}):", Logger);
-                foreach (var recurringTask in status.RecurringTasks)
-                {
-                    Presenter.ShowMessage(recurringTask.ToString(), Logger);
-                }
-            }
-            else
-            {
-                Presenter.ShowMessage("There are no recurring tasks", Logger);
-            }
+            Presenter.ShowMessage(status.ChefStatus.ToString(), Logger);
         }
 
         private static void ShowQueuedTasks(SchedulerStatus status)
