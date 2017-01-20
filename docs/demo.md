@@ -1,19 +1,4 @@
-# Introduction
-
-* Michael Hedgpeth - as myself, not an NCR employee - this is my lunch hour
-* Summit opportunity for improving windows
-
-# Problems in Windows
-
-* Windows added on after the fact, with a linux mindset that creates friction
-* Chef running Ruby updating Chef is not natural in a Windows environment
-* Logging not natural for windows-oriented operations - no rolling, no configuration, no specialized logging
-* Scheduling Chef is difficult - scheduled task OK, but no standard way of managing it
-* Pausing chef not standard and difficult
-* Upgrading Chef difficult as well (chef can't upgrade itself, chef should not be running)
-* Bootstrapping Chef when winrm isn't turned on is quite difficult as well
-
-# Let's do a walkthrough
+# Cafe Demonstration
 
 ## Starting point
 
@@ -25,6 +10,9 @@
 ## Bootstrapping
 
 ### Install Cafe on the node
+
+Let's get it installed:
+
   - Copy files to a folder
   - No ruby, no .NET Framework, **no prerequisites**, can be targeted to any of [these targets](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog#using-rids).
   - Run `cafe init` and reboot to add to PATH variable
@@ -44,11 +32,16 @@
   - Run `cafe chef version` and notice that it is installed, show add/remove programs
 
 ### Bootstrap the node
+
+On windows you have to have winrm open when you need just one thing. It's like opening the bank vault for a $20 withdrawal. This is better:
+
   - Run `cafe chef bootstrap policy: cafe-demo group: qa config: C:\temp\client.rb validator: C:\temp\validator.pem`
   - Run `cafe chef run`
     - view the chef-specific run on the Server
 
 ## Logging
+
+We want to operate chef with a windows mindset for easier adoption:
 
 * View `nlog-server.config` as context
 * Chef logging to its own file, rolled
@@ -75,27 +68,11 @@ People are going to pause Chef. Why not give them an easy way to do it so you ca
 * Go to `http://localhost:59320` and see that it is paused
 * Run `cafe chef resume` and see that chef starts running
 
-## Some other ideas
+## Upgrading
 
-### Configuration
+We want to upgrade chef outside of running chef, or ruby for that matter. Upgrade should be something separate:
 
-Through a chef cookbook, how else would we do it?
+* Run `cafe chef download 12.17.44`
+* Run `cafe chef upgrade 12.17.44`
 
-### Change Cafe configuration through Chef
-* Change the port cafe should listen on to port 80
-* Update policy and push to chef server
-* Run chef
-* Show that the port change was scheduled to not interrupt anything
-* Go to `http://localhost` and see cafe running
-
-### Upgrade Chef Client in Chef
-* Change the chef client version to `12.17.44`
-* Update policy and push to chef server
-* Run chef
-* Show that the upgrade was scheduled after chef and proceeded just fine
-
-# Conclusion
-
-* What do you like?
-* What did I miss?
-* What would it take for you to use this?
+We know that chef won't be running, because if it was, the upgrade would wait! This is a much safer upgrade process.
