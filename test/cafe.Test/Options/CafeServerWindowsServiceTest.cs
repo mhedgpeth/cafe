@@ -1,5 +1,7 @@
 ﻿using cafe.Options;
 using cafe.Options.Server;
+using cafe.Server.Jobs;
+using cafe.Test.Server.Jobs;
 using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using NodaTime;
@@ -13,13 +15,19 @@ namespace cafe.Test.Options
         public void Initialize_ShouldInitializeChefRecurringTaskIfSettingExists()
         {
             const int interval = 1800;
-            var scheduler = SchedulerTest.CreateScheduler();
-            CafeServerWindowsService.Initialize(scheduler, interval);
+            var runChefJob = RunChefJobTest.CreateRunChefJob();
+            var timerFactory = new FakeTimerFactory();
+            var clock = new FakeClock();
+            CafeServerWindowsService.Initialize(runChefJob, interval, timerFactory, clock);
 
-            var recurringTask = scheduler.FindRecurringTaskByName("chef");
+            bool wasRunReady = false;
+            runChefJob.RunReady += (sender, run) => wasRunReady = true;
 
-            recurringTask.Should().NotBeNull("because initialize should have added it");
-            recurringTask.Interval.Should().Be(Duration.FromSeconds(interval));
+            timerFactory.FireTimerAction();
+
+            wasRunReady.Should()
+                .BeTrue(
+                    "because there was a policy created by the initialize that tied the timer to when runs were ready");
         }
 
         [Fact]
@@ -36,13 +44,11 @@ namespace cafe.Test.Options
 
         private static void AssertInitializeDoesNothingWhenIntervalIs(int chefIntervalInSeconds)
         {
-            var scheduler = SchedulerTest.CreateScheduler();
+            var runChefJob = RunChefJobTest.CreateRunChefJob();
 
-            CafeServerWindowsService.Initialize(scheduler, chefIntervalInSeconds);
+            CafeServerWindowsService.Initialize(runChefJob, chefIntervalInSeconds, new FakeTimerFactory(), new FakeClock());
 
-            scheduler.FindRecurringTaskByName("chef")
-                .Should()
-                .BeNull("because no interval was given, it will not be run on an interval");
+            runChefJob.RunPolicy.Should().NotBeOfType<RecurringRunPolicy>("because no interval was given, it will not be run on an interval");
         }
     }
 

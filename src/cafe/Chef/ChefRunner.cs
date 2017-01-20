@@ -3,7 +3,7 @@ using cafe.Shared;
 
 namespace cafe.Chef
 {
-    public class ChefRunner
+    public class ChefRunner : IChefRunner
     {
         private readonly Func<IChefProcess> _processCreator;
 

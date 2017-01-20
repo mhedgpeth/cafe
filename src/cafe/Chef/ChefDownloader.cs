@@ -7,16 +7,21 @@ using NLog;
 
 namespace cafe.Chef
 {
-    public class ChefDownloader
+    public interface IDownloader
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefDownloader).FullName);
+        Result Download(string version, IMessagePresenter messagePresenter);
+    }
+
+    public class Downloader : IDownloader
+    {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Downloader).FullName);
 
         public const string StagingDirectory = "staging";
 
         private readonly IFileDownloader _fileDownloader;
         private readonly IFileSystem _fileSystem;
 
-        public ChefDownloader(IFileDownloader fileDownloader, IFileSystem fileSystem)
+        public Downloader(IFileDownloader fileDownloader, IFileSystem fileSystem)
         {
             _fileDownloader = fileDownloader;
             _fileSystem = fileSystem;

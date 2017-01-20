@@ -6,14 +6,13 @@ namespace cafe.Shared
     {
         public string Name { get; set; }
         public bool IsRunning { get; set; }
-        public DateTime Created { get; set; }
         public TimeSpan Interval { get; set; }
         public DateTime? LastRun { get; set; }
         public DateTime ExpectedNextRun { get; set; }
 
-        protected bool Equals(RecurringTaskStatus other)
+        private bool Equals(RecurringTaskStatus other)
         {
-            return string.Equals(Name, other.Name) && IsRunning == other.IsRunning && Created.Equals(other.Created) &&
+            return string.Equals(Name, other.Name) && IsRunning == other.IsRunning &&
                    Interval.Equals(other.Interval) && LastRun.Equals(other.LastRun) &&
                    ExpectedNextRun.Equals(other.ExpectedNextRun);
         }
@@ -39,7 +38,6 @@ namespace cafe.Shared
             {
                 var hashCode = (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ IsRunning.GetHashCode();
-                hashCode = (hashCode * 397) ^ Created.GetHashCode();
                 hashCode = (hashCode * 397) ^ Interval.GetHashCode();
                 hashCode = (hashCode * 397) ^ LastRun.GetHashCode();
                 hashCode = (hashCode * 397) ^ ExpectedNextRun.GetHashCode();

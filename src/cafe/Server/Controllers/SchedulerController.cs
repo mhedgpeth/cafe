@@ -1,4 +1,5 @@
 using System;
+using cafe.Server.Jobs;
 using cafe.Server.Scheduling;
 using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,13 @@ namespace cafe.Server.Controllers
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerController).FullName);
 
-        private readonly Scheduler _scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
+        private readonly ChefJobRunner _chefJobRunner = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
 
         [HttpGet("status")]
         public SchedulerStatus GetStatus()
         {
             Logger.Info("Getting scheduler status");
-            var schedulerStatus = _scheduler.CurrentStatus;
+            var schedulerStatus = _chefJobRunner.ToStatus();
             Logger.Debug($"Scheduler status is {schedulerStatus}");
             return schedulerStatus;
         }
@@ -26,36 +27,8 @@ namespace cafe.Server.Controllers
         public ScheduledTaskStatus GetTaskStatus(Guid id)
         {
             Logger.Info($"Getting status of task with id {id}");
-            var status = _scheduler.FindStatusById(id);
+            var status = _chefJobRunner.FindStatusById(id);
             Logger.Debug($"Status for task {id} is {status}");
-            return status;
-        }
-
-        [HttpGet("recurring/{name}")]
-        public RecurringTaskStatus GetRecurringTask(string name)
-        {
-            Logger.Info($"Getting recurring task named {name}");
-            var task = _scheduler.FindRecurringTaskByName(name);
-            var status = task?.ToRecurringTaskStatus();
-            Logger.Debug($"Status for recurring task {name} is {status}");
-            return status;
-        }
-
-        [HttpPut("recurring/{name}/pause")]
-        public RecurringTaskStatus PauseRecurringTask(string name)
-        {
-            Logger.Info($"Pausing recurring task {name}");
-            var status = _scheduler.PauseRecurringTask(name);
-            Logger.Debug($"Finished pausing task {name} with new status of {status}");
-            return status;
-        }
-
-        [HttpPut("recurring/{name}/resume")]
-        public RecurringTaskStatus ResumeRecurringTask(string name)
-        {
-            Logger.Info($"Resuming recurring task {name}");
-            var status = _scheduler.ResumeRecurringTask(name);
-            Logger.Debug($"Finished resuming task {name} with new status of {status}");
             return status;
         }
     }

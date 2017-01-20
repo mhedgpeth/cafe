@@ -1,7 +1,6 @@
-﻿using System;
-using cafe.Chef;
+﻿using cafe.Chef;
 using cafe.LocalSystem;
-using cafe.Server.Scheduling;
+using cafe.Server.Jobs;
 using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
@@ -13,17 +12,12 @@ namespace cafe.Server.Controllers
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefController).FullName);
 
-        private readonly Scheduler _scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
+        private readonly ChefJobRunner _chefJobRunner = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
 
         [HttpPut("run")]
         public ScheduledTaskStatus RunChef()
         {
-            return ScheduleAsSoonAsPossible("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run, RecurringTask.RunChefKey);
-        }
-
-        private ScheduledTaskStatus ScheduleAsSoonAsPossible(string description, Func<IMessagePresenter, Result> action, string recurringTaskKey = null)
-        {
-            return _scheduler.Schedule(description, action, recurringTaskKey);
+            return _chefJobRunner.RunChefJob.Run();
         }
 
         [HttpPut("install")]
@@ -31,17 +25,14 @@ namespace cafe.Server.Controllers
         public ScheduledTaskStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
-            return ScheduleAsSoonAsPossible($"Install/Upgrade Chef to {version}",
-                presenter => StructureMapResolver.Container.GetInstance<ChefProduct>()
-                    .InstallOrUpgrade(version, presenter));
+            return _chefJobRunner.InstallChefJob.InstallOrUpgrade(version);
         }
 
         [HttpPut("download")]
         public ScheduledTaskStatus DownloadChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be downloaded");
-            return ScheduleAsSoonAsPossible($"Download Chef {version}",
-                presenter => StructureMapResolver.Container.GetInstance<ChefDownloader>().Download(version, presenter));
+            return _chefJobRunner.DownloadChefJob.Download(version);
         }
 
         [HttpGet("status")]
@@ -56,16 +47,8 @@ namespace cafe.Server.Controllers
         public ScheduledTaskStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
         {
             Logger.Info($"Bootstrapping chef with policy {policyName} and group: {policyGroup}");
-            return ScheduleBootstrap($"Bootstrapping Chef Policy {policyName} Group {policyGroup}",
-                CreateChefBootstrapper(config, validator,
+            return _chefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator,
                     new PolicyChefBootstrapSettings {PolicyGroup = policyGroup, PolicyName = policyName}));
-        }
-
-        private ScheduledTaskStatus ScheduleBootstrap(string description, IChefBootstrapper chefBootstrapper)
-        {
-            return ScheduleAsSoonAsPossible(description,
-                presenter => StructureMapResolver.Container.GetInstance<ChefRunner>()
-                    .Run(presenter, chefBootstrapper), RecurringTask.RunChefKey);
         }
 
         [HttpPut("bootstrap/runList")]
@@ -73,8 +56,7 @@ namespace cafe.Server.Controllers
         {
             var description = $"Bootstrapping chef with run list {runList}";
             Logger.Info(description);
-            return ScheduleBootstrap(description,
-                CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));
+            return _chefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));
         }
 
         private static ChefBootstrapper CreateChefBootstrapper(string config, string validator,
@@ -83,5 +65,33 @@ namespace cafe.Server.Controllers
             return new ChefBootstrapper(StructureMapResolver.Container.GetInstance<IFileSystemCommands>(), config,
                 validator, bootstrapSettings);
         }
+
+        [HttpGet("status")]
+        public RecurringTaskStatus GetRunChefStatus(string name)
+        {
+            Logger.Info($"Getting recurring task named {name}");
+            var status = _chefJobRunner.RunChefJob.ToStatus();
+            Logger.Debug($"Status for recurring task {name} is {status}");
+            return status;
+        }
+
+        [HttpPut("pause")]
+        public RecurringTaskStatus PauseChef(string name)
+        {
+            Logger.Info($"Pausing recurring task {name}");
+            var status = _chefJobRunner.RunChefJob.Pause();
+            Logger.Debug($"Finished pausing task {name} with new status of {status}");
+            return status;
+        }
+
+        [HttpPut("recurring/{name}/resume")]
+        public RecurringTaskStatus ResumeRecurringTask(string name)
+        {
+            Logger.Info($"Resuming recurring task {name}");
+            var status = _chefJobRunner.RunChefJob.Resume();
+            Logger.Debug($"Finished resuming task {name} with new status of {status}");
+            return status;
+        }
+
     }
 }

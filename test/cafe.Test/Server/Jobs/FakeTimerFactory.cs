@@ -17,6 +17,8 @@ namespace cafe.Test.Server.Scheduling
             return new Mock<IDisposable>().Object;
         }
 
+        public Duration Every => _every;
+
         public void FireTimerAction()
         {
             _action();

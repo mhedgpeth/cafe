@@ -6,7 +6,7 @@ using NLog;
 
 namespace cafe.Chef
 {
-    public class ChefProduct
+    public class ChefProduct : IInstaller
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefProduct).FullName);
 
