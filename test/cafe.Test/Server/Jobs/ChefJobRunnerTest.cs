@@ -41,13 +41,25 @@ namespace cafe.Test.Server.Jobs
 
             runner.ProcessQueue();
 
-            fakeInstaller.InstalledVersion.Should().Be(expectedVersion);
+            fakeInstaller.InstalledVersion.ToString().Should().Be(expectedVersion);
         }
 
 
         private DownloadChefJob CreateDownloadJob()
         {
             return new DownloadChefJob(new FakeDownloader(), new FakeClock());
+        }
+
+        [Fact]
+        public void LastRun_ShouldDefaultToNullBeforeItRuns()
+        {
+            var runner = CreateChefJobRunner();
+            runner.ToStatus().ChefStatus.LastRun.Should().BeNull("because the job has not yet run");
+        }
+
+        private ChefJobRunner CreateChefJobRunner()
+        {
+            return new ChefJobRunner(JobRunnerTest.CreateJobRunner(), CreateDownloadJob(), CreateInstallChefJob(), RunChefJobTest.CreateRunChefJob());
         }
     }
 }

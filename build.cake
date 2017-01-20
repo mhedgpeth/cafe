@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.1.0." + buildNumber;
+var version = "0.2.0." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -120,11 +120,6 @@ Task("FullBuild")
 
 var cafeWindowsPublishDirectory = buildDir + Directory("netcoreapp1.1/win10-x64/publish");
 
-Task("ShowChefStatus")
-    .Does(() => {
-        RunCafe("chef status");
-    });
-
 Task("ShowChefVersion")
     .Does(() => {
         RunCafe("chef version");
@@ -167,11 +162,57 @@ Task("InstallOldVersion")
         RunCafe("chef install {0}", oldVersion);
     });
 
+var newVersion = "12.17.44";
+
+Task("DownloadNewVersion")
+    .Does(() =>
+    {
+        RunCafe("chef download {0}", newVersion);
+    });
+
+Task("InstallNewVersion")
+    .Does(() =>
+    {
+        RunCafe("chef install {0}", newVersion);
+    });
+
+
 Task("BootstrapPolicy")
     .Does(() =>
     {
-        RunCafe(@"chef bootstrap policy: webserver group: production config: C:\Users\mhedg\.chef\client.rb validator: C:\Users\mhedg\.chef\cafe-demo-validator.pem");
+        RunCafe(@"chef bootstrap policy: cafe-demo group: qa config: C:\Users\mhedg\.chef\client.rb validator: C:\Users\mhedg\.chef\cafe-demo-validator.pem");
     });
+
+Task("RegisterService")
+    .Does(() =>
+    {
+        RunCafe(@"service register");
+    });
+
+Task("UnregisterService")
+    .Does(() =>
+    {
+        RunCafe(@"service unregister");
+    });
+
+Task("PauseChef")
+    .Does(() =>
+    {
+        RunCafe(@"chef pause");
+    });
+
+Task("ResumeChef")
+    .Does(() =>
+    {
+        RunCafe(@"chef resume");
+    });
+
+Task("StopService")
+    .Does(() =>
+    {
+        RunCafe(@"service stop");
+    });
+
 
 public void RunCafe(string argument, params string[] formatParameters) 
 {
@@ -180,7 +221,23 @@ public void RunCafe(string argument, params string[] formatParameters)
   Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
   var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
   Information("Exit code: {0}", exitCode);
+  if (exitCode < 0) throw new Exception(string.Format("cafe.exe exited with code: {0}", exitCode));
 }
+
+Task("AcceptanceTest")
+    .IsDependentOn("RegisterService")
+    .IsDependentOn("DownloadOldVersion")
+    .IsDependentOn("InstallOldVersion")
+    .IsDependentOn("BootstrapPolicy")
+    .IsDependentOn("ShowStatus")
+    .IsDependentOn("ShowChefVersion")
+    .IsDependentOn("DownloadNewVersion")
+    .IsDependentOn("InstallNewVersion")
+    .IsDependentOn("RunChef")
+    .IsDependentOn("PauseChef")
+    .IsDependentOn("ResumeChef")
+    .IsDependentOn("StopService")
+    .IsDependentOn("UnregisterService");
 
 Task("RunServerInDocker")
     .Does(() => {

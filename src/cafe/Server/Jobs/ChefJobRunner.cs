@@ -44,7 +44,16 @@ namespace cafe.Server.Jobs
 
         public SchedulerStatus ToStatus()
         {
-            return _runner.ToStatus();
+            var status = _runner.ToStatus();
+            status.ChefStatus = new ChefStatus()
+            {
+                IsRunning = RunChefJob.IsRunning,
+                ExpectedNextRun = RunChefJob.RunPolicy.ExpectedNextRun?.ToDateTimeUtc(),
+                Interval = RunChefJob.RunPolicy.Interval?.ToTimeSpan(),
+                LastRun = RunChefJob.LastRun?.Start?.ToDateTimeUtc(),
+                Version = InstallChefJob.CurrentVersion?.ToString()
+            };
+            return status;
         }
 
         public ScheduledTaskStatus FindStatusById(Guid id)

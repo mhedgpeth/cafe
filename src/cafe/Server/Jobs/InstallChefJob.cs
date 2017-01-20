@@ -1,4 +1,5 @@
-﻿using cafe.Chef;
+﻿using System;
+using cafe.Chef;
 using cafe.Shared;
 using NodaTime;
 
@@ -14,6 +15,8 @@ namespace cafe.Server.Jobs
             _installer = installer;
             _clock = clock;
         }
+
+        public Version CurrentVersion => _installer.InstalledVersion;
 
         public ScheduledTaskStatus InstallOrUpgrade(string version)
         {

@@ -19,14 +19,15 @@ namespace cafe
         public const string ServerLoggingConfigurationFile = "nlog-server.config";
         public const string ClientLoggingConfigurationFile = "nlog-client.config";
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             Directory.SetCurrentDirectory(AssemblyDirectory);
             ConfigureLogging(args);
             Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
-            runner.Run(args);
+            var returnValue = runner.Run(args);
             Logger.Debug("Finishing cafe run");
+            return returnValue;
         }
 
         public static string AssemblyDirectory
@@ -50,7 +51,7 @@ namespace cafe
         public static Runner CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
-            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForSchedulerServer,
+            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForChefServer,
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new TaskStatusPresenter(new PresenterMessagePresenter()));
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
@@ -60,6 +61,7 @@ namespace cafe
             var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status",
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new ServiceStatusProvider(processExecutor, fileSystem));
+            // all options available
             var runner = new Runner(
                 new RunChefOption(clientFactory, schedulerWaiter),
                 new BootstrapChefRunListOption(clientFactory, schedulerWaiter, fileSystemCommands),
@@ -76,10 +78,9 @@ namespace cafe
                 ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(processExecutor, fileSystem,
                     serviceStatusWaiter),
                 new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
-                new StatusOption(clientFactory.RestClientForSchedulerServer),
-                new ShowChefStatusOption(clientFactory.RestClientForSchedulerServer),
-                ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForSchedulerServer),
-                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForSchedulerServer),
+                new StatusOption(clientFactory.RestClientForChefServer),
+                ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
+                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForChefServer),
                 new InitOption(AssemblyDirectory, environment));
             Logger.Debug("Running application");
             return runner;

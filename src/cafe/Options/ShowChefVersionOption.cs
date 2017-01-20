@@ -20,8 +20,8 @@ namespace cafe.Options
         protected override Result RunCore(string[] args)
         {
             var api = _clientFactory.RestClientForChefServer();
-            var status = api.GetChefStatus().Result;
-            var versionStatus = status.Version ?? "not installed";
+            var status = api.GetStatus().Result;
+            var versionStatus = status.ChefStatus.Version ?? "not installed";
             Presenter.ShowMessage($"chef-client version: {versionStatus}", Logger);
             return Result.Successful();
         }

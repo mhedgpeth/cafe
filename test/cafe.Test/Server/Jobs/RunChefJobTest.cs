@@ -130,12 +130,6 @@ namespace cafe.Test.Server.Jobs
             wasRunReady.Should().BeTrue("because the previous run already ran, we're ready to run again");
         }
 
-        [Fact]
-        public void LastRun_ShouldDefaultToNullBeforeItRuns()
-        {
-            var recurringTask = CreateRunChefJob();
-            recurringTask.ToStatus().LastRun.Should().BeNull("because the job has not yet run");
-        }
 
     }
 }

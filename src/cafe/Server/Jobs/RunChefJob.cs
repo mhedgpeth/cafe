@@ -48,25 +48,14 @@ namespace cafe.Server.Jobs
             return OnRunReady(new JobRun($"Bootstrapping Chef with {bootstrapper}", messagePresenter => _chefRunner.Run(messagePresenter, bootstrapper), _clock));
         }
 
-        public RecurringTaskStatus Pause()
+        public void Pause()
         {
             IsRunning = false;
-            return ToStatus();
         }
 
-        public RecurringTaskStatus Resume()
+        public void Resume()
         {
             IsRunning = true;
-            return ToStatus();
-        }
-
-        public RecurringTaskStatus ToStatus()
-        {
-            return new RecurringTaskStatus()
-            {
-                IsRunning = IsRunning,
-                LastRun = LastRun?.Finish?.ToDateTimeUtc(),
-            };
         }
 
     }

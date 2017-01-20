@@ -1,7 +1,6 @@
 ﻿using cafe.Server;
 using cafe.Server.Controllers;
 using cafe.Server.Jobs;
-using cafe.Server.Scheduling;
 using FluentAssertions;
 using Xunit;
 
@@ -20,7 +19,7 @@ namespace cafe.IntegrationTest
             const string version = "14.17.44";
             chefController.DownloadChef(version);
             chefController.InstallChef(version);
-            chefController.GetChefStatus().Should().NotBeNull("because chef should be operational");
+            chefController.GetStatus().Should().NotBeNull("because chef should be operational");
         }
 
         private static T AssertStructureMapCreatesControllerOfType<T>()
@@ -37,12 +36,6 @@ namespace cafe.IntegrationTest
             var another = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
 
             one.Should().BeSameAs(another, "because chef job runner should be a singleton");
-        }
-
-        [Fact]
-        public void SchedulerController_ShouldInstantiateThroughStructureMap()
-        {
-            AssertStructureMapCreatesControllerOfType<SchedulerController>();
         }
     }
 }

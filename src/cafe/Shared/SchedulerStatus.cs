@@ -4,6 +4,6 @@ namespace cafe.Shared
     {
         public ScheduledTaskStatus[] QueuedTasks { get; set; }
         public ScheduledTaskStatus[] FinishedTasks { get; set; }
-        public RecurringTaskStatus[] RecurringTasks { get; set; }
+        public ChefStatus ChefStatus { get; set; }
     }
 }

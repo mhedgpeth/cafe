@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using cafe.Client;
 using cafe.Options;
 using FluentAssertions;
@@ -13,14 +12,14 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void Exception_ShouldNotBeRethrown()
         {
-            var scheduler = new Mock<ISchedulerServer>();
+            var scheduler = new Mock<IChefServer>();
             scheduler.Setup(s => s.GetStatus()).Throws<HttpRequestException>();
 
             var option = new StatusOption(() => scheduler.Object);
 
             var result = option.Run();
 
-            result.IsSuccess.Should().BeTrue("because the result should succeed even when status of server is off");
+            result.IsSuccess.Should().BeFalse("because the task should fail when the server can't be connected to");
         }
     }
 }

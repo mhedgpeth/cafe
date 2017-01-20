@@ -6,11 +6,16 @@ namespace cafe.Server.Jobs
 {
     public class RunPolicy
     {
-        protected RunPolicy()
+        private readonly Duration? _interval;
+
+        protected RunPolicy(Duration? interval)
         {
+            _interval = interval;
         }
 
         public event EventHandler Due;
+        public Duration? Interval => _interval;
+        public virtual Instant? ExpectedNextRun { get; } = null;
 
         protected virtual void OnDue()
         {
@@ -24,7 +29,7 @@ namespace cafe.Server.Jobs
 
         public static RunPolicy OnDemand()
         {
-            return new RunPolicy();
+            return new RunPolicy(null);
         }
 
         public override string ToString()

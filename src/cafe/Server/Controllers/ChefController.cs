@@ -1,4 +1,5 @@
-﻿using cafe.Chef;
+﻿using System;
+using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;
@@ -35,14 +36,6 @@ namespace cafe.Server.Controllers
             return _chefJobRunner.DownloadChefJob.Download(version);
         }
 
-        [HttpGet("status")]
-        public ChefStatus GetChefStatus()
-        {
-            Logger.Info("Getting chef status");
-            var product = StructureMapResolver.Container.GetInstance<ChefProduct>();
-            return product.ToChefStatus();
-        }
-
         [HttpPut("bootstrap/policy")]
         public ScheduledTaskStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
         {
@@ -67,31 +60,41 @@ namespace cafe.Server.Controllers
         }
 
         [HttpGet("status")]
-        public RecurringTaskStatus GetRunChefStatus(string name)
+        public SchedulerStatus GetStatus()
         {
-            Logger.Info($"Getting recurring task named {name}");
-            var status = _chefJobRunner.RunChefJob.ToStatus();
-            Logger.Debug($"Status for recurring task {name} is {status}");
+            Logger.Info($"Getting chef status");
+            var status = _chefJobRunner.ToStatus();
+            Logger.Debug($"Status for chef is {status}");
             return status;
         }
 
         [HttpPut("pause")]
-        public RecurringTaskStatus PauseChef(string name)
+        public SchedulerStatus Pause()
         {
-            Logger.Info($"Pausing recurring task {name}");
-            var status = _chefJobRunner.RunChefJob.Pause();
-            Logger.Debug($"Finished pausing task {name} with new status of {status}");
+            Logger.Info($"Pausing chef");
+            _chefJobRunner.RunChefJob.Pause();
+            var status = _chefJobRunner.ToStatus();
+            Logger.Debug($"Finished pausing chef with new status of {status}");
             return status;
         }
 
-        [HttpPut("recurring/{name}/resume")]
-        public RecurringTaskStatus ResumeRecurringTask(string name)
+        [HttpPut("resume")]
+        public SchedulerStatus Resume()
         {
-            Logger.Info($"Resuming recurring task {name}");
-            var status = _chefJobRunner.RunChefJob.Resume();
-            Logger.Debug($"Finished resuming task {name} with new status of {status}");
+            Logger.Info($"Resuming chef");
+            _chefJobRunner.RunChefJob.Resume();
+            var status = _chefJobRunner.ToStatus();
+            Logger.Debug($"Finished resuming chef with new status of {status}");
             return status;
         }
 
+        [HttpGet("task/{id}")]
+        public ScheduledTaskStatus GetTaskStatus(Guid id)
+        {
+            Logger.Info($"Getting status of task with id {id}");
+            var status = _chefJobRunner.FindStatusById(id);
+            Logger.Debug($"Status for task {id} is {status}");
+            return status;
+        }
     }
 }

@@ -15,13 +15,13 @@ namespace cafe.Client
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
-        private ISchedulerServer _schedulerServer;
+        private IChefServer _schedulerServer;
         private ScheduledTaskStatus _originalStatus;
-        private readonly Func<ISchedulerServer> _schedulerServerProvider;
+        private readonly Func<IChefServer> _schedulerServerProvider;
         private readonly TaskStatusPresenter _taskStatusPresenter;
 
 
-        public SchedulerWaiter(Func<ISchedulerServer> schedulerServerProvider, IAutoResetEvent autoResetEvent,
+        public SchedulerWaiter(Func<IChefServer> schedulerServerProvider, IAutoResetEvent autoResetEvent,
             ITimerFactory timerFactory, TaskStatusPresenter taskStatusPresenter)
             : base("status", autoResetEvent, timerFactory)
         {

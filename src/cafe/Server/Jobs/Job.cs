@@ -12,7 +12,7 @@ namespace cafe.Server.Jobs
 
         private JobRun _lastRun;
 
-        protected JobRun LastRun => _lastRun;
+        public JobRun LastRun => _lastRun;
 
         protected virtual ScheduledTaskStatus OnRunReady(JobRun run)
         {

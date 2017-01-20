@@ -12,12 +12,12 @@ namespace cafe.Options
     {
         private readonly string _command;
         private readonly string _commandDescription;
-        private readonly Func<ISchedulerServer, Task<RecurringTaskStatus>> _serverAction;
+        private readonly Func<IChefServer, Task<SchedulerStatus>> _serverAction;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChangeChefRunningStatusOption).FullName);
 
-        public ChangeChefRunningStatusOption(Func<ISchedulerServer> schedulerServerProvider, string command,
+        public ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
             string commandDescription,
-            Func<ISchedulerServer, Task<RecurringTaskStatus>> serverAction)
+            Func<IChefServer, Task<SchedulerStatus>> serverAction)
             : base(schedulerServerProvider, new OptionSpecification("chef", command), $"{command} chef")
         {
             _command = command;
@@ -30,7 +30,7 @@ namespace cafe.Options
             return $"{_commandDescription} Chef";
         }
 
-        protected override Result RunCore(ISchedulerServer server, string[] args)
+        protected override Result RunCore(IChefServer server, string[] args)
         {
             var status = _serverAction(server).Result;
             if (status == null)
@@ -48,17 +48,17 @@ namespace cafe.Options
         }
 
         public static ChangeChefRunningStatusOption CreatePauseChefOption(
-            Func<ISchedulerServer> schedulerServerProvider)
+            Func<IChefServer> chefServerProvider)
         {
-            return new ChangeChefRunningStatusOption(schedulerServerProvider, "pause", "Pausing",
-                server => server.PauseRecurringTask("chef"));
+            return new ChangeChefRunningStatusOption(chefServerProvider, "pause", "Pausing",
+                server => server.Pause());
         }
 
         public static ChangeChefRunningStatusOption CreateResumeChefOption(
-            Func<ISchedulerServer> schedulerServerProvider)
+            Func<IChefServer> chefServerProvider)
         {
-            return new ChangeChefRunningStatusOption(schedulerServerProvider, "resume", "Resuming",
-                server => server.ResumeRecurringTask("chef"));
+            return new ChangeChefRunningStatusOption(chefServerProvider, "resume", "Resuming",
+                server => server.Resume());
         }
     }
 }

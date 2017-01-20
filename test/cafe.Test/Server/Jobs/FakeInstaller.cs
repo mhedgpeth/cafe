@@ -1,4 +1,5 @@
-﻿using cafe.Chef;
+﻿using System;
+using cafe.Chef;
 using cafe.Shared;
 
 namespace cafe.Test.Server.Jobs
@@ -7,10 +8,10 @@ namespace cafe.Test.Server.Jobs
     {
         public Result InstallOrUpgrade(string version, IMessagePresenter presenter)
         {
-            InstalledVersion = version;
+            InstalledVersion = Version.Parse(version);
             return Result.Successful();
         }
 
-        public string InstalledVersion { get; private set; }
+        public Version InstalledVersion { get; private set; }
     }
 }

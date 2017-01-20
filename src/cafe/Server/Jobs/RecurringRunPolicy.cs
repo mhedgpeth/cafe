@@ -15,7 +15,7 @@ namespace cafe.Server.Jobs
         private readonly IDisposable _timer;
         private Instant _lastFired;
 
-        public RecurringRunPolicy(Duration every, ITimerFactory timerFactory, IClock clock)
+        public RecurringRunPolicy(Duration every, ITimerFactory timerFactory, IClock clock) : base(every)
         {
             _every = every;
             _clock = clock;
@@ -32,7 +32,7 @@ namespace cafe.Server.Jobs
         }
 
         public Duration Every => _every;
-        public Instant ExpectedNextRun => _lastFired.Plus(Every);
+        public override Instant? ExpectedNextRun => _lastFired.Plus(Every);
 
         public void Dispose()
         {
@@ -43,5 +43,7 @@ namespace cafe.Server.Jobs
         {
             return $"Every {_every.Seconds} seconds";
         }
+
+
     }
 }
