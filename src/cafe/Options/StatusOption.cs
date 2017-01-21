@@ -21,14 +21,18 @@ namespace cafe.Options
             var status = schedulerServer.GetStatus().Result;
             ShowQueuedTasks(status);
             ShowFinishedTasks(status);
-            ShowChefStatus(status);
+            ShowChefStatus(status.ChefStatus);
             return Result.Successful();
         }
 
-        private void ShowChefStatus(ServerStatus status)
+        private void ShowChefStatus(ChefStatus status)
         {
             Presenter.NewLine();
-            Presenter.ShowMessage(status.ChefStatus.ToString(), Logger);
+            Presenter.ShowMessage("Chef Status:", Logger);
+            Presenter.ShowMessage(status.ToString(), Logger);
+            ShowChefVersionOption.ShowVersionStatus(status);
+            Presenter.ShowMessage($"Last run: {status.LastRun?.ToLocalTime()}", Logger);
+            Presenter.ShowMessage($"Expected Next Run: {status.ExpectedNextRun?.ToLocalTime()}", Logger);
         }
 
         private static void ShowQueuedTasks(ServerStatus status)
