@@ -13,7 +13,7 @@ namespace cafe.Test.CommandLine
         public void SameMessage_ShouldNotLogAnything()
         {
             var presenter = new FakeMessagePresenter();
-            var status = ScheduledTaskStatus.Create("task");
+            var status = JobRunStatus.Create("task");
 
             var statusPresenter = new TaskStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
@@ -30,7 +30,7 @@ namespace cafe.Test.CommandLine
         public void TaskStart_ShouldLogMessage()
         {
             var presenter = new FakeMessagePresenter();
-            var status = ScheduledTaskStatus.Create("task");
+            var status = JobRunStatus.Create("task");
 
             var statusPresenter = new TaskStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
@@ -48,7 +48,7 @@ namespace cafe.Test.CommandLine
         public void DifferentCurrentMessage_ShouldLogMessage()
         {
             var presenter = new FakeMessagePresenter();
-            var status = ScheduledTaskStatus.Create("task");
+            var status = JobRunStatus.Create("task");
 
             var statusPresenter = new TaskStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
@@ -68,7 +68,7 @@ namespace cafe.Test.CommandLine
         {
             var presenter = new FakeMessagePresenter();
             var statusPresenter = new TaskStatusPresenter(presenter);
-            statusPresenter.BeginPresenting(ScheduledTaskStatus.Create("task"));
+            statusPresenter.BeginPresenting(JobRunStatus.Create("task"));
             presenter.Clear();
 
             statusPresenter.PresentAnyChangesTo(null);
@@ -80,7 +80,7 @@ namespace cafe.Test.CommandLine
         public void MessageChange_ShouldLogMessageAfterFirstTime()
         {
             var presenter = new FakeMessagePresenter();
-            var status = ScheduledTaskStatus.Create("task");
+            var status = JobRunStatus.Create("task");
 
             var statusPresenter = new TaskStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
@@ -96,7 +96,7 @@ namespace cafe.Test.CommandLine
         public void TwoMessagesInARow_ShouldNotBePresented()
         {
             var presenter = new FakeMessagePresenter();
-            var status = ScheduledTaskStatus.Create("task");
+            var status = JobRunStatus.Create("task");
 
             var statusPresenter = new TaskStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);

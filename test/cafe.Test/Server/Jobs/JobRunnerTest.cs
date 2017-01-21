@@ -128,6 +128,5 @@ namespace cafe.Test.Server.Jobs
                 .BeTrue(
                     "because scheduling a scheduled task should immediately process it to make manually submitted tasks faster");
         }
-
     }
 }

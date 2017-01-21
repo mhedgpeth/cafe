@@ -48,7 +48,7 @@ namespace cafe.Options
             return args[5];
         }
 
-        protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
         {
             var config = _fileSystemCommands.ReadAllText(args[7]);
             var validator = _fileSystemCommands.ReadAllText(args[9]);

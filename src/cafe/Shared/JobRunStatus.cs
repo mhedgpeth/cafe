@@ -3,17 +3,17 @@ using NodaTime;
 
 namespace cafe.Shared
 {
-    public class ScheduledTaskStatus
+    public class JobRunStatus
     {
         public Guid Id { get; set; }
         public string Description { get; set; }
-        public TaskState State { get; set; }
+        public JobRunState State { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? CompleteTime { get; set; }
         public Result Result { get; set; }
         public string CurrentMessage { get; set; }
-        public bool IsNotRun => State == TaskState.NotRun;
-        public bool IsRunning => State == TaskState.Running;
+        public bool IsNotRun => State == JobRunState.NotRun;
+        public bool IsRunning => State == JobRunState.Running;
 
         public TimeSpan? Duration
         {
@@ -25,13 +25,13 @@ namespace cafe.Shared
             }
         }
 
-        public static ScheduledTaskStatus Create(string description)
+        public static JobRunStatus Create(string description)
         {
-            return new ScheduledTaskStatus
+            return new JobRunStatus
             {
                 Id = Guid.NewGuid(),
                 Description = description,
-                State = TaskState.NotRun
+                State = JobRunState.NotRun
             };
         }
 
@@ -49,10 +49,10 @@ namespace cafe.Shared
             return $"{firstPart}{Result}";
         }
 
-        public ScheduledTaskStatus Copy()
+        public JobRunStatus Copy()
         {
             // making a copy to defend from outsiders changing the state
-            return new ScheduledTaskStatus()
+            return new JobRunStatus()
             {
                 Id = Id,
                 Description = Description,
@@ -64,7 +64,7 @@ namespace cafe.Shared
             };
         }
 
-        protected bool Equals(ScheduledTaskStatus other)
+        protected bool Equals(JobRunStatus other)
         {
             return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State &&
                    StartTime.Equals(other.StartTime) && CompleteTime.Equals(other.CompleteTime) &&
@@ -76,7 +76,7 @@ namespace cafe.Shared
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ScheduledTaskStatus) obj);
+            return Equals((JobRunStatus) obj);
         }
 
         public override int GetHashCode()
@@ -94,34 +94,34 @@ namespace cafe.Shared
             }
         }
 
-        public static bool operator ==(ScheduledTaskStatus left, ScheduledTaskStatus right)
+        public static bool operator ==(JobRunStatus left, JobRunStatus right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ScheduledTaskStatus left, ScheduledTaskStatus right)
+        public static bool operator !=(JobRunStatus left, JobRunStatus right)
         {
             return !Equals(left, right);
         }
 
-        public ScheduledTaskStatus ToRunningState(DateTime startTime)
+        public JobRunStatus ToRunningState(DateTime startTime)
         {
             var copy = Copy();
             copy.StartTime = startTime;
-            copy.State = TaskState.Running;
+            copy.State = JobRunState.Running;
             return copy;
         }
 
-        public ScheduledTaskStatus ToFinishedState(Result result, DateTime completeTime)
+        public JobRunStatus ToFinishedState(Result result, DateTime completeTime)
         {
             var copy = Copy();
             copy.Result = result;
             copy.CompleteTime = completeTime;
-            copy.State = TaskState.Finished;
+            copy.State = JobRunState.Finished;
             return copy;
         }
 
-        public ScheduledTaskStatus WithDifferentMessage(string message)
+        public JobRunStatus WithDifferentMessage(string message)
         {
             var copy = Copy();
             copy.CurrentMessage = message;

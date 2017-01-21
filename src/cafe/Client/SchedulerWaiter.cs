@@ -8,15 +8,15 @@ namespace cafe.Client
 {
     public interface ISchedulerWaiter
     {
-        ScheduledTaskStatus WaitForTaskToComplete(ScheduledTaskStatus status);
+        JobRunStatus WaitForTaskToComplete(JobRunStatus status);
     }
 
-    public class SchedulerWaiter : StatusWaiter<ScheduledTaskStatus>, ISchedulerWaiter
+    public class SchedulerWaiter : StatusWaiter<JobRunStatus>, ISchedulerWaiter
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
         private IChefServer _schedulerServer;
-        private ScheduledTaskStatus _originalStatus;
+        private JobRunStatus _originalStatus;
         private readonly Func<IChefServer> _schedulerServerProvider;
         private readonly TaskStatusPresenter _taskStatusPresenter;
 
@@ -29,19 +29,19 @@ namespace cafe.Client
             _taskStatusPresenter = taskStatusPresenter;
         }
 
-        public ScheduledTaskStatus WaitForTaskToComplete(ScheduledTaskStatus status)
+        public JobRunStatus WaitForTaskToComplete(JobRunStatus status)
         {
             _originalStatus = status;
             _taskStatusPresenter.BeginPresenting(status);
             return Wait();
         }
 
-        protected override bool IsCurrentStatusCompleted(ScheduledTaskStatus currentStatus)
+        protected override bool IsCurrentStatusCompleted(JobRunStatus currentStatus)
         {
-            return currentStatus != null && currentStatus.State == TaskState.Finished;
+            return currentStatus != null && currentStatus.State == JobRunState.Finished;
         }
 
-        protected override ScheduledTaskStatus RetrieveCurrentStatus()
+        protected override JobRunStatus RetrieveCurrentStatus()
         {
             if (_schedulerServer == null)
             {
@@ -49,7 +49,7 @@ namespace cafe.Client
                 _schedulerServer = _schedulerServerProvider();
             }
             var taskId = _originalStatus.Id;
-            ScheduledTaskStatus currentStatus;
+            JobRunStatus currentStatus;
             try
             {
                 Log.Debug($"Fetching current status for task {taskId}");
@@ -64,7 +64,7 @@ namespace cafe.Client
                 currentStatus = _originalStatus.Copy();
                 currentStatus.Result = Result.Failure(
                     "Lost connection to the server, and so couldn't finish processing this task");
-                currentStatus.State = TaskState.Finished;
+                currentStatus.State = JobRunState.Finished;
                 currentStatus.CompleteTime = DateTime.Now;
             }
             return currentStatus;

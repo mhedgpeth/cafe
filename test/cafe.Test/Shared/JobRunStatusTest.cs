@@ -6,7 +6,7 @@ using Xunit;
 
 namespace cafe.Test.Shared
 {
-    public class ScheduledTaskStatusTest
+    public class JobRunStatusTest
     {
         [Fact]
         public void Copy_ShouldCopyAllElements()
@@ -58,15 +58,15 @@ namespace cafe.Test.Shared
         }
         private static readonly DateTime StartTime = Instant.FromUtc(2016, 12, 27, 11, 15).ToDateTimeUtc();
 
-        private static ScheduledTaskStatus CreateFullStatus()
+        private static JobRunStatus CreateFullStatus()
         {
-            return new ScheduledTaskStatus
+            return new JobRunStatus
             {
                 Id = new Guid("9eb4a43d-306d-44e2-82fe-188813518fdd"),
                 StartTime = StartTime,
                 CompleteTime = StartTime.Add(TimeSpan.FromMinutes(5)),
                 Description = "a task for testing",
-                State = TaskState.Finished,
+                State = JobRunState.Finished,
                 CurrentMessage = "Task finisehd!",
                 Result = Result.Failure("something bad happened!")
             };
@@ -75,14 +75,14 @@ namespace cafe.Test.Shared
         [Fact]
         public void ToString_ShouldBeDescriptiveForNotRun()
         {
-            var status = ScheduledTaskStatus.Create("do something");
+            var status = JobRunStatus.Create("do something");
             status.ToString().Should().Be($"Task {status.Description} ({status.Id}) - Not yet run");
         }
 
         [Fact]
         public void ToString_ShouldBeDescriptiveForRunning()
         {
-            var status = ScheduledTaskStatus.Create("do something").ToRunningState(StartTime);
+            var status = JobRunStatus.Create("do something").ToRunningState(StartTime);
             status.ToString()
                 .Should()
                 .Be($"Task {status.Description} ({status.Id}) - Running for {(int)status.Duration.Value.TotalSeconds} seconds");
@@ -91,7 +91,7 @@ namespace cafe.Test.Shared
         [Fact]
         public void ToString_ShouldBeDescriptiveForFinished()
         {
-            var status = ScheduledTaskStatus.Create("do something")
+            var status = JobRunStatus.Create("do something")
                 .ToRunningState(StartTime)
                 .ToFinishedState(Result.Failure("failed!"), StartTime.Add(TimeSpan.FromSeconds(5)));
 
@@ -101,7 +101,7 @@ namespace cafe.Test.Shared
         [Fact]
         public void Duration_ShouldBeNullBeforeRunning()
         {
-            var status = ScheduledTaskStatus.Create("do something");
+            var status = JobRunStatus.Create("do something");
 
             status.Duration.Should().BeNull("because it hasn't yet started");
         }
@@ -109,7 +109,7 @@ namespace cafe.Test.Shared
         [Fact]
         public void Duration_ShouldBeBasedOnCurrentDate()
         {
-            var status = ScheduledTaskStatus.Create("do something")
+            var status = JobRunStatus.Create("do something")
                 .ToRunningState(DateTime.Now.Subtract(TimeSpan.FromMinutes(1)));
 
             status.Duration.HasValue.Should().BeTrue("because the task has started");
@@ -120,7 +120,7 @@ namespace cafe.Test.Shared
         public void Duration_ShouldBeBasedOnStartAndCompleteDate()
         {
 
-            var status = ScheduledTaskStatus.Create("do something")
+            var status = JobRunStatus.Create("do something")
                 .ToRunningState(StartTime)
                 .ToFinishedState(Result.Successful(), StartTime.AddMinutes(2));
 

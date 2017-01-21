@@ -16,7 +16,7 @@ namespace cafe.Server.Jobs
             _clock = clock;
         }
 
-        public ScheduledTaskStatus Download(string version)
+        public JobRunStatus Download(string version)
         {
             return OnRunReady(new JobRun($"Download Chef {version}", presenter => _downloader.Download(version, presenter), _clock));
         }

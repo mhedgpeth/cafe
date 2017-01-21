@@ -21,7 +21,7 @@ namespace cafe.Options
             _schedulerWaiter = schedulerWaiter;
         }
 
-        protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
         {
             return chefServer.DownloadChef(FindVersion(args));
         }

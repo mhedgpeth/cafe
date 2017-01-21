@@ -25,13 +25,13 @@ namespace cafe.Options
             return Result.Successful();
         }
 
-        private void ShowChefStatus(SchedulerStatus status)
+        private void ShowChefStatus(ServerStatus status)
         {
             Presenter.NewLine();
             Presenter.ShowMessage(status.ChefStatus.ToString(), Logger);
         }
 
-        private static void ShowQueuedTasks(SchedulerStatus status)
+        private static void ShowQueuedTasks(ServerStatus status)
         {
             Presenter.NewLine();
             if (status.QueuedTasks.Length > 0)
@@ -48,7 +48,7 @@ namespace cafe.Options
             }
         }
 
-        private static void ShowFinishedTasks(SchedulerStatus status)
+        private static void ShowFinishedTasks(ServerStatus status)
         {
             Presenter.NewLine();
             var count = 0;

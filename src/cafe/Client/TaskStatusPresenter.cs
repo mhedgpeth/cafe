@@ -6,14 +6,14 @@ namespace cafe.Client
     public class TaskStatusPresenter
     {
         private readonly IMessagePresenter _messagePresenter;
-        private ScheduledTaskStatus _lastStatus;
+        private JobRunStatus _lastStatus;
 
         public TaskStatusPresenter(IMessagePresenter messagePresenter)
         {
             _messagePresenter = messagePresenter;
         }
 
-        public void PresentAnyChangesTo(ScheduledTaskStatus status)
+        public void PresentAnyChangesTo(JobRunStatus status)
         {
             if (status == null)
             {
@@ -34,7 +34,7 @@ namespace cafe.Client
             _lastStatus = status;
         }
 
-        public void BeginPresenting(ScheduledTaskStatus status)
+        public void BeginPresenting(JobRunStatus status)
         {
             if (status == null)
             {

@@ -14,7 +14,7 @@ namespace cafe.Server.Jobs
 
         public JobRun LastRun => _lastRun;
 
-        protected virtual ScheduledTaskStatus OnRunReady(JobRun run)
+        protected virtual JobRunStatus OnRunReady(JobRun run)
         {
             Logger.Debug($"Firing run ready for {run}");
             _lastRun = run;

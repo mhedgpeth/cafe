@@ -1,6 +1,6 @@
 ﻿namespace cafe.Shared
 {
-    public enum TaskState
+    public enum JobRunState
     {
         NotRun = 0,
         Running = 1,

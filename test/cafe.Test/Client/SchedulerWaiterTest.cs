@@ -26,7 +26,7 @@ namespace cafe.Test.Client
                 fakeTimerFactory.FireTimerAction();
             };
 
-            var result = waiter.WaitForTaskToComplete(ScheduledTaskStatus.Create("sample task"));
+            var result = waiter.WaitForTaskToComplete(JobRunStatus.Create("sample task"));
 
             result.Result.IsSuccess.Should().BeFalse("because an exception was thrown by the scheduler");
             result.Result.FailureDescription.Should()

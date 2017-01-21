@@ -14,22 +14,22 @@ namespace cafe.Test.Server.Jobs
         public void Run()
         {
             WasRunCalled = true;
-            CurrentState = FinishTaskImmediately ? TaskState.Finished : TaskState.Running;
+            CurrentState = FinishTaskImmediately ? JobRunState.Finished : JobRunState.Running;
         }
 
-        public bool IsFinishedRunning => CurrentState == TaskState.Finished;
-        public bool IsRunning => CurrentState == TaskState.Running;
+        public bool IsFinishedRunning => CurrentState == JobRunState.Finished;
+        public bool IsRunning => CurrentState == JobRunState.Running;
 
-        public TaskState CurrentState { get; set; }
+        public JobRunState CurrentState { get; set; }
         public Guid Id { get; } = Guid.NewGuid();
-        public ScheduledTaskStatus ToStatus()
+        public JobRunStatus ToStatus()
         {
-            return new ScheduledTaskStatus() { Id = Id};
+            return new JobRunStatus() { Id = Id};
         }
 
-        public ScheduledTaskStatus ToTaskStatus()
+        public JobRunStatus ToTaskStatus()
         {
-            return new ScheduledTaskStatus()
+            return new JobRunStatus()
             {
                 Id = Id,
                 Description = "fake task",
@@ -43,7 +43,7 @@ namespace cafe.Test.Server.Jobs
 
         public void FinishTask(Instant endTime)
         {
-            CurrentState = TaskState.Finished;
+            CurrentState = JobRunState.Finished;
             Ended = endTime;
         }
     }

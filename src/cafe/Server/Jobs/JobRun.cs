@@ -12,7 +12,7 @@ namespace cafe.Server.Jobs
         private readonly string _description;
         private readonly Func<IMessagePresenter, Result> _action;
         private readonly IClock _clock;
-        private TaskState _state = TaskState.NotRun;
+        private JobRunState _state = JobRunState.NotRun;
         private readonly Guid _id = Guid.NewGuid();
         private Instant? _start;
         private Instant? _finish;
@@ -26,8 +26,8 @@ namespace cafe.Server.Jobs
             _clock = clock;
         }
 
-        public bool IsRunning => _state == TaskState.Running;
-        public bool IsFinishedRunning => _state == TaskState.Finished;
+        public bool IsRunning => _state == JobRunState.Running;
+        public bool IsFinishedRunning => _state == JobRunState.Finished;
         public Guid Id => _id;
         public Instant? Start => _start;
         public Instant? Finish => _finish;
@@ -60,7 +60,7 @@ namespace cafe.Server.Jobs
         private void FinishRun()
         {
             _finish = _clock.GetCurrentInstant();
-            _state = TaskState.Finished;
+            _state = JobRunState.Finished;
             ShowMessage(
                 $"Job Run {_description} ({Id}) finished at {_finish} with result: {Result}");
 
@@ -69,7 +69,7 @@ namespace cafe.Server.Jobs
         private void StartRun()
         {
             _start = _clock.GetCurrentInstant();
-            _state = TaskState.Running;
+            _state = JobRunState.Running;
             ShowMessage($"Job Run {_description} ({Id}) started at {Start}");
         }
 
@@ -84,9 +84,9 @@ namespace cafe.Server.Jobs
             return ToStatus().ToString();
         }
 
-        public ScheduledTaskStatus ToStatus()
+        public JobRunStatus ToStatus()
         {
-            return new ScheduledTaskStatus
+            return new JobRunStatus
             {
                 Id = _id,
                 State = _state,

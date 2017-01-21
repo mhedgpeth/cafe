@@ -12,12 +12,12 @@ namespace cafe.Options
     {
         private readonly string _command;
         private readonly string _commandDescription;
-        private readonly Func<IChefServer, Task<SchedulerStatus>> _serverAction;
+        private readonly Func<IChefServer, Task<ServerStatus>> _serverAction;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChangeChefRunningStatusOption).FullName);
 
         public ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
             string commandDescription,
-            Func<IChefServer, Task<SchedulerStatus>> serverAction)
+            Func<IChefServer, Task<ServerStatus>> serverAction)
             : base(schedulerServerProvider, new OptionSpecification("chef", command), $"{command} chef")
         {
             _command = command;

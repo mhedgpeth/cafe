@@ -18,7 +18,7 @@ namespace cafe.Server.Jobs
 
         public Version CurrentVersion => _installer.InstalledVersion;
 
-        public ScheduledTaskStatus InstallOrUpgrade(string version)
+        public JobRunStatus InstallOrUpgrade(string version)
         {
             return OnRunReady(new JobRun($"Install/Upgrade Chef to {version}", presenter => _installer.InstallOrUpgrade(version, presenter), _clock));
         }

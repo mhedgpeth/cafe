@@ -42,7 +42,7 @@ namespace cafe.Server.Jobs
             _runner.Enqueue(jobRun);
         }
 
-        public SchedulerStatus ToStatus()
+        public ServerStatus ToStatus()
         {
             var status = _runner.ToStatus();
             status.ChefStatus = new ChefStatus()
@@ -56,7 +56,7 @@ namespace cafe.Server.Jobs
             return status;
         }
 
-        public ScheduledTaskStatus FindStatusById(Guid id)
+        public JobRunStatus FindStatusById(Guid id)
         {
             return _runner.FindStatusById(id);
         }

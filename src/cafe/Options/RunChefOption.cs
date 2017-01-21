@@ -12,7 +12,7 @@ namespace cafe.Options
         {
         }
 
-        protected override Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
         {
             return chefServer.RunChef();
         }

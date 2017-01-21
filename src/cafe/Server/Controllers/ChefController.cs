@@ -16,28 +16,28 @@ namespace cafe.Server.Controllers
         private readonly ChefJobRunner _chefJobRunner = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
 
         [HttpPut("run")]
-        public ScheduledTaskStatus RunChef()
+        public JobRunStatus RunChef()
         {
             return _chefJobRunner.RunChefJob.Run();
         }
 
         [HttpPut("install")]
         [HttpPut("upgrade")]
-        public ScheduledTaskStatus InstallChef(string version)
+        public JobRunStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
             return _chefJobRunner.InstallChefJob.InstallOrUpgrade(version);
         }
 
         [HttpPut("download")]
-        public ScheduledTaskStatus DownloadChef(string version)
+        public JobRunStatus DownloadChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be downloaded");
             return _chefJobRunner.DownloadChefJob.Download(version);
         }
 
         [HttpPut("bootstrap/policy")]
-        public ScheduledTaskStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
+        public JobRunStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
         {
             Logger.Info($"Bootstrapping chef with policy {policyName} and group: {policyGroup}");
             return _chefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator,
@@ -45,7 +45,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpPut("bootstrap/runList")]
-        public ScheduledTaskStatus BootstrapChef(string config, string validator, string runList)
+        public JobRunStatus BootstrapChef(string config, string validator, string runList)
         {
             var description = $"Bootstrapping chef with run list {runList}";
             Logger.Info(description);
@@ -60,7 +60,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpGet("status")]
-        public SchedulerStatus GetStatus()
+        public ServerStatus GetStatus()
         {
             Logger.Info($"Getting chef status");
             var status = _chefJobRunner.ToStatus();
@@ -69,7 +69,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpPut("pause")]
-        public SchedulerStatus Pause()
+        public ServerStatus Pause()
         {
             Logger.Info($"Pausing chef");
             _chefJobRunner.RunChefJob.Pause();
@@ -79,7 +79,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpPut("resume")]
-        public SchedulerStatus Resume()
+        public ServerStatus Resume()
         {
             Logger.Info($"Resuming chef");
             _chefJobRunner.RunChefJob.Resume();
@@ -89,7 +89,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpGet("task/{id}")]
-        public ScheduledTaskStatus GetTaskStatus(Guid id)
+        public JobRunStatus GetTaskStatus(Guid id)
         {
             Logger.Info($"Getting status of task with id {id}");
             var status = _chefJobRunner.FindStatusById(id);

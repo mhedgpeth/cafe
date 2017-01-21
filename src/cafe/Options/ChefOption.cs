@@ -30,6 +30,6 @@ namespace cafe.Options
             return finalStatus.Result;
         }
 
-        protected abstract Task<ScheduledTaskStatus> RunCore(IChefServer chefServer, string[] args);
+        protected abstract Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args);
     }
 }

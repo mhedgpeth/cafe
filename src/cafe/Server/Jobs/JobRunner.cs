@@ -15,7 +15,7 @@ namespace cafe.Server.Jobs
         private static readonly Logger Logger = LogManager.GetLogger(typeof(JobRunner).FullName);
 
         private readonly Queue<IJobRun> _queuedRuns = new Queue<IJobRun>();
-        private readonly IList<ScheduledTaskStatus> _finishedTasks = new List<ScheduledTaskStatus>();
+        private readonly IList<JobRunStatus> _finishedTasks = new List<JobRunStatus>();
         private readonly object _processLocker = new object();
 
         public JobRunner(ITimerFactory timerFactory, IActionExecutor actionExecutor)
@@ -61,7 +61,7 @@ namespace cafe.Server.Jobs
             ProcessQueue();
         }
 
-        public ScheduledTaskStatus FindStatusById(Guid id)
+        public JobRunStatus FindStatusById(Guid id)
         {
             Logger.Debug(
                 $"Searching for task {id} within {_queuedRuns.Count} queued tasks and {_finishedTasks.Count} finished tasks");
@@ -84,9 +84,13 @@ namespace cafe.Server.Jobs
             return status;
         }
 
-        public SchedulerStatus ToStatus()
+        public ServerStatus ToStatus()
         {
-            return new SchedulerStatus();
+            return new ServerStatus()
+            {
+                QueuedTasks = _queuedRuns.Select(queuedRun => queuedRun.ToStatus()).ToArray(),
+                FinishedTasks = _finishedTasks.ToArray()
+            };
         }
 
         public void Dispose()
