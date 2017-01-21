@@ -32,7 +32,7 @@ namespace cafe.Client
         [Put("resume")]
         Task<ServerStatus> Resume();
 
-        [Get("task/{id}")]
-        Task<JobRunStatus> GetTaskStatus([Path]Guid id);
+        [Get("job/{id}")]
+        Task<JobRunStatus> GetJobRunStatus([Path]Guid id);
     }
 }

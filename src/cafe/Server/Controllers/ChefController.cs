@@ -88,8 +88,8 @@ namespace cafe.Server.Controllers
             return status;
         }
 
-        [HttpGet("task/{id}")]
-        public JobRunStatus GetTaskStatus(Guid id)
+        [HttpGet("job/{id}")]
+        public JobRunStatus GetJobRunStatus(Guid id)
         {
             Logger.Info($"Getting status of task with id {id}");
             var status = _chefJobRunner.FindStatusById(id);

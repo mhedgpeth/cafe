@@ -79,6 +79,7 @@ namespace cafe
                     serviceStatusWaiter),
                 new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
                 new StatusOption(clientFactory.RestClientForChefServer),
+                new JobRunStatusOption(clientFactory.RestClientForChefServer),
                 ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
                 ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForChefServer),
                 new InitOption(AssemblyDirectory, environment));

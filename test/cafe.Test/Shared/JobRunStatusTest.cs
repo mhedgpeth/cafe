@@ -17,7 +17,7 @@ namespace cafe.Test.Shared
 
             copy.Id.Should().Be(status.Id);
             copy.StartTime.Should().Be(status.StartTime);
-            copy.CompleteTime.Should().Be(status.CompleteTime);
+            copy.FinishTime.Should().Be(status.FinishTime);
             copy.Description.Should().Be(status.Description);
             copy.State.Should().Be(status.State);
             copy.Result.Should().Be(status.Result);
@@ -37,7 +37,7 @@ namespace cafe.Test.Shared
         public void Equals_ShouldBeFalseWhenCompleteTimeDiffers()
         {
             var status = CreateFullStatus();
-            status.CompleteTime = status.CompleteTime.Value.Add(TimeSpan.FromMinutes(2));
+            status.FinishTime = status.FinishTime.Value.Add(TimeSpan.FromMinutes(2));
 
             status.Should().NotBe(CreateFullStatus(), "because complete time differs, the two should not be equal");
         }
@@ -64,7 +64,7 @@ namespace cafe.Test.Shared
             {
                 Id = new Guid("9eb4a43d-306d-44e2-82fe-188813518fdd"),
                 StartTime = StartTime,
-                CompleteTime = StartTime.Add(TimeSpan.FromMinutes(5)),
+                FinishTime = StartTime.Add(TimeSpan.FromMinutes(5)),
                 Description = "a task for testing",
                 State = JobRunState.Finished,
                 CurrentMessage = "Task finisehd!",

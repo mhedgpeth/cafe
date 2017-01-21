@@ -94,7 +94,7 @@ namespace cafe.Server.Jobs
                 Description = _description,
                 Result = _result,
                 StartTime = Start?.ToDateTimeUtc(),
-                CompleteTime = Finish?.ToDateTimeUtc()
+                FinishTime = Finish?.ToDateTimeUtc()
             };
         }
     }

@@ -37,5 +37,6 @@ namespace cafe.CommandLine
         {
             Console.Out.WriteLine();
         }
+
     }
 }

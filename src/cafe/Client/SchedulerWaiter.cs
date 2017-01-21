@@ -53,7 +53,7 @@ namespace cafe.Client
             try
             {
                 Log.Debug($"Fetching current status for task {taskId}");
-                currentStatus = _schedulerServer.GetTaskStatus(taskId).Result;
+                currentStatus = _schedulerServer.GetJobRunStatus(taskId).Result;
                 Log.Debug($"Task {taskId} has status of {currentStatus}");
                 _taskStatusPresenter.PresentAnyChangesTo(currentStatus);
             }
@@ -65,7 +65,7 @@ namespace cafe.Client
                 currentStatus.Result = Result.Failure(
                     "Lost connection to the server, and so couldn't finish processing this task");
                 currentStatus.State = JobRunState.Finished;
-                currentStatus.CompleteTime = DateTime.Now;
+                currentStatus.FinishTime = DateTime.Now;
             }
             return currentStatus;
         }

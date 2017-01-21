@@ -9,7 +9,7 @@ namespace cafe.Shared
         public string Description { get; set; }
         public JobRunState State { get; set; }
         public DateTime? StartTime { get; set; }
-        public DateTime? CompleteTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         public Result Result { get; set; }
         public string CurrentMessage { get; set; }
         public bool IsNotRun => State == JobRunState.NotRun;
@@ -19,7 +19,7 @@ namespace cafe.Shared
         {
             get
             {
-                if (StartTime.HasValue && CompleteTime.HasValue) return CompleteTime.Value.Subtract(StartTime.Value);
+                if (StartTime.HasValue && FinishTime.HasValue) return FinishTime.Value.Subtract(StartTime.Value);
                 if (StartTime.HasValue) return SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Subtract(StartTime.Value);
                 return null;
             }
@@ -58,7 +58,7 @@ namespace cafe.Shared
                 Description = Description,
                 State = State,
                 StartTime = StartTime,
-                CompleteTime = CompleteTime,
+                FinishTime = FinishTime,
                 Result = Result,
                 CurrentMessage = CurrentMessage
             };
@@ -67,7 +67,7 @@ namespace cafe.Shared
         protected bool Equals(JobRunStatus other)
         {
             return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State &&
-                   StartTime.Equals(other.StartTime) && CompleteTime.Equals(other.CompleteTime) &&
+                   StartTime.Equals(other.StartTime) && FinishTime.Equals(other.FinishTime) &&
                    Equals(Result, other.Result) && string.Equals(CurrentMessage, other.CurrentMessage);
         }
 
@@ -87,7 +87,7 @@ namespace cafe.Shared
                 hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int) State;
                 hashCode = (hashCode * 397) ^ StartTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ CompleteTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ FinishTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Result != null ? Result.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (CurrentMessage != null ? CurrentMessage.GetHashCode() : 0);
                 return hashCode;
@@ -116,7 +116,7 @@ namespace cafe.Shared
         {
             var copy = Copy();
             copy.Result = result;
-            copy.CompleteTime = completeTime;
+            copy.FinishTime = completeTime;
             copy.State = JobRunState.Finished;
             return copy;
         }

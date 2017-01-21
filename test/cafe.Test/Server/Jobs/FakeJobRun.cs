@@ -34,7 +34,7 @@ namespace cafe.Test.Server.Jobs
                 Id = Id,
                 Description = "fake task",
                 State = CurrentState,
-                CompleteTime = Ended?.ToDateTimeUtc()
+                FinishTime = Ended?.ToDateTimeUtc()
             };
         }
 

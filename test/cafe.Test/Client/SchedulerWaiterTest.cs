@@ -16,7 +16,7 @@ namespace cafe.Test.Client
         public void Exception_ShouldSetAutoresetEventAndFail()
         {
             var scheduler = new Mock<IChefServer>();
-            scheduler.Setup(s => s.GetTaskStatus(It.IsAny<Guid>())).Throws<HttpRequestException>();
+            scheduler.Setup(s => s.GetJobRunStatus(It.IsAny<Guid>())).Throws<HttpRequestException>();
             var autoResetEvent = new FakeAutoResetEvent();
             var fakeTimerFactory = new FakeTimerFactory();
 
