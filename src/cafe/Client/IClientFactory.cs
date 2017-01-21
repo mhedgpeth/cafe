@@ -3,6 +3,5 @@
     public interface IClientFactory
     {
         IChefServer RestClientForChefServer();
-        ISchedulerServer RestClientForSchedulerServer();
     }
 }

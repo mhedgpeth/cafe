@@ -1,7 +1,7 @@
 using System.IO;
-using cafe.Chef;
 using cafe.CommandLine;
 using cafe.Server;
+using cafe.Server.Jobs;
 using cafe.Server.Scheduling;
 using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore.Hosting;
@@ -45,24 +45,26 @@ namespace cafe.Options.Server
                     }
                 });
 
-            Initialize(StructureMapResolver.Container.GetInstance<Scheduler>(), ServerSettings.Instance.ChefInterval);
+            Initialize(StructureMapResolver.Container.GetInstance<RunChefJob>(), ServerSettings.Instance.ChefInterval,
+                StructureMapResolver.Container.GetInstance<ITimerFactory>(),
+                StructureMapResolver.Container.GetInstance<IClock>());
 
             _webHost.Start();
         }
 
-        public static void Initialize(Scheduler scheduler, int chefIntervalInSeconds)
+        public static void Initialize(RunChefJob runChefJob, int chefIntervalInSeconds, ITimerFactory timerFactory,
+            IClock clock)
         {
             if (chefIntervalInSeconds > 0)
             {
-                Logger.Info($"Since chef interval duration is set to {chefIntervalInSeconds}, adding chef as a recurring task");
                 var interval = Duration.FromSeconds(chefIntervalInSeconds);
-                Presenter.ShowMessage($"Scheduling chef to run every {(int)interval.TotalSeconds} seconds", Logger);
-                scheduler.Add(new RecurringTask(RecurringTask.RunChefKey, SystemClock.Instance, interval,
-                    recurringTask => new ScheduledTask("Run Chef", StructureMapResolver.Container.GetInstance<ChefRunner>().Run, recurringTask, SystemClock.Instance)));
+                Presenter.ShowMessage($"Scheduling chef to run every {(int) interval.TotalSeconds} seconds", Logger);
+                runChefJob.RunPolicy = RunPolicy.RegularlyEvery(interval, timerFactory, clock);
             }
             else
             {
-                Logger.Debug($"Since chef interval duration is set to {chefIntervalInSeconds}, not adding chef as a recurring task");
+                Logger.Debug(
+                    $"Since chef interval duration is set to {chefIntervalInSeconds}, not adding chef as a recurring task");
             }
         }
 

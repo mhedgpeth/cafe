@@ -34,7 +34,7 @@ namespace cafe.Chef
 
         public Result Install(string version)
         {
-            var fullPathToStagedInstaller = ChefDownloader.FullPathToStagedInstaller(version);
+            var fullPathToStagedInstaller = Downloader.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
                 Logger.Warn(

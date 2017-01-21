@@ -48,5 +48,10 @@ namespace cafe.LocalSystem
             var binDirectory = Directory.GetParent(batchFilePath);
             return binDirectory.FullName;
         }
+
+        public bool FileExists(string destination)
+        {
+            return _commands.FileExists(destination);
+        }
     }
 }

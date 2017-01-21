@@ -1,6 +1,6 @@
 ﻿using cafe.Server;
 using cafe.Server.Controllers;
-using cafe.Server.Scheduling;
+using cafe.Server.Jobs;
 using FluentAssertions;
 using Xunit;
 
@@ -12,14 +12,14 @@ namespace cafe.IntegrationTest
         public void ChefController_ShouldInsantiateThroughStructureMap()
         {
             var chefController = AssertStructureMapCreatesControllerOfType<ChefController>();
-            var scheduler = StructureMapResolver.Container.GetInstance<Scheduler>();
-            scheduler.Pause();
+            var scheduler = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
+            scheduler.RunChefJob.Pause();
 
             chefController.RunChef();
             const string version = "14.17.44";
             chefController.DownloadChef(version);
             chefController.InstallChef(version);
-            chefController.GetChefStatus().Should().NotBeNull("because chef should be operational");
+            chefController.GetStatus().Should().NotBeNull("because chef should be operational");
         }
 
         private static T AssertStructureMapCreatesControllerOfType<T>()
@@ -32,16 +32,10 @@ namespace cafe.IntegrationTest
         [Fact]
         public void Scheduler_ShouldBeSingleton()
         {
-            var one = StructureMapResolver.Container.GetInstance<Scheduler>();
-            var another = StructureMapResolver.Container.GetInstance<Scheduler>();
+            var one = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
+            var another = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
 
-            one.Should().BeSameAs(another, "because scheduler should be a singleton");
-        }
-
-        [Fact]
-        public void SchedulerController_ShouldInstantiateThroughStructureMap()
-        {
-            AssertStructureMapCreatesControllerOfType<SchedulerController>();
+            one.Should().BeSameAs(another, "because chef job runner should be a singleton");
         }
     }
 }

@@ -9,9 +9,9 @@ namespace cafe.Options
     public abstract class SchedulerOption : Option
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerOption).FullName);
-        private readonly Func<ISchedulerServer> _schedulerServerProvider;
+        private readonly Func<IChefServer> _schedulerServerProvider;
 
-        protected SchedulerOption(Func<ISchedulerServer> schedulerServerProvider,
+        protected SchedulerOption(Func<IChefServer> schedulerServerProvider,
             OptionSpecification optionSpecification,
             string helpText)
             : base(optionSpecification, helpText)
@@ -24,16 +24,16 @@ namespace cafe.Options
             try
             {
                 var schedulerServer = _schedulerServerProvider();
-                RunCore(schedulerServer, args);
+                return RunCore(schedulerServer, args);
             }
             catch (Exception ex)
             {
                 Logger.Debug(ex, $"An exception occurred while {ToDescription(args)}");
                 Presenter.ShowMessage("The server is not currently running", Logger);
+                return Result.Failure("Could not establish connection with cafe server");
             }
-            return Result.Successful();
         }
 
-        protected abstract Result RunCore(ISchedulerServer server, string[] args);
+        protected abstract Result RunCore(IChefServer server, string[] args);
     }
 }
