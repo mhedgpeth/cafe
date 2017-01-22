@@ -12,7 +12,7 @@ namespace cafe.Options
         private readonly ClientFactory _clientFactory;
 
         public ShowChefVersionOption(ClientFactory clientFactory)
-            : base(new OptionSpecification("chef", "version"), "show the current version of chef")
+            : base("show the current version of chef")
         {
             _clientFactory = clientFactory;
         }

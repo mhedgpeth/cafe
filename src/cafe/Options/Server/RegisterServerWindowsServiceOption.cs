@@ -11,8 +11,7 @@ namespace cafe.Options.Server
         private static readonly Logger Logger =
             LogManager.GetLogger(typeof(RegisterServerWindowsServiceOption).FullName);
 
-        public RegisterServerWindowsServiceOption() : base(
-            new OptionSpecification("service", "register"), "Registers cafe as a service")
+        public RegisterServerWindowsServiceOption() : base("Registers cafe as a service")
         {
         }
 

@@ -13,7 +13,7 @@ namespace cafe.Options.Server
 
 
         public CafeWindowsServiceStatusOption(ProcessExecutor processExecutor, IFileSystem fileSystem)
-            : base(new OptionSpecification("service", "status"), "gets the status of the cafe windows service")
+            : base("gets the status of the cafe windows service")
         {
             _serviceStatusProvider = new ServiceStatusProvider(processExecutor, fileSystem);
         }

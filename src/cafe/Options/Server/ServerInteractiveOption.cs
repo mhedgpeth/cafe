@@ -10,7 +10,7 @@ namespace cafe.Options.Server
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ServerInteractiveOption).FullName);
 
-        public ServerInteractiveOption() : base(new OptionSpecification("server"), "Starts cafe in server mode to be run on the console")
+        public ServerInteractiveOption() : base("Starts cafe in server mode to be run on the console")
         {
         }
 

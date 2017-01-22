@@ -6,7 +6,7 @@ namespace cafe.Options.Server
 {
     public class ServerWindowsServiceOption : Option
     {
-        public ServerWindowsServiceOption() : base(new OptionSpecification("server", "--run-as-service"), "Runs cafe in service mode")
+        public ServerWindowsServiceOption() : base("Runs cafe in service mode")
         {
         }
 

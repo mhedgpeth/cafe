@@ -11,7 +11,7 @@ namespace cafe.Options
         private static readonly Logger Logger = LogManager.GetLogger(typeof(JobRunStatusOption).FullName);
 
         public JobRunStatusOption(Func<IChefServer> schedulerServerProvider)
-            : base(schedulerServerProvider, new OptionSpecification(OptionValueSpecification.ForExactValue("status"), OptionValueSpecification.ForAnyValue("job run id")), "Gets the id of the job")
+            : base(schedulerServerProvider, "Gets the id of the job")
         {
         }
 

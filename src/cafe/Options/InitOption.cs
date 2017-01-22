@@ -12,7 +12,7 @@ namespace cafe.Options
         private readonly string _cafeDirectory;
         private readonly IEnvironment _environment;
 
-        public InitOption(string cafeDirectory, IEnvironment environment) : base(new OptionSpecification("init"),
+        public InitOption(string cafeDirectory, IEnvironment environment) : base(
             "initializes cafe to run on this machine")
         {
             _cafeDirectory = cafeDirectory;

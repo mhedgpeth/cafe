@@ -9,8 +9,6 @@ namespace cafe.Options
     {
         public InstallChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter)
             : base(clientFactory, schedulerWaiter,
-                new OptionSpecification(OptionValueSpecification.ForExactValue("chef"),
-                    OptionValueSpecification.ForExactValues("install", "upgrade"), OptionValueSpecification.ForVersion()),
                 "installs or upgrades chef to the specified version")
         {
         }

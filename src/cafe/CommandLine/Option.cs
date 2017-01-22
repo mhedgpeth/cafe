@@ -12,21 +12,14 @@ namespace cafe.CommandLine
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
         private readonly string _helpText;
-        private readonly OptionSpecification _specification;
 
-        protected Option(OptionSpecification specification, string helpText)
+        protected Option(string helpText)
         {
-            _specification = specification;
             _helpText = helpText;
         }
 
         public Result Run(params string[] args)
         {
-            if (_specification.HelpRequested(args))
-            {
-                ShowHelp();
-                return Result.Successful();
-            }
             Result result = null;
             var description = ToDescription(args);
             try
@@ -81,19 +74,11 @@ namespace cafe.CommandLine
 
         protected abstract Result RunCore(string[] args);
 
-        public virtual void ShowHelp()
-        {
-            Presenter.ShowMessage(ToString(), Logger);
-        }
-
-        public bool IsSatisfiedBy(params string[] args)
-        {
-            return _specification.IsSatisfiedBy(args);
-        }
-
         public override string ToString()
         {
-            return $"{_specification} ({_helpText})";
+            return _helpText;
         }
+
+        public virtual void NotifyHelpWasShown() { }
     }
 }

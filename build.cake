@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.3.0." + buildNumber;
+var version = "0.3.1." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -120,6 +120,22 @@ Task("FullBuild")
 
 var cafeWindowsPublishDirectory = buildDir + Directory("netcoreapp1.1/win10-x64/publish");
 
+Task("ShowHelp")
+    .Does(() => {
+        RunCafe("-h");
+    });
+
+Task("ShowChefHelp")
+    .Does(() => {
+        RunCafe("chef -h");
+    });
+
+Task("ShowChefRunHelp")
+    .Does(() => {
+        RunCafe("chef run -h");
+    });
+
+
 Task("ShowChefVersion")
     .Does(() => {
         RunCafe("chef version");
@@ -225,6 +241,9 @@ public void RunCafe(string argument, params string[] formatParameters)
 }
 
 Task("AcceptanceTest")
+    .IsDependentOn("ShowHelp")
+    .IsDependentOn("ShowChefHelp")
+    .IsDependentOn("ShowChefRunHelp")
     .IsDependentOn("RegisterService")
     .IsDependentOn("DownloadOldVersion")
     .IsDependentOn("InstallOldVersion")
