@@ -15,7 +15,7 @@ namespace cafe.Test.CommandLine
             var presenter = new FakeMessagePresenter();
             var status = JobRunStatus.Create("task");
 
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
             presenter.Clear();
 
@@ -32,7 +32,7 @@ namespace cafe.Test.CommandLine
             var presenter = new FakeMessagePresenter();
             var status = JobRunStatus.Create("task");
 
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
 
             presenter.Clear();
@@ -50,7 +50,7 @@ namespace cafe.Test.CommandLine
             var presenter = new FakeMessagePresenter();
             var status = JobRunStatus.Create("task");
 
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
 
             presenter.Clear();
@@ -67,7 +67,7 @@ namespace cafe.Test.CommandLine
         public void NullStatus_ShouldBeIgnored()
         {
             var presenter = new FakeMessagePresenter();
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(JobRunStatus.Create("task"));
             presenter.Clear();
 
@@ -82,7 +82,7 @@ namespace cafe.Test.CommandLine
             var presenter = new FakeMessagePresenter();
             var status = JobRunStatus.Create("task");
 
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
             statusPresenter.PresentAnyChangesTo(status.WithDifferentMessage("another"));
             presenter.Clear();
@@ -98,7 +98,7 @@ namespace cafe.Test.CommandLine
             var presenter = new FakeMessagePresenter();
             var status = JobRunStatus.Create("task");
 
-            var statusPresenter = new TaskStatusPresenter(presenter);
+            var statusPresenter = new JobRunStatusPresenter(presenter);
             statusPresenter.BeginPresenting(status);
             var another = status.WithDifferentMessage("another");
             statusPresenter.PresentAnyChangesTo(another);

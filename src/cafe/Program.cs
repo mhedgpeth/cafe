@@ -6,6 +6,7 @@ using cafe.Client;
 using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Options;
+using cafe.Options.Chef;
 using cafe.Options.Server;
 using cafe.Server.Scheduling;
 using NLog;
@@ -30,7 +31,7 @@ namespace cafe
             return returnValue;
         }
 
-        public static string AssemblyDirectory
+        private static string AssemblyDirectory
         {
             get
             {
@@ -48,12 +49,12 @@ namespace cafe
             Logger.Info($"Logging set up based on {file}");
         }
 
-        public static OptionGroup CreateRunner(string[] args)
+        private static OptionGroup CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
-            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForChefServer,
+            var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForJobServer,
                 new AutoResetEventBoundary(), new TimerFactory(),
-                new TaskStatusPresenter(new PresenterMessagePresenter()));
+                new JobRunStatusPresenter(new PresenterMessagePresenter()));
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
             var environment = new EnvironmentBoundary();
             var fileSystemCommands = new FileSystemCommandsBoundary();
@@ -66,13 +67,13 @@ namespace cafe
             var root = new OptionGroup()
                 .WithGroup("chef", chefGroup =>
                 {
-                    chefGroup.WithOption(new RunChefOption(clientFactory, schedulerWaiter), "run");
-                    chefGroup.WithOption(new DownloadChefOption(clientFactory, schedulerWaiter),
+                    chefGroup.WithOption(new RunChefOption(clientFactory.RestClientForChefServer, schedulerWaiter), "run");
+                    chefGroup.WithOption(new DownloadChefOption(clientFactory.RestClientForChefServer, schedulerWaiter),
                         OptionValueSpecification.ForExactValue("download"),
                         OptionValueSpecification.ForVersion());
-                    chefGroup.WithOption(new ShowChefVersionOption(clientFactory), "version");
+                    chefGroup.WithOption(new ShowChefStatusOption(clientFactory), "status");
                     chefGroup.WithOption(
-                        new BootstrapChefRunListOption(clientFactory, schedulerWaiter, fileSystemCommands),
+                        new BootstrapChefRunListOption(clientFactory.RestClientForChefServer, schedulerWaiter, fileSystemCommands),
                         OptionValueSpecification.ForExactValue("bootstrap"),
                         OptionValueSpecification.ForExactValue("run-list:"),
                         OptionValueSpecification.ForAnyValue("the run list"),
@@ -81,7 +82,7 @@ namespace cafe
                         OptionValueSpecification.ForExactValue("validator:"),
                         OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
                     chefGroup.WithOption(
-                        new BootstrapChefPolicyOption(clientFactory, schedulerWaiter, fileSystemCommands),
+                        new BootstrapChefPolicyOption(clientFactory.RestClientForChefServer, schedulerWaiter, fileSystemCommands),
                         OptionValueSpecification.ForExactValue("bootstrap"),
                         OptionValueSpecification.ForExactValue("policy:"),
                         OptionValueSpecification.ForAnyValue("the policy name"),
@@ -91,7 +92,7 @@ namespace cafe
                         OptionValueSpecification.ForAnyValue("the client.rb file"),
                         OptionValueSpecification.ForExactValue("validator:"),
                         OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
-                    var installChefOption = new InstallChefOption(clientFactory, schedulerWaiter);
+                    var installChefOption = new InstallChefOption(clientFactory.RestClientForChefServer, schedulerWaiter);
                     chefGroup.WithOption(installChefOption, OptionValueSpecification.ForExactValue("install"),
                         OptionValueSpecification.ForVersion());
                     chefGroup.WithOption(installChefOption, OptionValueSpecification.ForExactValue("upgrade"),
@@ -121,11 +122,13 @@ namespace cafe
                     serviceGroup.WithOption(new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
                         "status");
                 })
-                .WithGroup("status", statusGroup =>
+                .WithGroup("job", statusGroup =>
                 {
-                    statusGroup.WithDefaultOption(new StatusOption(clientFactory.RestClientForChefServer));
-                    statusGroup.WithOption(new JobRunStatusOption(clientFactory.RestClientForChefServer),
-                        OptionValueSpecification.ForAnyValue("job run id"));
+                    var statusOption = new StatusOption(clientFactory.RestClientForJobServer);
+                    statusGroup.WithDefaultOption(statusOption);
+                    statusGroup.WithOption(statusOption, "status");
+                    statusGroup.WithOption(new JobRunStatusOption(clientFactory.RestClientForJobServer),
+                        OptionValueSpecification.ForExactValue("status"), OptionValueSpecification.ForAnyValue("job run id"));
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
             Logger.Debug("Running application");

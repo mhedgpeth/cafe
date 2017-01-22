@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.3.1." + buildNumber;
+var version = "0.4.0." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -135,27 +135,19 @@ Task("ShowChefRunHelp")
         RunCafe("chef run -h");
     });
 
-
-Task("ShowChefVersion")
+Task("ShowChefStatus")
     .Does(() => {
-        RunCafe("chef version");
+        RunCafe("chef status");
     });
 
-
-Task("ShowStatus")
+Task("ShowJobStatus")
     .Does(() => {
-        var processSettings =  new ProcessSettings() { Arguments = "status" }.UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
-    }); 
+        RunCafe("job all");
+    });
 
 Task("RunChef")
     .Does(() => {
-        var processSettings =  new ProcessSettings() { Arguments = "chef run" }.UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe("chef run");
     }); 
 
 
@@ -230,6 +222,12 @@ Task("StopService")
     });
 
 
+Task("StartService")
+    .Does(() =>
+    {
+        RunCafe(@"service start");
+    });
+
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
@@ -248,8 +246,8 @@ Task("AcceptanceTest")
     .IsDependentOn("DownloadOldVersion")
     .IsDependentOn("InstallOldVersion")
     .IsDependentOn("BootstrapPolicy")
-    .IsDependentOn("ShowStatus")
-    .IsDependentOn("ShowChefVersion")
+    .IsDependentOn("ShowChefStatus")
+    .IsDependentOn("ShowJobStatus")
     .IsDependentOn("DownloadNewVersion")
     .IsDependentOn("InstallNewVersion")
     .IsDependentOn("RunChef")

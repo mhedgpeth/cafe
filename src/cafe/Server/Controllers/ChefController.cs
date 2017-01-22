@@ -1,5 +1,4 @@
-﻿using System;
-using cafe.Chef;
+﻿using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;
@@ -59,17 +58,8 @@ namespace cafe.Server.Controllers
                 validator, bootstrapSettings);
         }
 
-        [HttpGet("status")]
-        public ServerStatus GetStatus()
-        {
-            Logger.Info($"Getting chef status");
-            var status = _chefJobRunner.ToStatus();
-            Logger.Debug($"Status for chef is {status}");
-            return status;
-        }
-
         [HttpPut("pause")]
-        public ServerStatus Pause()
+        public ChefStatus Pause()
         {
             Logger.Info($"Pausing chef");
             _chefJobRunner.RunChefJob.Pause();
@@ -79,7 +69,7 @@ namespace cafe.Server.Controllers
         }
 
         [HttpPut("resume")]
-        public ServerStatus Resume()
+        public ChefStatus Resume()
         {
             Logger.Info($"Resuming chef");
             _chefJobRunner.RunChefJob.Resume();
@@ -88,12 +78,12 @@ namespace cafe.Server.Controllers
             return status;
         }
 
-        [HttpGet("job/{id}")]
-        public JobRunStatus GetJobRunStatus(Guid id)
+        [HttpGet("status")]
+        public ChefStatus GetStatus()
         {
-            Logger.Info($"Getting status of task with id {id}");
-            var status = _chefJobRunner.FindStatusById(id);
-            Logger.Debug($"Status for task {id} is {status}");
+            Logger.Info($"Getting chef status");
+            var status = _chefJobRunner.ToStatus();
+            Logger.Debug($"Status for chef is {status}");
             return status;
         }
     }

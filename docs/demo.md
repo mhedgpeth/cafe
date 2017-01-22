@@ -18,7 +18,7 @@ Let's get it installed:
   - Run `cafe init` and reboot to add to PATH variable
   - Run `cafe service register` which adds cafe to services
   - Run `cafe service start` which starts the Server
-  - Run `cafe status` to see output
+  - Run `cafe job status` to see output
   - View `http://localhost:59320/api/scheduler/status` - it's the same thing
 
 ### Control your node remotely
@@ -26,10 +26,10 @@ Let's get it installed:
   - update `client.json` on another machine to point at your node over port `59320`
 
 ### Install chef-client on the node 
-  - Run `cafe chef version` and notice that it is not installed
+  - Run `cafe chef status` and notice that it is not installed
   - Run `cafe chef download 12.16.42` - places it in the staging folder (this could be done by a chef cookbook as well)
   - Run `cafe chef install 12.16.42`
-  - Run `cafe chef version` and notice that it is installed, show add/remove programs
+  - Run `cafe chef status` and notice that it is installed, show add/remove programs
 
 ### Bootstrap the node
 
@@ -47,16 +47,17 @@ We want to operate chef with a windows mindset for easier adoption:
 * Chef logging to its own file, rolled
 * NLog controlling the level, pattern, etc.
 * Rest of server that is consumable by a log4X log viewer, like Log4View
-* Run `cafe status` and notice that the runs are in the history
+* Run `cafe job all` and notice that the runs are in the history
+* Run `cafe job [guid]` and get detailed information on a particular job
 
 ## Scheduling
 
 * Schedule Chef to run every 30 seconds, defined in `server.json`
 * Run `cafe service stop`
 * Run `cafe service start`
-* Easily view the schedule through the `cafe status` command
+* Easily view the schedule through the `cafe job all` command
 * Everything scheduled, including the ad-hoc things, are run **serially**. That means no conflicts!
-* Keep running `cafe status` and notice what's happening. View the logs for a deeper view.
+* Keep running `cafe job all` and notice what's happening. View the logs for a deeper view.
 
 ## Pausing
 
@@ -64,7 +65,7 @@ People are going to pause Chef. Why not give them an easy way to do it so you ca
 
 * Pause chef with `cafe chef pause`
 * Run `cafe chef run`
-* Run `cafe status`. Notice that the task is queued but not run yet since it is paused.
+* Run `cafe job all`. Notice that the task is queued but not run yet since it is paused.
 * Go to `http://localhost:59320` and see that it is paused
 * Run `cafe chef resume` and see that chef starts running
 

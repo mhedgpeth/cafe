@@ -13,7 +13,8 @@ namespace cafe.Server.Jobs
         private readonly InstallChefJob _installJob;
         private readonly RunChefJob _runChefJob;
 
-        public ChefJobRunner(JobRunner runner, DownloadChefJob downloadJob, InstallChefJob installJob, RunChefJob runChefJob)
+        public ChefJobRunner(JobRunner runner, DownloadChefJob downloadJob, InstallChefJob installJob,
+            RunChefJob runChefJob)
         {
             ListenForJobsToBeReady(downloadJob, installJob, runChefJob);
             _runner = runner;
@@ -42,10 +43,9 @@ namespace cafe.Server.Jobs
             _runner.Enqueue(jobRun);
         }
 
-        public ServerStatus ToStatus()
+        public ChefStatus ToStatus()
         {
-            var status = _runner.ToStatus();
-            status.ChefStatus = new ChefStatus()
+            return new ChefStatus
             {
                 IsRunning = RunChefJob.IsRunning,
                 ExpectedNextRun = RunChefJob.RunPolicy.ExpectedNextRun?.ToDateTimeUtc(),
@@ -53,7 +53,6 @@ namespace cafe.Server.Jobs
                 LastRun = RunChefJob.LastRun?.Start?.ToDateTimeUtc(),
                 Version = InstallChefJob.CurrentVersion?.ToString()
             };
-            return status;
         }
 
         public JobRunStatus FindStatusById(Guid id)

@@ -1,27 +1,26 @@
 ﻿using System;
-using cafe.Client;
 using cafe.CommandLine;
 using cafe.Shared;
 using NLog;
 
 namespace cafe.Options
 {
-    public abstract class SchedulerOption : Option
+    public abstract class ServerConnectionOption<T> : Option
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerOption).FullName);
-        private readonly Func<IChefServer> _schedulerServerProvider;
+        private static readonly Logger Logger = LogManager.GetLogger("cafe.Options.ServerConnectionOption");
 
-        protected SchedulerOption(Func<IChefServer> schedulerServerProvider, string helpText)
-            : base(helpText)
+        private readonly Func<T> _serverFactory;
+
+        protected ServerConnectionOption(Func<T> serverFactory, string helpText) : base(helpText)
         {
-            _schedulerServerProvider = schedulerServerProvider;
+            _serverFactory = serverFactory;
         }
 
         protected sealed override Result RunCore(string[] args)
         {
             try
             {
-                var schedulerServer = _schedulerServerProvider();
+                var schedulerServer = _serverFactory();
                 return RunCore(schedulerServer, args);
             }
             catch (Exception ex)
@@ -32,6 +31,6 @@ namespace cafe.Options
             }
         }
 
-        protected abstract Result RunCore(IChefServer server, string[] args);
+        protected abstract Result RunCore(T client, string[] args);
     }
 }

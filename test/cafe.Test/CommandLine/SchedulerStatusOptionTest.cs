@@ -12,10 +12,10 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void Exception_ShouldNotBeRethrown()
         {
-            var scheduler = new Mock<IChefServer>();
-            scheduler.Setup(s => s.GetStatus()).Throws<HttpRequestException>();
+            var jobServer = new Mock<IJobServer>();
+            jobServer.Setup(s => s.GetStatus()).Throws<HttpRequestException>();
 
-            var option = new StatusOption(() => scheduler.Object);
+            var option = new StatusOption(() => jobServer.Object);
 
             var result = option.Run();
 

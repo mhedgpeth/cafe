@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using cafe.Shared;
-using Microsoft.AspNetCore.Mvc;
 using RestEase;
 
 namespace cafe.Client
@@ -9,7 +7,7 @@ namespace cafe.Client
     public interface IChefServer
     {
         [Get("status")]
-        Task<ServerStatus> GetStatus();
+        Task<ChefStatus> GetStatus();
 
         [Put("run")]
         Task<JobRunStatus> RunChef();
@@ -27,12 +25,9 @@ namespace cafe.Client
         Task<JobRunStatus> BootstrapChef(string config, string validator, string runList);
 
         [Put("pause")]
-        Task<ServerStatus> Pause();
+        Task<ChefStatus> Pause();
 
         [Put("resume")]
-        Task<ServerStatus> Resume();
-
-        [Get("job/{id}")]
-        Task<JobRunStatus> GetJobRunStatus([Path]Guid id);
+        Task<ChefStatus> Resume();
     }
 }

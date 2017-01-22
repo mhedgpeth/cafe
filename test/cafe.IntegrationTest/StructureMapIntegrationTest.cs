@@ -19,7 +19,13 @@ namespace cafe.IntegrationTest
             const string version = "14.17.44";
             chefController.DownloadChef(version);
             chefController.InstallChef(version);
-            chefController.GetStatus().Should().NotBeNull("because chef should be operational");
+        }
+
+        [Fact]
+        public void JobController_ShouldInstantiateThroughStructureMap()
+        {
+            var jobController = AssertStructureMapCreatesControllerOfType<JobController>();
+            jobController.GetStatus().Should().NotBeNull("because chef should be operational");
         }
 
         private static T AssertStructureMapCreatesControllerOfType<T>()

@@ -1,19 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using cafe.Client;
-using cafe.CommandLine;
 using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class InstallChefOption : ChefOption
+    public class InstallChefOption : ChefJobOption
     {
-        public InstallChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter)
-            : base(clientFactory, schedulerWaiter,
+        public InstallChefOption(Func<IChefServer> chefServerCreator, ISchedulerWaiter schedulerWaiter)
+            : base(chefServerCreator, schedulerWaiter,
                 "installs or upgrades chef to the specified version")
         {
         }
 
-        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, string[] args)
         {
             return chefServer.InstallChef(DownloadChefOption.FindVersion(args));
         }

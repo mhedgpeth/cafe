@@ -54,7 +54,7 @@ namespace cafe.Test.Server.Jobs
         public void LastRun_ShouldDefaultToNullBeforeItRuns()
         {
             var runner = CreateChefJobRunner();
-            runner.ToStatus().ChefStatus.LastRun.Should().BeNull("because the job has not yet run");
+            runner.ToStatus().LastRun.Should().BeNull("because the job has not yet run");
         }
 
         private ChefJobRunner CreateChefJobRunner()

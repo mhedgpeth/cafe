@@ -23,6 +23,12 @@ namespace cafe.Client
             return CreateRestClientFor<IChefServer>("chef");
         }
 
+        public IJobServer RestClientForJobServer()
+        {
+            return CreateRestClientFor<IJobServer>("job");
+        }
+
+
         private T CreateRestClientFor<T>(string serviceEndpoint)
         {
             var endpoint = $"http://{_hostname}:{_port}/api/{serviceEndpoint}";

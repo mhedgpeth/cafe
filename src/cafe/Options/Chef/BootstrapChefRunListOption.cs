@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
 using cafe.LocalSystem;
@@ -6,13 +7,13 @@ using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class BootstrapChefRunListOption : ChefOption
+    public class BootstrapChefRunListOption : ChefJobOption
     {
         private readonly IFileSystemCommands _fileSystemCommands;
 
-        public BootstrapChefRunListOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
+        public BootstrapChefRunListOption(Func<IChefServer> chefServerFactory, ISchedulerWaiter schedulerWaiter,
         IFileSystemCommands fileSystemCommands)
-            : base(clientFactory, schedulerWaiter,
+            : base(chefServerFactory, schedulerWaiter,
                 "boostraps chef to run the first time with the given policy name and group")
         {
             _fileSystemCommands = fileSystemCommands;
@@ -28,7 +29,7 @@ namespace cafe.Options
             return args[3];
         }
 
-        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, string[] args)
         {
 
             var config = _fileSystemCommands.ReadAllText(args[5]);

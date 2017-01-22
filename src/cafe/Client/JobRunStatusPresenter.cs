@@ -3,12 +3,12 @@ using cafe.Shared;
 
 namespace cafe.Client
 {
-    public class TaskStatusPresenter
+    public class JobRunStatusPresenter
     {
         private readonly IMessagePresenter _messagePresenter;
         private JobRunStatus _lastStatus;
 
-        public TaskStatusPresenter(IMessagePresenter messagePresenter)
+        public JobRunStatusPresenter(IMessagePresenter messagePresenter)
         {
             _messagePresenter = messagePresenter;
         }
