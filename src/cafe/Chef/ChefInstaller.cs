@@ -17,24 +17,27 @@ namespace cafe.Chef
 
         private readonly IFileSystem _fileSystem;
         private readonly IFileSystemCommands _commands;
+        private readonly string _prefix;
         private readonly ProcessExecutor _processExecutor;
 
-        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands)
+        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands, string prefix)
         {
             _fileSystem = fileSystem;
             _processExecutor = processExecutor;
             _commands = commands;
+            _prefix = prefix;
         }
 
         public Result Uninstall(string productCode)
         {
+            Logger.Debug($"Uninstalling product {productCode}");
             var msiexec = FindFullPathToMsiExec();
             return _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
         }
 
         public Result Install(string version)
         {
-            var fullPathToStagedInstaller = Downloader.FullPathToStagedInstaller(version);
+            var fullPathToStagedInstaller = Downloader.FullPathToStagedInstaller(version, _prefix);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
                 Logger.Warn(
@@ -42,9 +45,11 @@ namespace cafe.Chef
                 var failure = Result.Failure("There was no staged installer. Download the file first.");
                 return failure;
             }
+            Logger.Debug($"Installing installer {fullPathToStagedInstaller}");
             var msiexec = FindFullPathToMsiExec();
             var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /L*V \"logs/installation.log\" /i \"{fullPathToStagedInstaller}\"",
                 LogInformation, LogError);
+            Logger.Debug($"Result of installing {fullPathToStagedInstaller} is {result}");
             return result;
         }
 

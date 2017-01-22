@@ -6,6 +6,8 @@ namespace cafe.Test.Server.Jobs
 {
     public class FakeInstaller : IInstaller
     {
+        public string ProductName => "Fake product";
+
         public Result InstallOrUpgrade(string version, IMessagePresenter presenter)
         {
             InstalledVersion = Version.Parse(version);

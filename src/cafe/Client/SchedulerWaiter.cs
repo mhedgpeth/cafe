@@ -15,24 +15,24 @@ namespace cafe.Client
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
-        private IChefServer _schedulerServer;
+        private IJobServer _jobServer;
         private JobRunStatus _originalStatus;
-        private readonly Func<IChefServer> _schedulerServerProvider;
-        private readonly TaskStatusPresenter _taskStatusPresenter;
+        private readonly Func<IJobServer> _jobServerProvider;
+        private readonly JobRunStatusPresenter _jobRunStatusPresenter;
 
 
-        public SchedulerWaiter(Func<IChefServer> schedulerServerProvider, IAutoResetEvent autoResetEvent,
-            ITimerFactory timerFactory, TaskStatusPresenter taskStatusPresenter)
+        public SchedulerWaiter(Func<IJobServer> jobServerProvider, IAutoResetEvent autoResetEvent,
+            ITimerFactory timerFactory, JobRunStatusPresenter jobRunStatusPresenter)
             : base("status", autoResetEvent, timerFactory)
         {
-            _schedulerServerProvider = schedulerServerProvider;
-            _taskStatusPresenter = taskStatusPresenter;
+            _jobServerProvider = jobServerProvider;
+            _jobRunStatusPresenter = jobRunStatusPresenter;
         }
 
         public JobRunStatus WaitForTaskToComplete(JobRunStatus status)
         {
             _originalStatus = status;
-            _taskStatusPresenter.BeginPresenting(status);
+            _jobRunStatusPresenter.BeginPresenting(status);
             return Wait();
         }
 
@@ -43,19 +43,19 @@ namespace cafe.Client
 
         protected override JobRunStatus RetrieveCurrentStatus()
         {
-            if (_schedulerServer == null)
+            if (_jobServer == null)
             {
                 Logger.Debug("Creating rest api client for scheduler");
-                _schedulerServer = _schedulerServerProvider();
+                _jobServer = _jobServerProvider();
             }
             var taskId = _originalStatus.Id;
             JobRunStatus currentStatus;
             try
             {
                 Log.Debug($"Fetching current status for task {taskId}");
-                currentStatus = _schedulerServer.GetJobRunStatus(taskId).Result;
+                currentStatus = _jobServer.GetJobRunStatus(taskId).Result;
                 Log.Debug($"Task {taskId} has status of {currentStatus}");
-                _taskStatusPresenter.PresentAnyChangesTo(currentStatus);
+                _jobRunStatusPresenter.PresentAnyChangesTo(currentStatus);
             }
             catch (Exception ex)
             {

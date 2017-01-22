@@ -1,5 +1,4 @@
-﻿using System;
-using cafe.Chef;
+﻿using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;
@@ -13,12 +12,26 @@ namespace cafe.Server.Controllers
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefController).FullName);
 
-        private readonly ChefJobRunner _chefJobRunner = StructureMapResolver.Container.GetInstance<ChefJobRunner>();
+        private static readonly ChefJobRunner ChefJobRunner = CreateChefJobRunner();
+
+        private static ChefJobRunner CreateChefJobRunner()
+        {
+            var commands = new FileSystemCommandsBoundary();
+            var fileSystem = new FileSystem(new EnvironmentBoundary(), commands);
+            const string prefix = "chef-client";
+            var product = "chef";
+
+            return new ChefJobRunner(StructureMapResolver.Container.GetInstance<JobRunner>(),
+                InspecController.CreateDownloadJob(fileSystem, product, prefix, "2012r2"),
+                InspecController.CreateInstallJob(product, fileSystem, commands, prefix, InstalledProductsFinder.IsChefClient),
+            StructureMapResolver.Container.GetInstance<RunChefJob>());
+        }
+
 
         [HttpPut("run")]
         public JobRunStatus RunChef()
         {
-            return _chefJobRunner.RunChefJob.Run();
+            return ChefJobRunner.RunChefJob.Run();
         }
 
         [HttpPut("install")]
@@ -26,22 +39,22 @@ namespace cafe.Server.Controllers
         public JobRunStatus InstallChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be installed");
-            return _chefJobRunner.InstallChefJob.InstallOrUpgrade(version);
+            return ChefJobRunner.InstallJob.InstallOrUpgrade(version);
         }
 
         [HttpPut("download")]
         public JobRunStatus DownloadChef(string version)
         {
             Logger.Info($"Scheduling chef {version} to be downloaded");
-            return _chefJobRunner.DownloadChefJob.Download(version);
+            return ChefJobRunner.DownloadJob.Download(version);
         }
 
         [HttpPut("bootstrap/policy")]
         public JobRunStatus BootstrapChef(string config, string validator, string policyName, string policyGroup)
         {
             Logger.Info($"Bootstrapping chef with policy {policyName} and group: {policyGroup}");
-            return _chefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator,
-                    new PolicyChefBootstrapSettings {PolicyGroup = policyGroup, PolicyName = policyName}));
+            return ChefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator,
+                new PolicyChefBootstrapSettings {PolicyGroup = policyGroup, PolicyName = policyName}));
         }
 
         [HttpPut("bootstrap/runList")]
@@ -49,7 +62,8 @@ namespace cafe.Server.Controllers
         {
             var description = $"Bootstrapping chef with run list {runList}";
             Logger.Info(description);
-            return _chefJobRunner.RunChefJob.Bootstrap(CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));
+            return ChefJobRunner.RunChefJob.Bootstrap(
+                CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));
         }
 
         private static ChefBootstrapper CreateChefBootstrapper(string config, string validator,
@@ -59,41 +73,32 @@ namespace cafe.Server.Controllers
                 validator, bootstrapSettings);
         }
 
-        [HttpGet("status")]
-        public ServerStatus GetStatus()
-        {
-            Logger.Info($"Getting chef status");
-            var status = _chefJobRunner.ToStatus();
-            Logger.Debug($"Status for chef is {status}");
-            return status;
-        }
-
         [HttpPut("pause")]
-        public ServerStatus Pause()
+        public ChefStatus Pause()
         {
             Logger.Info($"Pausing chef");
-            _chefJobRunner.RunChefJob.Pause();
-            var status = _chefJobRunner.ToStatus();
+            ChefJobRunner.RunChefJob.Pause();
+            var status = ChefJobRunner.ToStatus();
             Logger.Debug($"Finished pausing chef with new status of {status}");
             return status;
         }
 
         [HttpPut("resume")]
-        public ServerStatus Resume()
+        public ChefStatus Resume()
         {
             Logger.Info($"Resuming chef");
-            _chefJobRunner.RunChefJob.Resume();
-            var status = _chefJobRunner.ToStatus();
+            ChefJobRunner.RunChefJob.Resume();
+            var status = ChefJobRunner.ToStatus();
             Logger.Debug($"Finished resuming chef with new status of {status}");
             return status;
         }
 
-        [HttpGet("job/{id}")]
-        public JobRunStatus GetJobRunStatus(Guid id)
+        [HttpGet("status")]
+        public ChefStatus GetStatus()
         {
-            Logger.Info($"Getting status of task with id {id}");
-            var status = _chefJobRunner.FindStatusById(id);
-            Logger.Debug($"Status for task {id} is {status}");
+            Logger.Info($"Getting chef status");
+            var status = ChefJobRunner.ToStatus();
+            Logger.Debug($"Status for chef is {status}");
             return status;
         }
     }

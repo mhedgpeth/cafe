@@ -5,12 +5,12 @@ using NodaTime;
 
 namespace cafe.Server.Jobs
 {
-    public class InstallChefJob : Job
+    public class InstallJob : Job
     {
         private readonly IInstaller _installer;
         private readonly IClock _clock;
 
-        public InstallChefJob(IInstaller installer, IClock clock)
+        public InstallJob(IInstaller installer, IClock clock)
         {
             _installer = installer;
             _clock = clock;
@@ -20,7 +20,7 @@ namespace cafe.Server.Jobs
 
         public JobRunStatus InstallOrUpgrade(string version)
         {
-            return OnRunReady(new JobRun($"Install/Upgrade Chef to {version}", presenter => _installer.InstallOrUpgrade(version, presenter), _clock));
+            return OnRunReady(new JobRun($"Install/Upgrade {_installer.ProductName} to {version}", presenter => _installer.InstallOrUpgrade(version, presenter), _clock));
         }
     }
 }

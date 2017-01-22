@@ -1,24 +1,25 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using cafe.Shared;
-using Microsoft.AspNetCore.Mvc;
 using RestEase;
 
 namespace cafe.Client
 {
-    public interface IChefServer
+    public interface IProductServer<T> where T : ProductStatus
     {
         [Get("status")]
-        Task<ServerStatus> GetStatus();
-
-        [Put("run")]
-        Task<JobRunStatus> RunChef();
+        Task<T> GetStatus();
 
         [Put("download")]
-        Task<JobRunStatus> DownloadChef(string version);
+        Task<JobRunStatus> Download(string version);
 
         [Put("install")]
-        Task<JobRunStatus> InstallChef(string version);
+        Task<JobRunStatus> Install(string version);
+    }
+
+    public interface IChefServer : IProductServer<ChefStatus>
+    {
+        [Put("run")]
+        Task<JobRunStatus> RunChef();
 
         [Put("bootstrap/policy")]
         Task<JobRunStatus> BootstrapChef(string config, string validator, string policyName, string policyGroup);
@@ -27,12 +28,9 @@ namespace cafe.Client
         Task<JobRunStatus> BootstrapChef(string config, string validator, string runList);
 
         [Put("pause")]
-        Task<ServerStatus> Pause();
+        Task<ChefStatus> Pause();
 
         [Put("resume")]
-        Task<ServerStatus> Resume();
-
-        [Get("job/{id}")]
-        Task<JobRunStatus> GetJobRunStatus([Path]Guid id);
+        Task<ChefStatus> Resume();
     }
 }

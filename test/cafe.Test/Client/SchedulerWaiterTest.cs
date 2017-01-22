@@ -15,12 +15,12 @@ namespace cafe.Test.Client
         [Fact]
         public void Exception_ShouldSetAutoresetEventAndFail()
         {
-            var scheduler = new Mock<IChefServer>();
-            scheduler.Setup(s => s.GetJobRunStatus(It.IsAny<Guid>())).Throws<HttpRequestException>();
+            var jobServer = new Mock<IJobServer>();
+            jobServer.Setup(s => s.GetJobRunStatus(It.IsAny<Guid>())).Throws<HttpRequestException>();
             var autoResetEvent = new FakeAutoResetEvent();
             var fakeTimerFactory = new FakeTimerFactory();
 
-            var waiter = new SchedulerWaiter(() => scheduler.Object, autoResetEvent, fakeTimerFactory, new TaskStatusPresenter(new FakeMessagePresenter()));
+            var waiter = new SchedulerWaiter(() => jobServer.Object, autoResetEvent, fakeTimerFactory, new JobRunStatusPresenter(new FakeMessagePresenter()));
             autoResetEvent.WhatToDoDuringWaitOne = () =>
             {
                 fakeTimerFactory.FireTimerAction();

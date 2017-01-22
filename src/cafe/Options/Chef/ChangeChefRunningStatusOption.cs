@@ -8,16 +8,16 @@ using NLog.Fluent;
 
 namespace cafe.Options
 {
-    public class ChangeChefRunningStatusOption : SchedulerOption
+    public class ChangeChefRunningStatusOption : ServerConnectionOption<IChefServer>
     {
         private readonly string _command;
         private readonly string _commandDescription;
-        private readonly Func<IChefServer, Task<ServerStatus>> _serverAction;
+        private readonly Func<IChefServer, Task<ChefStatus>> _serverAction;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChangeChefRunningStatusOption).FullName);
 
         private ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
             string commandDescription,
-            Func<IChefServer, Task<ServerStatus>> serverAction)
+            Func<IChefServer, Task<ChefStatus>> serverAction)
             : base(schedulerServerProvider, $"{command} chef")
         {
             _command = command;

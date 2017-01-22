@@ -1,23 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
-using cafe.CommandLine;
 using cafe.LocalSystem;
-using cafe.Server.Controllers;
 using cafe.Shared;
-using NLog;
 
-namespace cafe.Options
+namespace cafe.Options.Chef
 {
-    public class BootstrapChefPolicyOption : ChefOption
+    public class BootstrapChefPolicyOption : RunJobOption<IChefServer>
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefController).FullName);
-
         private readonly IFileSystemCommands _fileSystemCommands;
 
-        public BootstrapChefPolicyOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
+        public BootstrapChefPolicyOption(Func<IChefServer> chefServerFactory, ISchedulerWaiter schedulerWaiter,
             IFileSystemCommands fileSystemCommands)
-            : base(clientFactory, schedulerWaiter,
+            : base(chefServerFactory, schedulerWaiter,
                 "boostraps chef to run the first time with the given policy name and group")
         {
             _fileSystemCommands = fileSystemCommands;
@@ -38,11 +34,11 @@ namespace cafe.Options
             return args[5];
         }
 
-        protected override Task<JobRunStatus> RunCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, string[] args)
         {
             var config = _fileSystemCommands.ReadAllText(args[7]);
             var validator = _fileSystemCommands.ReadAllText(args[9]);
-            return chefServer.BootstrapChef(config, validator, FindPolicyName(args), FindPolicyGroup(args));
+            return productServer.BootstrapChef(config, validator, FindPolicyName(args), FindPolicyGroup(args));
         }
     }
 }

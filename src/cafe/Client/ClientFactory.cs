@@ -1,4 +1,5 @@
 ﻿using cafe.Options;
+using cafe.Shared;
 using NLog;
 using RestEase;
 
@@ -23,11 +24,22 @@ namespace cafe.Client
             return CreateRestClientFor<IChefServer>("chef");
         }
 
+        public IJobServer RestClientForJobServer()
+        {
+            return CreateRestClientFor<IJobServer>("job");
+        }
+
+
         private T CreateRestClientFor<T>(string serviceEndpoint)
         {
             var endpoint = $"http://{_hostname}:{_port}/api/{serviceEndpoint}";
             Logger.Debug($"Creating rest client for {typeof(T).FullName} at endpoint {endpoint}");
             return RestClient.For<T>(endpoint);
+        }
+
+        public IProductServer<ProductStatus> RestClientForInspecServer()
+        {
+            return CreateRestClientFor<IProductServer<ProductStatus>>("inspec");
         }
     }
 }

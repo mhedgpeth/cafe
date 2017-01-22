@@ -12,12 +12,29 @@ namespace cafe.LocalSystem
     {
         public static bool IsChefClient(ProductInstallationMetaData metaData)
         {
-            return string.Equals("Chef Software, Inc.", metaData.Publisher) &&
-                   metaData.DisplayName.StartsWith("Chef Client");
+            return IsPublishedByChefAndNameStartsWith(metaData, "Chef Client");
+        }
+
+        private static bool IsPublishedByChefAndNameStartsWith(ProductInstallationMetaData metaData, string name)
+        {
+            return IsPublishedByChef(metaData) &&
+                   metaData.DisplayName.StartsWith(name);
+        }
+
+        private static bool IsPublishedByChef(ProductInstallationMetaData metaData)
+        {
+            return !string.IsNullOrEmpty(metaData.Publisher) && metaData.Publisher.Contains("Chef Software, Inc");
+        }
+
+        public static bool IsInspec(ProductInstallationMetaData metaData)
+        {
+            var isInspec = IsPublishedByChefAndNameStartsWith(metaData, "InSpec");
+            return isInspec;
         }
 
         public IEnumerable<ProductInstallationMetaData> GetInstalledProducts()
         {
+            var installedProducts = new List<ProductInstallationMetaData>();
             const string keyPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
             using (var registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
                 .OpenSubKey(keyPath))
@@ -40,12 +57,12 @@ namespace cafe.LocalSystem
                                 UninstallString = uninstallString,
                                 Parent = subkeyName
                             };
-                            yield return metaData;
+                            installedProducts.Add(metaData);
                         }
                     }
                 }
             }
+            return installedProducts;
         }
-
     }
 }

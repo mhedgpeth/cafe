@@ -6,11 +6,11 @@ using NLog;
 
 namespace cafe.Options
 {
-    public class JobRunStatusOption : SchedulerOption
+    public class JobRunStatusOption : ServerConnectionOption<IJobServer>
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(JobRunStatusOption).FullName);
 
-        public JobRunStatusOption(Func<IChefServer> schedulerServerProvider)
+        public JobRunStatusOption(Func<IJobServer> schedulerServerProvider)
             : base(schedulerServerProvider, "Gets the id of the job")
         {
         }
@@ -20,7 +20,7 @@ namespace cafe.Options
             return $"Retrieving Status for Job {IdArgument(args)}";
         }
 
-        protected override Result RunCore(IChefServer server, string[] args)
+        protected override Result RunCore(IJobServer server, string[] args)
         {
             Guid id;
             var idArgument = IdArgument(args);

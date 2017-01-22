@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.3.1." + buildNumber;
+var version = "0.4.0." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -135,27 +135,19 @@ Task("ShowChefRunHelp")
         RunCafe("chef run -h");
     });
 
-
-Task("ShowChefVersion")
+Task("ShowChefStatus")
     .Does(() => {
-        RunCafe("chef version");
+        RunCafe("chef status");
     });
 
-
-Task("ShowStatus")
+Task("ShowJobStatus")
     .Does(() => {
-        var processSettings =  new ProcessSettings() { Arguments = "status" }.UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
-    }); 
+        RunCafe("job status");
+    });
 
 Task("RunChef")
     .Does(() => {
-        var processSettings =  new ProcessSettings() { Arguments = "chef run" }.UseWorkingDirectory(cafeWindowsPublishDirectory);
-        Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-        var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
-        Information("Exit code: {0}", exitCode);
+        RunCafe("chef run");
     }); 
 
 
@@ -164,32 +156,62 @@ Task("RunServer")
         RunCafe("server"); 
     });
 
+var oldInspecVersion = "1.6.0";
+var newInspecVersion = "1.7.1";
+var oldChefVersion = "12.16.42";
+var newChefVersion = "12.17.44";
+
+Task("InspecDownloadOldVersion")
+    .Does(() =>
+    {
+        RunCafe("inspec download {0}", oldInspecVersion);
+    });
+
+Task("InspecInstallOldVersion")
+    .Does(() =>
+    {
+        RunCafe("inspec install {0}", oldInspecVersion);
+    });
+
+
+Task("InspecDownloadNewVersion")
+    .Does(() =>
+    {
+        RunCafe("inspec download {0}", newInspecVersion);
+    });
+
+Task("InspecInstallNewVersion")
+    .Does(() =>
+    {
+        RunCafe("inspec install {0}", newInspecVersion);
+    });
+
 var oldVersion = "12.16.42";
 
-Task("DownloadOldVersion")
+
+Task("ChefDownloadOldVersion")
     .Does(() =>
     {
-        RunCafe("chef download {0}", oldVersion);
+        RunCafe("chef download {0}", oldChefVersion);
     });
 
-Task("InstallOldVersion")
+Task("ChefInstallOldVersion")
     .Does(() =>
     {
-        RunCafe("chef install {0}", oldVersion);
+        RunCafe("chef install {0}", oldChefVersion);
     });
 
-var newVersion = "12.17.44";
 
-Task("DownloadNewVersion")
+Task("ChefDownloadNewVersion")
     .Does(() =>
     {
-        RunCafe("chef download {0}", newVersion);
+        RunCafe("chef download {0}", newChefVersion);
     });
 
-Task("InstallNewVersion")
+Task("ChefInstallNewVersion")
     .Does(() =>
     {
-        RunCafe("chef install {0}", newVersion);
+        RunCafe("chef install {0}", newChefVersion);
     });
 
 
@@ -230,6 +252,12 @@ Task("StopService")
     });
 
 
+Task("StartService")
+    .Does(() =>
+    {
+        RunCafe(@"service start");
+    });
+
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
@@ -245,13 +273,17 @@ Task("AcceptanceTest")
     .IsDependentOn("ShowChefHelp")
     .IsDependentOn("ShowChefRunHelp")
     .IsDependentOn("RegisterService")
-    .IsDependentOn("DownloadOldVersion")
-    .IsDependentOn("InstallOldVersion")
+    .IsDependentOn("InspecDownloadOldVersion")
+    .IsDependentOn("InspecInstallOldVersion")
+    .IsDependentOn("ChefDownloadOldVersion")
+    .IsDependentOn("ChefInstallOldVersion")
     .IsDependentOn("BootstrapPolicy")
-    .IsDependentOn("ShowStatus")
-    .IsDependentOn("ShowChefVersion")
-    .IsDependentOn("DownloadNewVersion")
-    .IsDependentOn("InstallNewVersion")
+    .IsDependentOn("ShowChefStatus")
+    .IsDependentOn("ShowJobStatus")
+    .IsDependentOn("InspecDownloadNewVersion")
+    .IsDependentOn("InspecInstallNewVersion")
+    .IsDependentOn("ChefDownloadNewVersion")
+    .IsDependentOn("ChefInstallNewVersion")
     .IsDependentOn("RunChef")
     .IsDependentOn("PauseChef")
     .IsDependentOn("ResumeChef")

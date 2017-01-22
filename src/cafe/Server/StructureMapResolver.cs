@@ -24,8 +24,13 @@ namespace cafe.Server
                 });
 
                 config.For<ChefJobRunner>().Singleton();
+
+                config.For<InspecJobRunner>().Singleton();
+
+
                 config.For<RunChefJob>().Singleton();
                 config.For<ChefProduct>().Singleton();
+                config.For<JobRunner>().Singleton();
                 config.For<IEnvironment>().Use<EnvironmentBoundary>();
                 config.For<IFileSystemCommands>().Use<FileSystemCommandsBoundary>();
                 config.For<IProcess>().Use<ProcessBoundary>();

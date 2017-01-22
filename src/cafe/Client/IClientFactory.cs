@@ -3,5 +3,6 @@
     public interface IClientFactory
     {
         IChefServer RestClientForChefServer();
+        IJobServer RestClientForJobServer();
     }
 }

@@ -1,40 +1,37 @@
 ﻿using System;
 using cafe.Client;
 using cafe.CommandLine;
+using cafe.Options.Chef;
 using cafe.Shared;
 using NLog;
 
 namespace cafe.Options
 {
-    public class StatusOption : SchedulerOption
+
+
+    public class StatusOption : ServerConnectionOption<IJobServer>
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(StatusOption).FullName);
 
-        public StatusOption(Func<IChefServer> schedulerServerProvider) : base(schedulerServerProvider,
+        public StatusOption(Func<IJobServer> jobServerFactory) : base(jobServerFactory,
             "Gets the status of the cafe server")
         {
         }
 
-        protected override Result RunCore(IChefServer schedulerServer, string[] args)
+        protected override Result RunCore(IJobServer schedulerServer, string[] args)
         {
             var status = schedulerServer.GetStatus().Result;
             ShowQueuedTasks(status);
             ShowFinishedTasks(status);
-            ShowChefStatus(status.ChefStatus);
             return Result.Successful();
         }
 
         private void ShowChefStatus(ChefStatus status)
         {
             Presenter.NewLine();
-            Presenter.ShowMessage("Chef Status:", Logger);
-            Presenter.ShowMessage(status.ToString(), Logger);
-            ShowChefVersionOption.ShowVersionStatus(status);
-            Presenter.ShowMessage($"Last run: {status.LastRun?.ToLocalTime()}", Logger);
-            Presenter.ShowMessage($"Expected Next Run: {status.ExpectedNextRun?.ToLocalTime()}", Logger);
         }
 
-        private static void ShowQueuedTasks(ServerStatus status)
+        private static void ShowQueuedTasks(JobRunnerStatus status)
         {
             Presenter.NewLine();
             if (status.QueuedTasks.Length > 0)
@@ -51,7 +48,7 @@ namespace cafe.Options
             }
         }
 
-        private static void ShowFinishedTasks(ServerStatus status)
+        private static void ShowFinishedTasks(JobRunnerStatus status)
         {
             Presenter.NewLine();
             var count = 0;

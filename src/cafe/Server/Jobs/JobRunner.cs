@@ -84,9 +84,9 @@ namespace cafe.Server.Jobs
             return status;
         }
 
-        public ServerStatus ToStatus()
+        public JobRunnerStatus ToStatus()
         {
-            return new ServerStatus()
+            return new JobRunnerStatus()
             {
                 QueuedTasks = _queuedRuns.Select(queuedRun => queuedRun.ToStatus()).ToArray(),
                 FinishedTasks = _finishedTasks.ToArray()
