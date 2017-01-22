@@ -1,8 +1,5 @@
-﻿using System;
-using cafe.Chef;
+﻿using cafe.Chef;
 using cafe.LocalSystem;
-using cafe.Server.Scheduling;
-using cafe.Shared;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -11,10 +8,13 @@ namespace cafe.Test.Chef
 {
     public class ChefDownloaderTest
     {
+        private const string Product = "chef";
+        private const string Prefix = "chef-client";
+
         [Fact]
         public void DownloadUriFor_ShouldProduceDownloadLinkForLatestVersion()
         {
-            Downloader.DownloadUriFor(LatestVersion).AbsoluteUri
+            Downloader.DownloadUriFor(LatestVersion, Product, Prefix, "2012r2").AbsoluteUri
                 .Should()
                 .Be("https://packages.chef.io/files/stable/chef/12.17.44/windows/2012r2/chef-client-12.17.44-1-x64.msi");
         }
@@ -22,7 +22,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void DownloadUriFor_ShouldProduceDownloadLinkForPreviousVersion()
         {
-            Downloader.DownloadUriFor(PreviousVersion).AbsoluteUri
+            Downloader.DownloadUriFor(PreviousVersion, Product, Prefix, "2012r2").AbsoluteUri
                 .Should()
                 .Be("https://packages.chef.io/files/stable/chef/12.14.77/windows/2012r2/chef-client-12.14.77-1-x64.msi");
         }
@@ -32,7 +32,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void FilenameFor_ShouldProduceFilenameForLatestVersion()
         {
-            Downloader.FilenameFor(LatestVersion)
+            Downloader.FilenameFor(LatestVersion, Prefix)
                 .Should()
                 .Be("chef-client-12.17.44-1-x64.msi");
         }
@@ -40,7 +40,7 @@ namespace cafe.Test.Chef
         [Fact]
         public void FilenameFor_ShouldProduceFilenameForPreviousVersion()
         {
-            Downloader.FilenameFor(PreviousVersion)
+            Downloader.FilenameFor(PreviousVersion, Prefix)
                 .Should()
                 .Be("chef-client-12.14.77-1-x64.msi");
         }
@@ -52,37 +52,11 @@ namespace cafe.Test.Chef
         {
             var fileDownloader = new FakeFileDownloader();
             var fileSystem = new Mock<IFileSystem>();
-            var chefDownloader = new Downloader(fileDownloader, fileSystem.Object);
+            var chefDownloader = new Downloader(fileDownloader, fileSystem.Object, Product, Prefix, "2012r2");
             var shareDirectory = Downloader.StagingDirectory;
             chefDownloader.Download(PreviousVersion, new FakeMessagePresenter());
 
             fileSystem.Verify(f => f.EnsureDirectoryExists(shareDirectory));
-        }
-    }
-
-    public class FakeMessagePresenter : IMessagePresenter
-    {
-        public void ShowMessage(string message)
-        {
-            MessageShown = message;
-            WasMessageShown = true;
-        }
-
-        public string MessageShown { get; set; }
-
-        public void Clear()
-        {
-            WasMessageShown = false;
-        }
-
-        public bool WasMessageShown { get; private set; }
-    }
-
-    public class FakeFileDownloader : IFileDownloader
-    {
-        public Result Download(Uri downloadLink, string file)
-        {
-            return Result.Successful();
         }
     }
 }

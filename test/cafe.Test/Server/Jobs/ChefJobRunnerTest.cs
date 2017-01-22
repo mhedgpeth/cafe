@@ -11,33 +11,33 @@ namespace cafe.Test.Server.Jobs
         public void Download_ShouldQueueJob()
         {
             var downloader = new FakeDownloader();
-            var job = new DownloadChefJob(downloader, new FakeClock());
+            var job = new DownloadJob(downloader, new FakeClock());
             var runner = JobRunnerTest.CreateJobRunner();
             var jobRunner = new ChefJobRunner(runner, job, CreateInstallChefJob(), RunChefJobTest.CreateRunChefJob());
             const string expectedVersion = "1.2.3";
 
-            jobRunner.DownloadChefJob.Download(expectedVersion);
+            jobRunner.DownloadJob.Download(expectedVersion);
 
             runner.ProcessQueue();
 
             downloader.DownloadedVersion.Should().Be(expectedVersion, "because the download should have been there");
         }
 
-        private InstallChefJob CreateInstallChefJob()
+        private InstallJob CreateInstallChefJob()
         {
-            return new InstallChefJob(new FakeInstaller(), new FakeClock());
+            return new InstallJob(new FakeInstaller(), new FakeClock());
         }
 
         [Fact]
         public void Install_ShouldQueueJob()
         {
             var fakeInstaller = new FakeInstaller();
-            var installJob = new InstallChefJob(fakeInstaller, new FakeClock());
+            var installJob = new InstallJob(fakeInstaller, new FakeClock());
             var runner = JobRunnerTest.CreateJobRunner();
             var jobProcessor = new ChefJobRunner(runner, CreateDownloadJob(), installJob, RunChefJobTest.CreateRunChefJob());
 
             var expectedVersion = "1.2.3";
-            jobProcessor.InstallChefJob.InstallOrUpgrade(expectedVersion);
+            jobProcessor.InstallJob.InstallOrUpgrade(expectedVersion);
 
             runner.ProcessQueue();
 
@@ -45,9 +45,9 @@ namespace cafe.Test.Server.Jobs
         }
 
 
-        private DownloadChefJob CreateDownloadJob()
+        private DownloadJob CreateDownloadJob()
         {
-            return new DownloadChefJob(new FakeDownloader(), new FakeClock());
+            return new DownloadJob(new FakeDownloader(), new FakeClock());
         }
 
         [Fact]

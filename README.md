@@ -20,13 +20,27 @@ Cafe is lightweight. To run the service it takes 17.8MB of memory and no CPU. Th
 
 # Walkthrough
 
-After installation, let's work on getting chef bootstrapped on the machine. The first step is to download the [Chef Client](https://docs.chef.io/ctl_chef_client.html):
+After installation, let's work on getting chef bootstrapped on the machine. 
+
+The first step is to download and install [inspec](http://inspec.io/):
+
+```
+cafe inspec download 1.7.1
+```
+
+Once the inspec installer is downloaded, let's install it:
+
+```
+cafe inspec install 1.7.1
+```
+
+Next we will do the same with the [Chef Client](https://docs.chef.io/ctl_chef_client.html):
 
 ```
 cafe chef download 12.16.42
 ```
 
-Once the Chef Client is downloaded, let's install it:
+And then install it:
 
 ```
 cafe chef install 12.16.42

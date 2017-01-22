@@ -5,6 +5,8 @@ namespace cafe.Test.Server.Jobs
 {
     public class FakeDownloader : IDownloader
     {
+        public string Product => "Fake Product";
+
         public Result Download(string version, IMessagePresenter messagePresenter)
         {
             DownloadedVersion = version;

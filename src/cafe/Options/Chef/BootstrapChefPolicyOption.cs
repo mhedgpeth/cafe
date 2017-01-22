@@ -2,18 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
-using cafe.CommandLine;
 using cafe.LocalSystem;
-using cafe.Server.Controllers;
 using cafe.Shared;
-using NLog;
 
-namespace cafe.Options
+namespace cafe.Options.Chef
 {
-    public class BootstrapChefPolicyOption : ChefJobOption
+    public class BootstrapChefPolicyOption : RunJobOption<IChefServer>
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefController).FullName);
-
         private readonly IFileSystemCommands _fileSystemCommands;
 
         public BootstrapChefPolicyOption(Func<IChefServer> chefServerFactory, ISchedulerWaiter schedulerWaiter,
@@ -39,11 +34,11 @@ namespace cafe.Options
             return args[5];
         }
 
-        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, string[] args)
         {
             var config = _fileSystemCommands.ReadAllText(args[7]);
             var validator = _fileSystemCommands.ReadAllText(args[9]);
-            return chefServer.BootstrapChef(config, validator, FindPolicyName(args), FindPolicyGroup(args));
+            return productServer.BootstrapChef(config, validator, FindPolicyName(args), FindPolicyGroup(args));
         }
     }
 }

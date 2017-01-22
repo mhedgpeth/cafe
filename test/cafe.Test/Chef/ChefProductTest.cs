@@ -50,7 +50,7 @@ namespace cafe.Test.Chef
 
         private ChefProduct CreateChefProduct(FakeInstalledProductsFinder finder)
         {
-            return new ChefProduct(finder, new FakeProductInstaller(finder));
+            return new ChefProduct("chef", finder, new FakeProductInstaller(finder), InstalledProductsFinder.IsChefClient);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace cafe.Test.Chef
             var finder = new FakeInstalledProductsFinder(chefInstallationMetaData);
             var installer = new FakeProductInstaller(finder);
 
-            var product = new ChefProduct(finder, installer);
+            var product = new ChefProduct("chef", finder, installer, InstalledProductsFinder.IsChefClient);
 
             const string versionInstalled = "15.1.2";
             product.InstallOrUpgrade(versionInstalled, new FakeMessagePresenter());

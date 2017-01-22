@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
 using cafe.LocalSystem;
+using cafe.Options.Chef;
 using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class BootstrapChefRunListOption : ChefJobOption
+    public class BootstrapChefRunListOption : RunJobOption<IChefServer>
     {
         private readonly IFileSystemCommands _fileSystemCommands;
 
@@ -29,12 +30,12 @@ namespace cafe.Options
             return args[3];
         }
 
-        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, string[] args)
         {
 
             var config = _fileSystemCommands.ReadAllText(args[5]);
             var validator = _fileSystemCommands.ReadAllText(args[7]);
-            return chefServer.BootstrapChef(config, validator, FindRunList(args));
+            return productServer.BootstrapChef(config, validator, FindRunList(args));
         }
     }
 }

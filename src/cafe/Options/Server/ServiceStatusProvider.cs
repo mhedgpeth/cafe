@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using cafe.LocalSystem;
 using NLog;
@@ -59,7 +60,7 @@ namespace cafe.Options.Server
 
         private ServiceStatus DetermineStateFromCachedOutput()
         {
-            foreach (var line in _cachedOutput)
+            foreach (var line in _cachedOutput.Where(s => !string.IsNullOrEmpty(s)))
             {
                 Logger.Debug($"Determining if this line has the status: {line}");
                 var match = _matchingState.Match(line);

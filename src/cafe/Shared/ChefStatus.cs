@@ -2,9 +2,13 @@ using System;
 
 namespace cafe.Shared
 {
-    public class ChefStatus
+    public class ProductStatus
     {
         public string Version { get; set; }
+    }
+
+    public class ChefStatus : ProductStatus
+    {
         public bool IsRunning { get; set; }
         public TimeSpan? Interval { get; set; }
         public DateTime? LastRun { get; set; }

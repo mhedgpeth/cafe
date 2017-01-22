@@ -4,19 +4,22 @@ using RestEase;
 
 namespace cafe.Client
 {
-    public interface IChefServer
+    public interface IProductServer<T> where T : ProductStatus
     {
         [Get("status")]
-        Task<ChefStatus> GetStatus();
-
-        [Put("run")]
-        Task<JobRunStatus> RunChef();
+        Task<T> GetStatus();
 
         [Put("download")]
-        Task<JobRunStatus> DownloadChef(string version);
+        Task<JobRunStatus> Download(string version);
 
         [Put("install")]
-        Task<JobRunStatus> InstallChef(string version);
+        Task<JobRunStatus> Install(string version);
+    }
+
+    public interface IChefServer : IProductServer<ChefStatus>
+    {
+        [Put("run")]
+        Task<JobRunStatus> RunChef();
 
         [Put("bootstrap/policy")]
         Task<JobRunStatus> BootstrapChef(string config, string validator, string policyName, string policyGroup);

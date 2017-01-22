@@ -24,6 +24,10 @@ namespace cafe.Server
                 });
 
                 config.For<ChefJobRunner>().Singleton();
+
+                config.For<InspecJobRunner>().Singleton();
+
+
                 config.For<RunChefJob>().Singleton();
                 config.For<ChefProduct>().Singleton();
                 config.For<JobRunner>().Singleton();

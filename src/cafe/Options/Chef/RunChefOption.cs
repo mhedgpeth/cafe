@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using cafe.Client;
+using cafe.Options.Chef;
 using cafe.Shared;
 
 namespace cafe.Options
 {
-    public class RunChefOption : ChefJobOption
+    public class RunChefOption : RunJobOption<IChefServer>
     {
-        public RunChefOption(Func<IChefServer> chefServerFactory, SchedulerWaiter schedulerWaiter)
+        public RunChefOption(Func<IChefServer> chefServerFactory, ISchedulerWaiter schedulerWaiter)
             : base(chefServerFactory, schedulerWaiter, "runs chef")
         {
         }

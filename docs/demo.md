@@ -25,9 +25,15 @@ Let's get it installed:
   * Won't demonstrate, but talk about:
   - update `client.json` on another machine to point at your node over port `59320`
 
+### Install inspec on the node
+- Run `cafe inspec status` and notice it's not installed
+- Run `cafe inspec download 1.7.1` - places it in the staging folder (this could be done by a chef cookbook as well)
+- Run `cafe chef install 1.7.1`
+- Run `cafe inspec status`, it's installed, show add/remove programs
+
 ### Install chef-client on the node 
   - Run `cafe chef status` and notice that it is not installed
-  - Run `cafe chef download 12.16.42` - places it in the staging folder (this could be done by a chef cookbook as well)
+  - Run `cafe chef download 12.16.42` 
   - Run `cafe chef install 12.16.42`
   - Run `cafe chef status` and notice that it is installed, show add/remove programs
 
