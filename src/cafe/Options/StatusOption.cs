@@ -11,7 +11,6 @@ namespace cafe.Options
         private static readonly Logger Logger = LogManager.GetLogger(typeof(StatusOption).FullName);
 
         public StatusOption(Func<IChefServer> schedulerServerProvider) : base(schedulerServerProvider,
-            new OptionSpecification("status"),
             "Gets the status of the cafe server")
         {
         }

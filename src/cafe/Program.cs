@@ -17,7 +17,7 @@ namespace cafe
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Program).FullName);
         public const string ServerLoggingConfigurationFile = "nlog-server.config";
-        public const string ClientLoggingConfigurationFile = "nlog-client.config";
+        private const string ClientLoggingConfigurationFile = "nlog-client.config";
 
         public static int Main(string[] args)
         {
@@ -25,7 +25,7 @@ namespace cafe
             ConfigureLogging(args);
             Presenter.ShowApplicationHeading(Logger, args);
             var runner = CreateRunner(args);
-            var returnValue = runner.Run(args);
+            var returnValue = runner.RunProgram(args);
             Logger.Debug("Finishing cafe run");
             return returnValue;
         }
@@ -48,7 +48,7 @@ namespace cafe
             Logger.Info($"Logging set up based on {file}");
         }
 
-        public static Runner CreateRunner(string[] args)
+        public static OptionGroup CreateRunner(string[] args)
         {
             var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForChefServer,
@@ -62,29 +62,74 @@ namespace cafe
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new ServiceStatusProvider(processExecutor, fileSystem));
             // all options available
-            var runner = new Runner(
-                new RunChefOption(clientFactory, schedulerWaiter),
-                new BootstrapChefRunListOption(clientFactory, schedulerWaiter, fileSystemCommands),
-                new BootstrapChefPolicyOption(clientFactory, schedulerWaiter, fileSystemCommands),
-                new ShowChefVersionOption(clientFactory),
-                new DownloadChefOption(clientFactory, schedulerWaiter),
-                new InstallChefOption(clientFactory, schedulerWaiter),
-                new ServerInteractiveOption(),
-                new ServerWindowsServiceOption(),
-                new RegisterServerWindowsServiceOption(),
-                new UnregisterServerWindowsServiceOption(),
-                ChangeStateForCafeWindowsServiceOption.StartCafeWindowsServiceOption(processExecutor, fileSystem,
-                    serviceStatusWaiter),
-                ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(processExecutor, fileSystem,
-                    serviceStatusWaiter),
-                new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
-                new StatusOption(clientFactory.RestClientForChefServer),
-                new JobRunStatusOption(clientFactory.RestClientForChefServer),
-                ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
-                ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForChefServer),
-                new InitOption(AssemblyDirectory, environment));
+
+            var root = new OptionGroup()
+                .WithGroup("chef", chefGroup =>
+                {
+                    chefGroup.WithOption(new RunChefOption(clientFactory, schedulerWaiter), "run");
+                    chefGroup.WithOption(new DownloadChefOption(clientFactory, schedulerWaiter),
+                        OptionValueSpecification.ForExactValue("download"),
+                        OptionValueSpecification.ForVersion());
+                    chefGroup.WithOption(new ShowChefVersionOption(clientFactory), "version");
+                    chefGroup.WithOption(
+                        new BootstrapChefRunListOption(clientFactory, schedulerWaiter, fileSystemCommands),
+                        OptionValueSpecification.ForExactValue("bootstrap"),
+                        OptionValueSpecification.ForExactValue("run-list:"),
+                        OptionValueSpecification.ForAnyValue("the run list"),
+                        OptionValueSpecification.ForExactValue("config:"),
+                        OptionValueSpecification.ForAnyValue("the client.rb file"),
+                        OptionValueSpecification.ForExactValue("validator:"),
+                        OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
+                    chefGroup.WithOption(
+                        new BootstrapChefPolicyOption(clientFactory, schedulerWaiter, fileSystemCommands),
+                        OptionValueSpecification.ForExactValue("bootstrap"),
+                        OptionValueSpecification.ForExactValue("policy:"),
+                        OptionValueSpecification.ForAnyValue("the policy name"),
+                        OptionValueSpecification.ForExactValue("group:"),
+                        OptionValueSpecification.ForAnyValue("the policy group"),
+                        OptionValueSpecification.ForExactValue("config:"),
+                        OptionValueSpecification.ForAnyValue("the client.rb file"),
+                        OptionValueSpecification.ForExactValue("validator:"),
+                        OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
+                    var installChefOption = new InstallChefOption(clientFactory, schedulerWaiter);
+                    chefGroup.WithOption(installChefOption, OptionValueSpecification.ForExactValue("install"),
+                        OptionValueSpecification.ForVersion());
+                    chefGroup.WithOption(installChefOption, OptionValueSpecification.ForExactValue("upgrade"),
+                        OptionValueSpecification.ForVersion());
+                    chefGroup.WithOption(
+                        ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
+                        "pause");
+                    chefGroup.WithOption(
+                        ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForChefServer),
+                        "resume");
+                })
+                .WithGroup("server", serverGroup =>
+                {
+                    serverGroup.WithDefaultOption(new ServerInteractiveOption());
+                    serverGroup.WithOption(new ServerWindowsServiceOption(), "--run-as-service");
+                })
+                .WithGroup("service", serviceGroup =>
+                {
+                    serviceGroup.WithOption(new RegisterServerWindowsServiceOption(), "register");
+                    serviceGroup.WithOption(new UnregisterServerWindowsServiceOption(), "unregister");
+                    serviceGroup.WithOption(ChangeStateForCafeWindowsServiceOption.StartCafeWindowsServiceOption(
+                        processExecutor, fileSystem,
+                        serviceStatusWaiter), "start");
+                    serviceGroup.WithOption(ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(
+                        processExecutor, fileSystem,
+                        serviceStatusWaiter), "stop");
+                    serviceGroup.WithOption(new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
+                        "status");
+                })
+                .WithGroup("status", statusGroup =>
+                {
+                    statusGroup.WithDefaultOption(new StatusOption(clientFactory.RestClientForChefServer));
+                    statusGroup.WithOption(new JobRunStatusOption(clientFactory.RestClientForChefServer),
+                        OptionValueSpecification.ForAnyValue("job run id"));
+                })
+                .WithOption(new InitOption(AssemblyDirectory, environment), "init");
             Logger.Debug("Running application");
-            return runner;
+            return root;
         }
 
         public static string LoggingConfigurationFileFor(string[] args)

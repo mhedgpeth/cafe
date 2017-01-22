@@ -17,10 +17,9 @@ namespace cafe.Options.Server
         private readonly IFileSystem _fileSystem;
         private readonly ServiceStatusWaiter _serviceStatusWaiter;
 
-        public ChangeStateForCafeWindowsServiceOption(string command, ServiceStatus waitFor,
+        private ChangeStateForCafeWindowsServiceOption(string command, ServiceStatus waitFor,
             ProcessExecutor processExecutor, IFileSystem fileSystem,
-            ServiceStatusWaiter serviceStatusWaiter) : base(new OptionSpecification("service", command),
-            "starts service")
+            ServiceStatusWaiter serviceStatusWaiter) : base($"{command} service")
         {
             _command = command;
             _waitFor = waitFor;

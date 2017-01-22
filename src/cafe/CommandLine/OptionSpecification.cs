@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NLog;
 
 namespace cafe.CommandLine
@@ -14,6 +15,8 @@ namespace cafe.CommandLine
             : this(ConvertToExactValueSpecifications(exactValues))
         {
         }
+
+        public OptionValueSpecification[] ValueSpecifications => _valueSpecifications;
 
         private static OptionValueSpecification[] ConvertToExactValueSpecifications(params string[] exactValues)
         {
@@ -74,5 +77,15 @@ namespace cafe.CommandLine
         {
             return args.LastOrDefault() == "-h";
         }
+
+        public OptionSpecification WithAdditionalSpecifications(OptionValueSpecification[] valueSpecifications)
+        {
+            var allValues = new List<OptionValueSpecification>();
+            allValues.AddRange(_valueSpecifications);
+            allValues.AddRange(valueSpecifications);
+            var optionSpecification = new OptionSpecification(allValues.ToArray());
+            return optionSpecification;
+        }
+
     }
 }

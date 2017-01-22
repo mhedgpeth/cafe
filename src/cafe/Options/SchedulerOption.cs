@@ -11,10 +11,8 @@ namespace cafe.Options
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerOption).FullName);
         private readonly Func<IChefServer> _schedulerServerProvider;
 
-        protected SchedulerOption(Func<IChefServer> schedulerServerProvider,
-            OptionSpecification optionSpecification,
-            string helpText)
-            : base(optionSpecification, helpText)
+        protected SchedulerOption(Func<IChefServer> schedulerServerProvider, string helpText)
+            : base(helpText)
         {
             _schedulerServerProvider = schedulerServerProvider;
         }

@@ -13,9 +13,8 @@ namespace cafe.Options
         private readonly IClientFactory _clientFactory;
         private readonly ISchedulerWaiter _schedulerWaiter;
 
-        protected ChefOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
-            OptionSpecification optionSpecification, string helpText)
-            : base(optionSpecification, helpText)
+        protected ChefOption(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter, string helpText)
+            : base(helpText)
         {
             _clientFactory = clientFactory;
             _schedulerWaiter = schedulerWaiter;

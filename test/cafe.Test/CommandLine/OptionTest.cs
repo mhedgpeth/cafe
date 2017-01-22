@@ -21,7 +21,7 @@ namespace cafe.Test.CommandLine
 
     public class OptionThrowingException : Option
     {
-        public OptionThrowingException() : base(new OptionSpecification("throw"), "throws an exception")
+        public OptionThrowingException() : base("help")
         {
         }
 

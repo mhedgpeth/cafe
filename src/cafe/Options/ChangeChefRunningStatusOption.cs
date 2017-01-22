@@ -15,10 +15,10 @@ namespace cafe.Options
         private readonly Func<IChefServer, Task<ServerStatus>> _serverAction;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ChangeChefRunningStatusOption).FullName);
 
-        public ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
+        private ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
             string commandDescription,
             Func<IChefServer, Task<ServerStatus>> serverAction)
-            : base(schedulerServerProvider, new OptionSpecification("chef", command), $"{command} chef")
+            : base(schedulerServerProvider, $"{command} chef")
         {
             _command = command;
             _commandDescription = commandDescription;

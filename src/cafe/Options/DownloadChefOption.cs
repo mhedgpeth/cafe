@@ -12,9 +12,6 @@ namespace cafe.Options
 
         public DownloadChefOption(ClientFactory clientFactory, SchedulerWaiter schedulerWaiter)
             : base(clientFactory, schedulerWaiter,
-                new OptionSpecification(OptionValueSpecification.ForExactValue("chef"),
-                    OptionValueSpecification.ForExactValue("download"),
-                    OptionValueSpecification.ForVersion()),
                 "downloads the provided version of chef")
         {
             _clientFactory = clientFactory;

@@ -5,7 +5,7 @@ namespace cafe.Test.CommandLine
 {
     public class FakeOption : Option
     {
-        public FakeOption(OptionSpecification specification, string helpText) : base(specification, helpText)
+        public FakeOption(string helpText) : base(helpText)
         {
         }
 
@@ -15,7 +15,7 @@ namespace cafe.Test.CommandLine
             return Result.Successful();
         }
 
-        public override void ShowHelp()
+        public override void NotifyHelpWasShown()
         {
             WasHelpShown = true;
         }

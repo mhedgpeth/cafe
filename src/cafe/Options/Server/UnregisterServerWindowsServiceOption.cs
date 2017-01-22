@@ -10,7 +10,7 @@ namespace cafe.Options.Server
         private static readonly Logger Logger =
             LogManager.GetLogger(typeof(UnregisterServerWindowsServiceOption).FullName);
 
-        public UnregisterServerWindowsServiceOption() : base(new OptionSpecification("service", "unregister"), "unregisters cafe to run as a service")
+        public UnregisterServerWindowsServiceOption() : base("unregisters cafe to run as a service")
         {
         }
 
