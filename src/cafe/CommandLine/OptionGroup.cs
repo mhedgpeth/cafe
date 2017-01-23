@@ -76,7 +76,7 @@ namespace cafe.CommandLine
 
         public Result Run(params string[] args)
         {
-            if (_groupSpecification.IsSatisfiedBy(args) && _groupSpecification.HelpRequested(args))
+            if (args.Length == 0 || (_groupSpecification.IsSatisfiedBy(args) && _groupSpecification.HelpRequested(args)))
             {
                 ShowHelp();
                 return Result.Successful();

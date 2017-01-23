@@ -170,14 +170,25 @@ namespace cafe.Test.Options
         [Fact]
         public void DashH_ShouldShowAllOptions()
         {
+            AssertArgumentsShouldShowHelpOnAllOptions("-h");
+        }
+
+        private void AssertArgumentsShouldShowHelpOnAllOptions(params string[] args)
+        {
             FakeOption chefRunOption;
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            group.RunProgram("-h");
+            @group.RunProgram(args);
 
             chefRunOption.WasHelpShown.Should().BeTrue("because help was asked for all options");
             chefVersionOption.WasHelpShown.Should().BeTrue("because help was asked for all options");
+        }
+
+        [Fact]
+        public void NoArguments_ShouldShowHelp()
+        {
+            AssertArgumentsShouldShowHelpOnAllOptions();
         }
 
     }

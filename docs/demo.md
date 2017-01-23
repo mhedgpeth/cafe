@@ -1,11 +1,15 @@
 # Cafe Demonstration
 
+Cafe makes running Chef easier. 
+
 ## Starting point
 
 * Local VM running Windows 2016
 * chrome, log4view, code installed
 * Zip file of cafe build
 * Chef Server account (manage.chef.io), client.rb, and validator for bootstrapping
+
+* We're going to take a windows-centric approach to the demo
 
 ## Bootstrapping
 

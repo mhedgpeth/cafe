@@ -45,7 +45,7 @@ namespace cafe.Options
 
         private static string IdArgument(string[] args)
         {
-            var idArgument = args[1];
+            var idArgument = args[2];
             return idArgument;
         }
     }
