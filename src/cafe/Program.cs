@@ -75,7 +75,7 @@ namespace cafe
                         new DownloadProductOption<IChefServer, ChefStatus>(chefProduct, clientFactory.RestClientForChefServer,
                             schedulerWaiter),
                         CreateDownloadVersionSpecifications());
-                    chefGroup.WithOption(new ShowChefStatusOption(clientFactory), "status");
+                    chefGroup.WithOption(new ShowChefStatusOption(clientFactory.RestClientForChefServer), "status");
                     chefGroup.WithOption(
                         new BootstrapChefRunListOption(clientFactory.RestClientForChefServer, schedulerWaiter,
                             fileSystemCommands),
@@ -114,6 +114,8 @@ namespace cafe
                 .WithGroup("inspec", inspecGroup =>
                 {
                     const string inspecProduct = "InSpec";
+                    inspecGroup.WithOption(new ShowInSpecStatusOption(clientFactory.RestClientForInspecServer),
+                        "status");
                     inspecGroup.WithOption(
                         new InstallOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
                             clientFactory.RestClientForInspecServer, schedulerWaiter), CreateInstallVersionSpecifications());
