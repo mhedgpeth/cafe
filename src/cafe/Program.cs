@@ -79,30 +79,23 @@ namespace cafe
                     chefGroup.WithOption(
                         new BootstrapChefRunListOption(clientFactory.RestClientForChefServer, schedulerWaiter,
                             fileSystemCommands),
-                        OptionValueSpecification.ForExactValue("bootstrap"),
-                        OptionValueSpecification.ForExactValue("run-list:"),
-                        OptionValueSpecification.ForAnyValue("the run list"),
-                        OptionValueSpecification.ForExactValue("config:"),
-                        OptionValueSpecification.ForAnyValue("the client.rb file"),
-                        OptionValueSpecification.ForExactValue("validator:"),
-                        OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
+                        OptionValueSpecification.ForCommand("bootstrap"),
+                        OptionValueSpecification.ForValue("run-list:", "the run list"),
+                        OptionValueSpecification.ForValue("config:", "the client.rb file"),
+                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"));
                     chefGroup.WithOption(
                         new BootstrapChefPolicyOption(clientFactory.RestClientForChefServer, schedulerWaiter,
                             fileSystemCommands),
-                        OptionValueSpecification.ForExactValue("bootstrap"),
-                        OptionValueSpecification.ForExactValue("policy:"),
-                        OptionValueSpecification.ForAnyValue("the policy name"),
-                        OptionValueSpecification.ForExactValue("group:"),
-                        OptionValueSpecification.ForAnyValue("the policy group"),
-                        OptionValueSpecification.ForExactValue("config:"),
-                        OptionValueSpecification.ForAnyValue("the client.rb file"),
-                        OptionValueSpecification.ForExactValue("validator:"),
-                        OptionValueSpecification.ForAnyValue("the validator.pem file used to join the node"));
+                        OptionValueSpecification.ForCommand("bootstrap"),
+                        OptionValueSpecification.ForValue("policy:", "the policy name"),
+                        OptionValueSpecification.ForValue("group:", "the policy group"),
+                        OptionValueSpecification.ForValue("config:", "the client.rb file"),
+                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"));
                     var installChefOption =
                         new InstallOption<IChefServer, ChefStatus>(chefProduct, clientFactory.RestClientForChefServer,
                             schedulerWaiter);
                     chefGroup.WithOption(installChefOption, CreateInstallVersionSpecifications());
-                    chefGroup.WithOption(installChefOption, OptionValueSpecification.ForExactValue("upgrade"),
+                    chefGroup.WithOption(installChefOption, OptionValueSpecification.ForCommand("upgrade"),
                         OptionValueSpecification.ForVersion());
                     chefGroup.WithOption(
                         ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
@@ -148,8 +141,8 @@ namespace cafe
                     statusGroup.WithDefaultOption(statusOption);
                     statusGroup.WithOption(statusOption, "status");
                     statusGroup.WithOption(new JobRunStatusOption(clientFactory.RestClientForJobServer),
-                        OptionValueSpecification.ForExactValue("status"),
-                        OptionValueSpecification.ForAnyValue("job run id"));
+                        OptionValueSpecification.ForCommand("status"),
+                        OptionValueSpecification.ForValue("id:", "job run id"));
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
             Logger.Debug("Running application");
@@ -160,7 +153,7 @@ namespace cafe
         {
             return new[]
             {
-                OptionValueSpecification.ForExactValue("download"),
+                OptionValueSpecification.ForCommand("download"),
                 OptionValueSpecification.ForVersion()
             };
         }
@@ -169,7 +162,7 @@ namespace cafe
         {
             return new[]
             {
-                OptionValueSpecification.ForExactValue("install"),
+                OptionValueSpecification.ForCommand("install"),
                 OptionValueSpecification.ForVersion()
             };
         }

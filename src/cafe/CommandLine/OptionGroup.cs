@@ -22,7 +22,7 @@ namespace cafe.CommandLine
             _groupSpecification = new OptionSpecification(groupSpecifications);
         }
 
-        public OptionGroup(string group) : this(OptionValueSpecification.ForExactValue(group))
+        public OptionGroup(string group) : this(OptionValueSpecification.ForCommand(group))
         {
         }
 
@@ -52,7 +52,7 @@ namespace cafe.CommandLine
 
         public OptionGroup WithOption(Option option, params string[] args)
         {
-            return WithOption(option, args.Select(OptionValueSpecification.ForExactValue).ToArray());
+            return WithOption(option, args.Select(OptionValueSpecification.ForCommand).ToArray());
         }
 
         public OptionGroup WithOption(Option option, params OptionValueSpecification[] valueSpecifications)
@@ -100,7 +100,7 @@ namespace cafe.CommandLine
             var specifications =
                 new List<OptionValueSpecification>(_groupSpecification.ValueSpecifications)
                 {
-                    OptionValueSpecification.ForExactValue(groupValue)
+                    OptionValueSpecification.ForCommand(groupValue)
                 };
             var optionGroup = new OptionGroup(specifications.ToArray());
             groupInitializer(optionGroup);

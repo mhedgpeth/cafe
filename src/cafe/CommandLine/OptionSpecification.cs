@@ -20,7 +20,7 @@ namespace cafe.CommandLine
 
         private static OptionValueSpecification[] ConvertToExactValueSpecifications(params string[] exactValues)
         {
-            return exactValues.Select(OptionValueSpecification.ForExactValue).ToArray();
+            return exactValues.Select(OptionValueSpecification.ForCommand).ToArray();
         }
 
         public OptionSpecification(params OptionValueSpecification[] valueSpecifications)
@@ -43,7 +43,7 @@ namespace cafe.CommandLine
                     var valueSpecification = _valueSpecifications[i];
                     var value = trimmedArguments[i];
                     Logger.Debug($"Determining if {value} matches specification {valueSpecification}");
-                    if (!valueSpecification.IsSatisfiedBy(value))
+                    if (!valueSpecification.IsSatisfiedBy(0, value))
                     {
                         Logger.Debug(
                             $"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
@@ -87,5 +87,15 @@ namespace cafe.CommandLine
             return optionSpecification;
         }
 
+        public Argument[] ParseArguments(params string[] args)
+        {
+            var arguments = new List<Argument>();
+            for (var i = 0; i < _valueSpecifications.Length; i++)
+            {
+                var valueSpecification = _valueSpecifications[i];
+                arguments.Add(valueSpecification.ParseArgument(i, args));
+            }
+            return arguments.ToArray();
+        }
     }
 }

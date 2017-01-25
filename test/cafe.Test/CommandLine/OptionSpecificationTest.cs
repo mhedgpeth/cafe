@@ -1,4 +1,5 @@
-﻿using cafe.CommandLine;
+﻿using System.Text.RegularExpressions;
+using cafe.CommandLine;
 using FluentAssertions;
 using Xunit;
 
@@ -6,10 +7,7 @@ namespace cafe.Test.CommandLine
 {
     public class OptionSpecificationTest
     {
-        public static readonly OptionSpecification ChefRunOptionSpecification = new OptionSpecification("chef", "run");
-
-        public static readonly OptionSpecification ChefVersionOptionSpecification = new OptionSpecification("chef",
-            "version");
+        private static readonly OptionSpecification ChefRunOptionSpecification = new OptionSpecification("chef", "run");
 
         [Fact]
         public void IsSatisfiedBy_ShouldBeSatisfiedByExactArguments()
@@ -36,8 +34,9 @@ namespace cafe.Test.CommandLine
         }
 
         private static readonly OptionSpecification ChefDownloadOptionSpecification = new OptionSpecification(
-            OptionValueSpecification.ForExactValue("chef"),
-            OptionValueSpecification.ForExactValue("download"), OptionValueSpecification.ForVersion());
+            OptionValueSpecification.ForCommand("chef"),
+            OptionValueSpecification.ForCommand("download"),
+            OptionValueSpecification.ForVersion());
 
 
         [Fact]
@@ -56,6 +55,124 @@ namespace cafe.Test.CommandLine
         public void IsSatisfiedBy_ShouldBeFalseForUnmatchingParameter()
         {
             ChefDownloadOptionSpecification.IsSatisfiedBy("chef", "download", "something").Should().BeFalse();
+        }
+
+        [Fact]
+        public void ParseArguments_ShouldParseDownloadSpecificationCorrectly()
+        {
+            var version = "1.2.3";
+            var arguments = ChefDownloadOptionSpecification.ParseArguments("chef", "download", version);
+
+            arguments.Length.Should().Be(3, "because there are three arguments");
+            ArgumentParserTest.AssertArgumentIsCommandArgument("chef", arguments[0]);
+            ArgumentParserTest.AssertArgumentIsCommandArgument("download", arguments[1]);
+            ArgumentParserTest.AssertArgumentIsValueArgument("version:", version, arguments[2]);
+        }
+    }
+
+    public class CommandValueSpecificationTest
+    {
+        private const string Command = "chef";
+
+        [Fact]
+        public void ParseArgument_ShouldParseCommandIfItExistsInArgument()
+        {
+            var specification = CreateSpecification();
+
+            var argument = specification.ParseArgument(0, Command);
+
+            ArgumentParserTest.AssertArgumentIsCommandArgument(Command, argument);
+        }
+
+        private static CommandOptionValueSpecification CreateSpecification()
+        {
+            var specification = new CommandOptionValueSpecification(Command, "a command");
+            return specification;
+        }
+
+        [Fact]
+        public void ParseArgument_ShouldReturnNullIfCommandDoesNotExistInArguments()
+        {
+            CreateSpecification()
+                .ParseArgument(0, "another")
+                .Should()
+                .BeNull("because the command doesn't exist in the argument list");
+        }
+
+        [Fact]
+        public void ParseArgument_ShouldReturnNullIfCommandAtPositionDoesNotExistButExistsElsewhere()
+        {
+            CreateSpecification()
+                .ParseArgument(0, "another", Command)
+                .Should()
+                .BeNull("because the command doesn't exist in the right location");
+        }
+    }
+
+    public class LabeledValueSpecificationTest
+    {
+        private const string Label = "version:";
+        private const string Value = "1.2.3";
+
+        [Fact]
+        public void ParseArgument_ShouldParseArgumentWithoutLabel()
+        {
+            var specification = CreateLabeledValueSpecification();
+
+            var argument = specification.ParseArgument(0, Value);
+
+            ArgumentParserTest.AssertArgumentIsValueArgument(Label, Value, argument);
+        }
+
+        private LabelledValueSpecification CreateLabeledValueSpecification()
+        {
+            return new AnyLabelledValueSpecification(Label, "does something awesome");
+        }
+
+        [Fact]
+        public void ParseArgument_ShouldParseArgumentWithLabel()
+        {
+            var specification = CreateLabeledValueSpecification();
+
+            var argument = specification.ParseArgument(0, Label, Value);
+
+            ArgumentParserTest.AssertArgumentIsValueArgument(Label, Value, argument);
+        }
+
+        [Fact]
+        public void IsSatisfiedBy_ShouldBeSatisfiedByArgumentWithoutLabel()
+        {
+            var specification = CreateLabeledValueSpecification();
+
+
+            specification.IsSatisfiedBy(0, Value).Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsSatisfiedBy_ShouldBeSatisfiedByArgumentWithLabel()
+        {
+            CreateLabeledValueSpecification().IsSatisfiedBy(0, Label, Value).Should().BeTrue("because the value is there and labeled properly");
+
+        }
+
+        [Fact]
+        public void IsSatsifiedBy_ShouldNotBeSatisfiedByArgumentsWithJustLabel()
+        {
+            CreateLabeledValueSpecification()
+                .IsSatisfiedBy(0, Label)
+                .Should()
+                .BeFalse("because the label is missing a value");
+        }
+
+        [Fact]
+        public void IsSatisfiedBy_ShouldBeFalseIfItDoesNotMatchRegularExpression()
+        {
+            var versionRegularExpression = new Regex(@"\d+\.\d+\.\d+");
+            var specification = new MatchingRegularExpressionLabelledValueSpecification(Label, versionRegularExpression, "labeled value");
+
+            specification.IsSatisfiedBy(0, "invalid-value")
+                .Should()
+                .BeFalse("because the value doesn't match the specification value");
         }
     }
 }
