@@ -18,7 +18,7 @@ namespace cafe.CommandLine
             _helpText = helpText;
         }
 
-        public Result Run(params string[] args)
+        public Result Run(params Argument[] args)
         {
             Result result = null;
             var description = ToDescription(args);
@@ -70,9 +70,9 @@ namespace cafe.CommandLine
             return Result.Failure($"An unexpected error occurred while executing this option: {ex.Message}");
         }
 
-        protected abstract string ToDescription(string[] args);
+        protected abstract string ToDescription(Argument[] args);
 
-        protected abstract Result RunCore(string[] args);
+        protected abstract Result RunCore(Argument[] args);
 
         public override string ToString()
         {

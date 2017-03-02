@@ -18,12 +18,12 @@ namespace cafe.Options.Server
             _serviceStatusProvider = new ServiceStatusProvider(processExecutor, fileSystem);
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Determining Cafe Windows Service Status";
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             var serviceName = CafeServerWindowsServiceOptions.ServiceName;
             var status = _serviceStatusProvider.DetermineStatusDescription(serviceName);

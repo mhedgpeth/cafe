@@ -1,12 +1,26 @@
-﻿using cafe.CommandLine;
-using cafe.Test.CommandLine;
+﻿using System.Linq;
+using cafe.CommandLine;
 using FluentAssertions;
 using Xunit;
 
-namespace cafe.Test.Options
+namespace cafe.Test.CommandLine
 {
+    public static class OptionGroupTestExtensions
+    {
+        public static bool IsSatsifiedBy(this OptionGroup optionGroup, params string[] args)
+        {
+            var arguments = args.ToList().Select(a => new CommandArgument(a)).ToArray();
+            return optionGroup.IsSatisfiedBy(arguments);
+        }
+    }
+
     public class OptionGroupTest
     {
+        public static Argument[] ToCommandArguments(params string[] args)
+        {
+            return args.ToList().Select(a => new CommandArgument(a)).ToArray();
+        }
+
         [Fact]
         public void IsSatisfiedBy_ShouldBeTrueForMatchingArguments()
         {
@@ -14,7 +28,7 @@ namespace cafe.Test.Options
             FakeOption statusOption;
             var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
 
-            optionGroup.IsSatisfiedBy("inspec", "version")
+            optionGroup.IsSatsifiedBy("inspec", "version")
                 .Should()
                 .BeTrue("because the argument matches the group, then the option");
         }
@@ -29,6 +43,12 @@ namespace cafe.Test.Options
             return optionGroup;
         }
 
+        private static bool IsSatisfiedBy(OptionGroup group, params string[] commands)
+        {
+            var arguments = commands.Select(Argument.CreateCommand).ToArray();
+            return group.IsSatisfiedBy(arguments);
+        }
+
         [Fact]
         public void IsSatisfiedBy_ShouldBeFalseForInvalidArguments()
         {
@@ -36,7 +56,7 @@ namespace cafe.Test.Options
             FakeOption statusOption;
             var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
 
-            optionGroup.IsSatisfiedBy("inspec", "something")
+            IsSatisfiedBy(optionGroup, "inspec", "something")
                 .Should()
                 .BeFalse("because even though the group matches the option doesn't");
         }
@@ -48,7 +68,7 @@ namespace cafe.Test.Options
             FakeOption statusOption;
             var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
 
-            optionGroup.MatchingOption("inspec", "version")
+            optionGroup.MatchingOption(ToCommandArguments("inspec", "version"))
                 .Should()
                 .BeSameAs(versionOption);
         }
@@ -60,8 +80,10 @@ namespace cafe.Test.Options
             FakeOption statusOption;
             var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
 
-            optionGroup.MatchingOption("inspec", "something").Should().BeNull("because it's not in the group");
+            optionGroup.MatchingOption(ToCommandArguments("inspec", "something")).Should().BeNull("because it's not in the group");
         }
+
+
 
         [Fact]
         public void IsSatisfied_ShouldBeTrueForSubgroupOption()
@@ -73,7 +95,7 @@ namespace cafe.Test.Options
                     inspecGroup.WithOption(new FakeOption("status"), "status");
                 });
 
-            root.IsSatisfiedBy("inspec", "install").Should().BeTrue("because the child group should be used");
+            root.IsSatisfiedBy(ToCommandArguments("inspec", "install")).Should().BeTrue("because the child group should be used");
         }
 
         [Fact]
@@ -84,8 +106,8 @@ namespace cafe.Test.Options
             var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
             var inspecHelpArguments = new[] {"inspec", "-h"};
 
-            bool isSatisfied = optionGroup.IsSatisfiedBy(inspecHelpArguments);
-            var result = optionGroup.Run(inspecHelpArguments);
+            bool isSatisfied = optionGroup.IsSatisfiedBy(ToCommandArguments(inspecHelpArguments));
+            var result = optionGroup.Run(ToCommandArguments(inspecHelpArguments));
 
             isSatisfied.Should().BeTrue();
             result.IsSuccess.Should().BeTrue();
@@ -105,8 +127,8 @@ namespace cafe.Test.Options
 
             var inspecHelpArguments = new[] {"inspec", "-h"};
 
-            bool isSatisfied = root.IsSatisfiedBy(inspecHelpArguments);
-            var result = root.Run("inspec", "-h");
+            bool isSatisfied = root.IsSatisfiedBy(ToCommandArguments(inspecHelpArguments));
+            var result = root.Run(ToCommandArguments("inspec", "-h"));
 
             isSatisfied.Should().BeTrue();
             result.IsSuccess.Should().BeTrue();
@@ -161,8 +183,9 @@ namespace cafe.Test.Options
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            group.RunProgram("chef", "run", "-h");
+            var returnValue = group.RunProgram("chef", "run", "-h");
 
+            returnValue.Should().Be(0);
             chefRunOption.WasRun.Should().BeFalse();
             chefRunOption.WasHelpShown.Should().BeTrue();
         }
@@ -190,6 +213,5 @@ namespace cafe.Test.Options
         {
             AssertArgumentsShouldShowHelpOnAllOptions();
         }
-
     }
 }

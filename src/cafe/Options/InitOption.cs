@@ -19,14 +19,14 @@ namespace cafe.Options
             _environment = environment;
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Initializing Cafe to Run on This Machine";
         }
 
         public const string PathEnvironmentVariableKey = "PATH";
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             var path = GetPathEnvironmentVariable();
             if (!path.Contains(_cafeDirectory))

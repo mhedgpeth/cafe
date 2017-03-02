@@ -12,14 +12,14 @@ namespace cafe.Test.CommandLine
             const string value = "value";
             var specification = OptionValueSpecification.ForCommand(value);
 
-            specification.IsSatisfiedBy(0, value).Should().BeTrue();
+            specification.IsSatisfiedBy(0, Argument.CreateCommand(value)).Should().BeTrue();
         }
 
         [Fact]
         public void IsSatisfied_ShouldBeFalseForValueThatDoesNotMatch()
         {
             OptionValueSpecification.ForCommand("something")
-                .IsSatisfiedBy(0, "by a different value")
+                .IsSatisfiedBy(0, Argument.CreateCommand("by a different value"))
                 .Should()
                 .BeFalse("because the value doesn't exactly match");
         }
@@ -28,7 +28,7 @@ namespace cafe.Test.CommandLine
         public void IsSatisfiedBy_ShouldBeFalseIfExactValueDoesNotMatchButContainsOtherValue()
         {
             OptionValueSpecification.ForCommand("scheduler")
-                .IsSatisfiedBy(0, "schedulers")
+                .IsSatisfiedBy(0, Argument.CreateCommand("schedulers"))
                 .Should()
                 .BeFalse("because the values aren't exactly the same");
         }
@@ -36,7 +36,8 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfiedBy_ShouldBeTrueForAnyValue()
         {
-            OptionValueSpecification.ForValue("value:", "any value").IsSatisfiedBy(0, "policy").Should().BeTrue();
+            var value = new ValueArgument("value:", "anything");
+            OptionValueSpecification.ForValue("value:", "any value").IsSatisfiedBy(0, value).Should().BeTrue();
         }
 
 
@@ -47,18 +48,15 @@ namespace cafe.Test.CommandLine
         {
             var specification = OptionValueSpecification.ForCommand(Command);
 
-            var argument = specification.ParseArgument(0, Command);
-            ArgumentParserTest.AssertArgumentIsCommandArgument(Command, argument);
+            var argument = specification.ParseArgument(null, Command);
+            AssertArgumentIsCommandArgument(Command, argument);
         }
 
-        [Fact]
-        public void ParseArgument_ShouldParseCommandArgumentAtLaterPosition()
+        public static void AssertArgumentIsCommandArgument(string command, Argument argument)
         {
-            var specification = OptionValueSpecification.ForCommand(Command);
-
-            var argument = specification.ParseArgument(1, "something", Command);
-
-            ArgumentParserTest.AssertArgumentIsCommandArgument(Command, argument);
+            var commandArgument = argument as CommandArgument;
+            commandArgument.Should().NotBeNull();
+            commandArgument.Command.Should().Be(command);
         }
 
         [Fact]
@@ -68,9 +66,17 @@ namespace cafe.Test.CommandLine
             var specification = OptionValueSpecification.ForValue(label, "description");
 
             const string value = "1.2.3";
-            var argument = specification.ParseArgument(0, value);
+            var argument = specification.ParseArgument(label, value);
 
-            ArgumentParserTest.AssertArgumentIsValueArgument(label, value, argument);
+            AssertArgumentIsValueArgument(label, value, argument);
+        }
+
+        public static void AssertArgumentIsValueArgument(string label, string value, Argument argument)
+        {
+            var valueArgument = argument as ValueArgument;
+            valueArgument.Should().NotBeNull("because expecting argument to be a value argument");
+            valueArgument.Label.Should().Be(label);
+            valueArgument.Value.Should().Be(value);
         }
     }
 }

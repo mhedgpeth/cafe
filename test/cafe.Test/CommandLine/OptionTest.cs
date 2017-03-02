@@ -25,12 +25,12 @@ namespace cafe.Test.CommandLine
         {
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             throw new ArgumentException("this option always throws an exception for testing");
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Option Throwing Exception";
         }

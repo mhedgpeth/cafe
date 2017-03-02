@@ -15,12 +15,12 @@ namespace cafe.Options
         {
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return $"Retrieving Status for Job {IdArgument(args)}";
         }
 
-        protected override Result RunCore(IJobServer server, string[] args)
+        protected override Result RunCore(IJobServer server, Argument[] args)
         {
             Guid id;
             var idArgument = IdArgument(args);
@@ -43,10 +43,9 @@ namespace cafe.Options
             }
         }
 
-        private static string IdArgument(string[] args)
+        private static string IdArgument(Argument[] args)
         {
-            var idArgument = args[2];
-            return idArgument;
+            return args.FindValueFromLabel("id:").Value;
         }
     }
 }

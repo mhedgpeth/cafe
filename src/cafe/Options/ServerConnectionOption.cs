@@ -16,7 +16,7 @@ namespace cafe.Options
             _serverFactory = serverFactory;
         }
 
-        protected sealed override Result RunCore(string[] args)
+        protected sealed override Result RunCore(Argument[] args)
         {
             try
             {
@@ -31,6 +31,6 @@ namespace cafe.Options
             }
         }
 
-        protected abstract Result RunCore(T client, string[] args);
+        protected abstract Result RunCore(T client, Argument[] args);
     }
 }

@@ -12,13 +12,13 @@ namespace cafe.CommandLine
         private readonly OptionValueSpecification[] _valueSpecifications;
 
         public OptionSpecification(params string[] exactValues)
-            : this(ConvertToExactValueSpecifications(exactValues))
+            : this(ConvertToCommandSpecifications(exactValues))
         {
         }
 
         public OptionValueSpecification[] ValueSpecifications => _valueSpecifications;
 
-        private static OptionValueSpecification[] ConvertToExactValueSpecifications(params string[] exactValues)
+        private static OptionValueSpecification[] ConvertToCommandSpecifications(params string[] exactValues)
         {
             return exactValues.Select(OptionValueSpecification.ForCommand).ToArray();
         }
@@ -33,17 +33,24 @@ namespace cafe.CommandLine
             _description = _description.TrimEnd();
         }
 
-        public bool IsSatisfiedBy(params string[] args)
+        public bool IsSatisfiedBy(params Argument[] args)
         {
-            var trimmedArguments = TrimLastArgumentIfItIsHelpRequest(args);
-            if (_valueSpecifications.Length == trimmedArguments.Length)
+            if (_valueSpecifications.Length >= args.Length)
             {
                 for (int i = 0; i < _valueSpecifications.Length; i++)
                 {
                     var valueSpecification = _valueSpecifications[i];
-                    var value = trimmedArguments[i];
+                    if (i >= args.Length)
+                    {
+                        if (valueSpecification.IsRequired)
+                        {
+                            return false;
+                        }
+                        continue;
+                    }
+                    var value = args[i];
                     Logger.Debug($"Determining if {value} matches specification {valueSpecification}");
-                    if (!valueSpecification.IsSatisfiedBy(0, value))
+                    if (!valueSpecification.IsSatisfiedBy(i, args))
                     {
                         Logger.Debug(
                             $"Since {value} is not satisfied by {valueSpecification}, {this} is not an option");
@@ -60,28 +67,16 @@ namespace cafe.CommandLine
             }
         }
 
-        private string[] TrimLastArgumentIfItIsHelpRequest(string[] args)
-        {
-            if (!HelpRequested(args)) return args;
-            var list = args.ToList();
-            list.Remove("-h");
-            return list.ToArray();
-        }
-
         public override string ToString()
         {
             return _description;
         }
 
-        public bool HelpRequested(string[] args)
-        {
-            return args.LastOrDefault() == "-h";
-        }
-
-        public OptionSpecification WithAdditionalSpecifications(OptionValueSpecification[] valueSpecifications)
+        public OptionSpecification WithAdditionalSpecifications(params OptionValueSpecification[] valueSpecifications)
         {
             var allValues = new List<OptionValueSpecification>();
             allValues.AddRange(_valueSpecifications);
+            allValues.RemoveAll(a => !a.IsRequired);
             allValues.AddRange(valueSpecifications);
             var optionSpecification = new OptionSpecification(allValues.ToArray());
             return optionSpecification;
@@ -90,10 +85,25 @@ namespace cafe.CommandLine
         public Argument[] ParseArguments(params string[] args)
         {
             var arguments = new List<Argument>();
-            for (var i = 0; i < _valueSpecifications.Length; i++)
+            int currentSpecificationIndex = 0;
+            var label = string.Empty;
+            for (int i = 0; i < args.Length; i++)
             {
-                var valueSpecification = _valueSpecifications[i];
-                arguments.Add(valueSpecification.ParseArgument(i, args));
+                var argument = args[i];
+                if (argument.EndsWith(":"))
+                {
+                    label = argument;
+                    continue;
+                }
+                if (currentSpecificationIndex >= _valueSpecifications.Length)
+                {
+                    return null;
+                }
+                var valueSpecification = _valueSpecifications[currentSpecificationIndex];
+                var parsedArgument = valueSpecification.ParseArgument(label, argument);
+                if (parsedArgument == null) return null;
+                arguments.Add(parsedArgument);
+                currentSpecificationIndex++;
             }
             return arguments.ToArray();
         }

@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using cafe.CommandLine;
+﻿using cafe.CommandLine;
+using cafe.Test.Options;
 using FluentAssertions;
 using Xunit;
 
@@ -7,12 +7,14 @@ namespace cafe.Test.CommandLine
 {
     public class OptionSpecificationTest
     {
-        private static readonly OptionSpecification ChefRunOptionSpecification = new OptionSpecification("chef", "run");
+        private static readonly OptionSpecification ChefRunOptionSpecification = new OptionSpecification(
+            OptionValueSpecification.ForCommand("chef"), OptionValueSpecification.ForCommand("run"),
+            OptionValueSpecification.OptionalHelpCommand());
 
         [Fact]
         public void IsSatisfiedBy_ShouldBeSatisfiedByExactArguments()
         {
-            ChefRunOptionSpecification.IsSatisfiedBy("chef", "run")
+            ChefRunOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "run"))
                 .Should()
                 .BeTrue("because the arguments match exactly");
         }
@@ -20,7 +22,7 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfiedBy_ShouldBeSatisfiedByHelpArguments()
         {
-            ChefRunOptionSpecification.IsSatisfiedBy("chef", "run", "-h")
+            ChefRunOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "run", "-h"))
                 .Should()
                 .BeTrue("because the options match and they are asking for help");
         }
@@ -28,7 +30,7 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfied_ShouldBeFalseWhenParametersDoNotMatch()
         {
-            ChefRunOptionSpecification.IsSatisfiedBy("chef", "version")
+            ChefRunOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "version"))
                 .Should()
                 .BeFalse("because parameters don't match");
         }
@@ -42,19 +44,27 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfied_ShouldBeTrueWhenParameterized()
         {
-            ChefDownloadOptionSpecification.IsSatisfiedBy("chef", "download", "1.2.3").Should().BeTrue();
+            ChefDownloadOptionSpecification.IsSatisfiedBy(Argument.CreateCommand("chef"),
+                    Argument.CreateCommand("download"), new ValueArgument("version:", "1.2.3"))
+                .Should()
+                .BeTrue();
         }
 
         [Fact]
         public void IsSatisfiedBy_ShouldBeFalseForMissingParameter()
         {
-            ChefDownloadOptionSpecification.IsSatisfiedBy("chef", "download").Should().BeFalse();
+            ChefDownloadOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "download"))
+                .Should()
+                .BeFalse();
         }
 
         [Fact]
         public void IsSatisfiedBy_ShouldBeFalseForUnmatchingParameter()
         {
-            ChefDownloadOptionSpecification.IsSatisfiedBy("chef", "download", "something").Should().BeFalse();
+            ChefDownloadOptionSpecification
+                .IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "download", "something"))
+                .Should()
+                .BeFalse();
         }
 
         [Fact]
@@ -64,115 +74,49 @@ namespace cafe.Test.CommandLine
             var arguments = ChefDownloadOptionSpecification.ParseArguments("chef", "download", version);
 
             arguments.Length.Should().Be(3, "because there are three arguments");
-            ArgumentParserTest.AssertArgumentIsCommandArgument("chef", arguments[0]);
-            ArgumentParserTest.AssertArgumentIsCommandArgument("download", arguments[1]);
-            ArgumentParserTest.AssertArgumentIsValueArgument("version:", version, arguments[2]);
-        }
-    }
-
-    public class CommandValueSpecificationTest
-    {
-        private const string Command = "chef";
-
-        [Fact]
-        public void ParseArgument_ShouldParseCommandIfItExistsInArgument()
-        {
-            var specification = CreateSpecification();
-
-            var argument = specification.ParseArgument(0, Command);
-
-            ArgumentParserTest.AssertArgumentIsCommandArgument(Command, argument);
-        }
-
-        private static CommandOptionValueSpecification CreateSpecification()
-        {
-            var specification = new CommandOptionValueSpecification(Command, "a command");
-            return specification;
+            OptionValueSpecificationTest.AssertArgumentIsCommandArgument("chef", arguments[0]);
+            OptionValueSpecificationTest.AssertArgumentIsCommandArgument("download", arguments[1]);
+            OptionValueSpecificationTest.AssertArgumentIsValueArgument("version:", version, arguments[2]);
         }
 
         [Fact]
-        public void ParseArgument_ShouldReturnNullIfCommandDoesNotExistInArguments()
+        public void IsSatisfiedBy_ShouldBeTrueForOptionalArgumentThatIsNotThere()
         {
-            CreateSpecification()
-                .ParseArgument(0, "another")
+            var specification = new OptionSpecification(OptionValueSpecification.ForCommand("required"),
+                OptionValueSpecification.ForOptionalCommand("optional"));
+
+            specification.IsSatisfiedBy(Argument.CreateCommand("required"))
                 .Should()
-                .BeNull("because the command doesn't exist in the argument list");
+                .BeTrue("because the command is optional");
         }
 
         [Fact]
-        public void ParseArgument_ShouldReturnNullIfCommandAtPositionDoesNotExistButExistsElsewhere()
+        public void ParseArguments_ShouldReturnNullWhenRequiredArgumentsExistButNotInTheSpecification()
         {
-            CreateSpecification()
-                .ParseArgument(0, "another", Command)
+            new OptionSpecification(OptionValueSpecification.OptionalHelpCommand())
+                .ParseArguments("chef", "run")
                 .Should()
-                .BeNull("because the command doesn't exist in the right location");
-        }
-    }
-
-    public class LabeledValueSpecificationTest
-    {
-        private const string Label = "version:";
-        private const string Value = "1.2.3";
-
-        [Fact]
-        public void ParseArgument_ShouldParseArgumentWithoutLabel()
-        {
-            var specification = CreateLabeledValueSpecification();
-
-            var argument = specification.ParseArgument(0, Value);
-
-            ArgumentParserTest.AssertArgumentIsValueArgument(Label, Value, argument);
-        }
-
-        private LabelledValueSpecification CreateLabeledValueSpecification()
-        {
-            return new AnyLabelledValueSpecification(Label, "does something awesome");
+                .BeNull("because arguments were given that weren't in the specification");
         }
 
         [Fact]
-        public void ParseArgument_ShouldParseArgumentWithLabel()
+        public void ParseArguments_ShouldParseCommandAndTwoLabels()
         {
-            var specification = CreateLabeledValueSpecification();
+            const string groupLabel = "group:";
+            const string policyLabel = "policy:";
+            var specification = new OptionSpecification(OptionValueSpecification.ForCommand("chef"),
+                OptionValueSpecification.ForValue(policyLabel, "the policy"),
+                OptionValueSpecification.ForValue(groupLabel, "the group"));
 
-            var argument = specification.ParseArgument(0, Label, Value);
+            const string policyValue = "policy-value";
+            const string groupValue = "group-value";
+            var arguments = specification.ParseArguments("chef", policyLabel, policyValue, groupLabel, groupValue);
 
-            ArgumentParserTest.AssertArgumentIsValueArgument(Label, Value, argument);
-        }
-
-        [Fact]
-        public void IsSatisfiedBy_ShouldBeSatisfiedByArgumentWithoutLabel()
-        {
-            var specification = CreateLabeledValueSpecification();
-
-
-            specification.IsSatisfiedBy(0, Value).Should().BeTrue();
-        }
-
-        [Fact]
-        public void IsSatisfiedBy_ShouldBeSatisfiedByArgumentWithLabel()
-        {
-            CreateLabeledValueSpecification().IsSatisfiedBy(0, Label, Value).Should().BeTrue("because the value is there and labeled properly");
-
-        }
-
-        [Fact]
-        public void IsSatsifiedBy_ShouldNotBeSatisfiedByArgumentsWithJustLabel()
-        {
-            CreateLabeledValueSpecification()
-                .IsSatisfiedBy(0, Label)
-                .Should()
-                .BeFalse("because the label is missing a value");
-        }
-
-        [Fact]
-        public void IsSatisfiedBy_ShouldBeFalseIfItDoesNotMatchRegularExpression()
-        {
-            var versionRegularExpression = new Regex(@"\d+\.\d+\.\d+");
-            var specification = new MatchingRegularExpressionLabelledValueSpecification(Label, versionRegularExpression, "labeled value");
-
-            specification.IsSatisfiedBy(0, "invalid-value")
-                .Should()
-                .BeFalse("because the value doesn't match the specification value");
+            arguments.Should().NotBeNull("because the arguments fit the specification");
+            arguments.Length.Should().Be(3);
+            OptionValueSpecificationTest.AssertArgumentIsCommandArgument("chef", arguments[0]);
+            OptionValueSpecificationTest.AssertArgumentIsValueArgument(policyLabel, policyValue, arguments[1]);
+            OptionValueSpecificationTest.AssertArgumentIsValueArgument(groupLabel, groupValue, arguments[2]);
         }
     }
 }

@@ -28,12 +28,12 @@ namespace cafe.Options.Server
             _serviceStatusWaiter = serviceStatusWaiter;
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Starting Cafe Windows Service";
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             var descriptions = ServiceStatusProvider.DescribeWindowsStatuses();
             var waitForDescription = descriptions[_waitFor];

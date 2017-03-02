@@ -65,6 +65,15 @@ namespace cafe
                 new ServiceStatusProvider(processExecutor, fileSystem));
             // all options available
 
+            var root = CreateRootGroup(clientFactory, schedulerWaiter, fileSystemCommands, processExecutor, fileSystem, serviceStatusWaiter, environment);
+            Logger.Debug("Running application");
+            return root;
+        }
+
+        public static OptionGroup CreateRootGroup(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
+            IFileSystemCommands fileSystemCommands, ProcessExecutor processExecutor, IFileSystem fileSystem,
+            ServiceStatusWaiter serviceStatusWaiter, IEnvironment environment)
+        {
             var root = new OptionGroup()
                 .WithGroup("chef", chefGroup =>
                 {
@@ -145,7 +154,6 @@ namespace cafe
                         OptionValueSpecification.ForValue("id:", "job run id"));
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
-            Logger.Debug("Running application");
             return root;
         }
 

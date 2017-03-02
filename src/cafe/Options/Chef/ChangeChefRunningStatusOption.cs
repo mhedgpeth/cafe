@@ -25,12 +25,12 @@ namespace cafe.Options
             _serverAction = serverAction;
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return $"{_commandDescription} Chef";
         }
 
-        protected override Result RunCore(IChefServer server, string[] args)
+        protected override Result RunCore(IChefServer server, Argument[] args)
         {
             var status = _serverAction(server).Result;
             if (status == null)

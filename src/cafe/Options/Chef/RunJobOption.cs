@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using cafe.Client;
+using cafe.CommandLine;
 using cafe.Shared;
 using NLog;
 
@@ -18,7 +19,7 @@ namespace cafe.Options.Chef
             _schedulerWaiter = schedulerWaiter;
         }
 
-        protected sealed override Result RunCore(T client, string[] args)
+        protected sealed override Result RunCore(T client, Argument[] args)
         {
             var status = RunJobCore(client, args).Result;
             var finalStatus = _schedulerWaiter.WaitForTaskToComplete(status);
@@ -26,6 +27,6 @@ namespace cafe.Options.Chef
             return finalStatus.Result;
         }
 
-        protected abstract Task<JobRunStatus> RunJobCore(T productServer, string[] args);
+        protected abstract Task<JobRunStatus> RunJobCore(T productServer, Argument[] args);
     }
 }
