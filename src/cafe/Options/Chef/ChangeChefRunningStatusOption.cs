@@ -18,7 +18,7 @@ namespace cafe.Options
         private ChangeChefRunningStatusOption(Func<IChefServer> schedulerServerProvider, string command,
             string commandDescription,
             Func<IChefServer, Task<ChefStatus>> serverAction)
-            : base(schedulerServerProvider, $"{command} chef")
+            : base(schedulerServerProvider, $"{command}s chef")
         {
             _command = command;
             _commandDescription = commandDescription;

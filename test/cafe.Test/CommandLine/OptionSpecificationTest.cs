@@ -118,5 +118,13 @@ namespace cafe.Test.CommandLine
             OptionValueSpecificationTest.AssertArgumentIsValueArgument(policyLabel, policyValue, arguments[1]);
             OptionValueSpecificationTest.AssertArgumentIsValueArgument(groupLabel, groupValue, arguments[2]);
         }
+
+        [Fact]
+        public void ToString_ShouldNotHaveHelpInDescription()
+        {
+            const string command = "inspec";
+            var specification = new OptionSpecification(OptionValueSpecification.ForCommand(command), OptionValueSpecification.ForOptionalCommand("-h"));
+            specification.ToString().Should().Be(command);
+        }
     }
 }

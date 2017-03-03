@@ -111,8 +111,7 @@ Task("IncrementalBuild")
 
 Task("FullBuild")
     .IsDependentOn("Clean")
-    .IsDependentOn("IncrementalBuild")
-    .IsDependentOn("Build-WindowsImage");
+    .IsDependentOn("IncrementalBuild");
 
 //////////////////////////////////////////////////////////////////////
 // TESTING TARGETS
