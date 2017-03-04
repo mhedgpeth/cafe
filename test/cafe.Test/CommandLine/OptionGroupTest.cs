@@ -157,7 +157,7 @@ namespace cafe.Test.CommandLine
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            group.RunProgram("chef", "run");
+            group.RunProgram(group.ParseArguments("chef", "run"));
 
             chefRunOption.WasRun.Should().BeTrue();
         }
@@ -170,7 +170,7 @@ namespace cafe.Test.CommandLine
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            group.RunProgram("chef", "version");
+            group.RunProgram(group.ParseArguments("chef", "version"));
 
             chefRunOption.WasRun.Should().BeFalse();
             chefVersionOption.WasRun.Should().BeTrue();
@@ -183,7 +183,7 @@ namespace cafe.Test.CommandLine
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            var returnValue = group.RunProgram("chef", "run", "-h");
+            var returnValue = group.RunProgram(group.ParseArguments("chef", "run", "-h"));
 
             returnValue.Should().Be(0);
             chefRunOption.WasRun.Should().BeFalse();
@@ -202,7 +202,7 @@ namespace cafe.Test.CommandLine
             FakeOption chefVersionOption;
             var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
 
-            @group.RunProgram(args);
+            @group.RunProgram(group.ParseArguments(args));
 
             chefRunOption.WasHelpShown.Should().BeTrue("because help was asked for all options");
             chefVersionOption.WasHelpShown.Should().BeTrue("because help was asked for all options");

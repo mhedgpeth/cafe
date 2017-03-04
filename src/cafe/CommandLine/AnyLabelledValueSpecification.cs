@@ -2,7 +2,8 @@ namespace cafe.CommandLine
 {
     public class AnyLabelledValueSpecification : LabelledValueSpecification
     {
-        public AnyLabelledValueSpecification(string label, string description) : base(label, description)
+        public AnyLabelledValueSpecification(string label, string description, bool isRequired = true)
+            : base(label, description, isRequired)
         {
         }
 

@@ -6,7 +6,7 @@ namespace cafe.CommandLine
     {
         private readonly string _label;
 
-        protected LabelledValueSpecification(string label, string description) : base(description)
+        protected LabelledValueSpecification(string label, string description, bool isRequired = true) : base(description, isRequired)
         {
             _label = label;
         }

@@ -5,6 +5,11 @@ namespace cafe.CommandLine
 {
     public static class ArgumentEnumerableExtensions
     {
+        public static bool HasArgumentLabeled(this IEnumerable<Argument> arguments, string label)
+        {
+            return FindValueFromLabel(arguments, label) != null;
+        }
+
         public static ValueArgument FindValueFromLabel(this IEnumerable<Argument> arguments, string label)
         {
             return arguments.OfType<ValueArgument>().FirstOrDefault(v => v.Label == label);

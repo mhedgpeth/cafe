@@ -26,10 +26,23 @@ namespace cafe
             Directory.SetCurrentDirectory(AssemblyDirectory);
             ConfigureLogging(args);
             Presenter.ShowApplicationHeading(Logger, args);
-            var runner = CreateRunner();
-            var returnValue = runner.RunProgram(args);
-            Logger.Debug("Finishing cafe run");
-            return returnValue;
+            var clientFactory = CreateClientFactory();
+            var runner = CreateRunner(clientFactory);
+            var arguments = runner.ParseArguments(args);
+            if (arguments != null)
+            {
+                clientFactory.Hostname = arguments.HasArgumentLabeled("on:")
+                    ? arguments.FindValueFromLabel("on:").Value
+                    : clientFactory.Hostname;
+                var returnValue = runner.RunProgram(arguments);
+                Logger.Debug("Finishing cafe run");
+                return returnValue;
+            }
+            else
+            {
+                Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
+                return -2;
+            }
         }
 
         private static string AssemblyDirectory
@@ -50,9 +63,8 @@ namespace cafe
             Logger.Info($"Logging set up based on {file}");
         }
 
-        private static OptionGroup CreateRunner()
+        private static OptionGroup CreateRunner(IClientFactory clientFactory)
         {
-            var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForJobServer,
                 new AutoResetEventBoundary(), new TimerFactory(),
                 new JobRunStatusPresenter(new PresenterMessagePresenter()));
@@ -65,9 +77,16 @@ namespace cafe
                 new ServiceStatusProvider(processExecutor, fileSystem));
             // all options available
 
-            var root = CreateRootGroup(clientFactory, schedulerWaiter, fileSystemCommands, processExecutor, fileSystem, serviceStatusWaiter, environment);
+            var root = CreateRootGroup(clientFactory, schedulerWaiter, fileSystemCommands, processExecutor, fileSystem,
+                serviceStatusWaiter, environment);
             Logger.Debug("Running application");
             return root;
+        }
+
+        private static ClientFactory CreateClientFactory()
+        {
+            var clientFactory = new ClientFactory(ClientSettings.Instance.Node, ClientSettings.Instance.Port);
+            return clientFactory;
         }
 
         public static OptionGroup CreateRootGroup(IClientFactory clientFactory, ISchedulerWaiter schedulerWaiter,
@@ -79,19 +98,22 @@ namespace cafe
                 {
                     const string chefProduct = "Chef";
                     chefGroup.WithOption(new RunChefOption(clientFactory.RestClientForChefServer, schedulerWaiter),
-                        "run");
+                        OptionValueSpecification.ForCommand("run"), CreateOnOption());
                     chefGroup.WithOption(
-                        new DownloadProductOption<IChefServer, ChefStatus>(chefProduct, clientFactory.RestClientForChefServer,
+                        new DownloadProductOption<IChefServer, ChefStatus>(chefProduct,
+                            clientFactory.RestClientForChefServer,
                             schedulerWaiter),
                         CreateDownloadVersionSpecifications());
-                    chefGroup.WithOption(new ShowChefStatusOption(clientFactory.RestClientForChefServer), "status");
+                    chefGroup.WithOption(new ShowChefStatusOption(clientFactory.RestClientForChefServer),
+                        OptionValueSpecification.ForCommand("status"), CreateOnOption());
                     chefGroup.WithOption(
                         new BootstrapChefRunListOption(clientFactory.RestClientForChefServer, schedulerWaiter,
                             fileSystemCommands),
                         OptionValueSpecification.ForCommand("bootstrap"),
                         OptionValueSpecification.ForValue("run-list:", "the run list"),
                         OptionValueSpecification.ForValue("config:", "the client.rb file"),
-                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"));
+                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"),
+                        CreateOnOption());
                     chefGroup.WithOption(
                         new BootstrapChefPolicyOption(clientFactory.RestClientForChefServer, schedulerWaiter,
                             fileSystemCommands),
@@ -99,19 +121,20 @@ namespace cafe
                         OptionValueSpecification.ForValue("policy:", "the policy name"),
                         OptionValueSpecification.ForValue("group:", "the policy group"),
                         OptionValueSpecification.ForValue("config:", "the client.rb file"),
-                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"));
+                        OptionValueSpecification.ForValue("validator:", "the validator.pem file used to join the node"),
+                        CreateOnOption());
                     var installChefOption =
                         new InstallOption<IChefServer, ChefStatus>(chefProduct, clientFactory.RestClientForChefServer,
                             schedulerWaiter);
                     chefGroup.WithOption(installChefOption, CreateInstallVersionSpecifications());
                     chefGroup.WithOption(installChefOption, OptionValueSpecification.ForCommand("upgrade"),
-                        OptionValueSpecification.ForVersion());
+                        OptionValueSpecification.ForVersion(), CreateOnOption());
                     chefGroup.WithOption(
                         ChangeChefRunningStatusOption.CreatePauseChefOption(clientFactory.RestClientForChefServer),
-                        "pause");
+                        OptionValueSpecification.ForCommand("pause"), CreateOnOption());
                     chefGroup.WithOption(
                         ChangeChefRunningStatusOption.CreateResumeChefOption(clientFactory.RestClientForChefServer),
-                        "resume");
+                        OptionValueSpecification.ForCommand("resume"), CreateOnOption());
                 })
                 .WithGroup("inspec", inspecGroup =>
                 {
@@ -120,7 +143,8 @@ namespace cafe
                         "status");
                     inspecGroup.WithOption(
                         new InstallOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
-                            clientFactory.RestClientForInspecServer, schedulerWaiter), CreateInstallVersionSpecifications());
+                            clientFactory.RestClientForInspecServer, schedulerWaiter),
+                        CreateInstallVersionSpecifications());
                     inspecGroup.WithOption(
                         new DownloadProductOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
                             clientFactory.RestClientForInspecServer, schedulerWaiter),
@@ -148,13 +172,21 @@ namespace cafe
                 {
                     var statusOption = new StatusOption(clientFactory.RestClientForJobServer);
                     statusGroup.WithDefaultOption(statusOption);
-                    statusGroup.WithOption(statusOption, "status");
+                    statusGroup.WithOption(statusOption, OptionValueSpecification.ForCommand("status"),
+                        CreateOnOption());
                     statusGroup.WithOption(new JobRunStatusOption(clientFactory.RestClientForJobServer),
                         OptionValueSpecification.ForCommand("status"),
-                        OptionValueSpecification.ForValue("id:", "job run id"));
+                        OptionValueSpecification.ForValue("id:", "job run id"),
+                        CreateOnOption());
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
             return root;
+        }
+
+        private static OptionValueSpecification CreateOnOption()
+        {
+            var onOption = OptionValueSpecification.ForOptionalValue("on:", "the server to run the command against");
+            return onOption;
         }
 
         private static OptionValueSpecification[] CreateDownloadVersionSpecifications()
@@ -162,7 +194,8 @@ namespace cafe
             return new[]
             {
                 OptionValueSpecification.ForCommand("download"),
-                OptionValueSpecification.ForVersion()
+                OptionValueSpecification.ForVersion(),
+                CreateOnOption()
             };
         }
 
@@ -171,7 +204,8 @@ namespace cafe
             return new[]
             {
                 OptionValueSpecification.ForCommand("install"),
-                OptionValueSpecification.ForVersion()
+                OptionValueSpecification.ForVersion(),
+                CreateOnOption()
             };
         }
 

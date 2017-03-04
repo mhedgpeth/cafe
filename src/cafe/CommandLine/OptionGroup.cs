@@ -66,14 +66,8 @@ namespace cafe.CommandLine
         }
 
 
-        public int RunProgram(params string[] args)
+        public int RunProgram(params Argument[] arguments)
         {
-            var arguments = ParseArguments(args);
-            if (arguments == null || !IsSatisfiedBy(arguments))
-            {
-                Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
-                return -2;
-            }
             var result = Run(arguments);
             return result.IsSuccess ? 0 : -1;
         }

@@ -49,5 +49,10 @@ namespace cafe.CommandLine
         }
 
         public bool IsRequired => _isRequired;
+
+        public static OptionValueSpecification ForOptionalValue(string value, string description)
+        {
+            return new AnyLabelledValueSpecification(value, description, false);
+        }
     }
 }
