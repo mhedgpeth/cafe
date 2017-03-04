@@ -9,7 +9,7 @@ namespace cafe.Test.CommandLine
         {
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             WasRun = true;
             return Result.Successful();
@@ -23,7 +23,7 @@ namespace cafe.Test.CommandLine
 
         public bool WasRun { get; private set; }
         public bool WasHelpShown { get; private set; }
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Fake Option";
         }

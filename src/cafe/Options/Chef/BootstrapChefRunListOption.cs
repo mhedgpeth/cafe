@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
+using cafe.CommandLine;
 using cafe.LocalSystem;
-using cafe.Options.Chef;
 using cafe.Shared;
 
-namespace cafe.Options
+namespace cafe.Options.Chef
 {
     public class BootstrapChefRunListOption : RunJobOption<IChefServer>
     {
@@ -20,21 +20,21 @@ namespace cafe.Options
             _fileSystemCommands = fileSystemCommands;
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return $"Bootstrapping Chef with Run List {FindRunList(args)}";
         }
 
-        private static string FindRunList(IReadOnlyList<string> args)
+        private static string FindRunList(IEnumerable<Argument> args)
         {
-            return args[3];
+            return args.FindValueFromLabel("run-list:").Value;
         }
 
-        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, Argument[] args)
         {
 
-            var config = _fileSystemCommands.ReadAllText(args[5]);
-            var validator = _fileSystemCommands.ReadAllText(args[7]);
+            var config = _fileSystemCommands.ReadAllText(args.FindValueFromLabel("config:").Value);
+            var validator = _fileSystemCommands.ReadAllText(args.FindValueFromLabel("validator:").Value);
             return productServer.BootstrapChef(config, validator, FindRunList(args));
         }
     }

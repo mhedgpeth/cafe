@@ -1,5 +1,6 @@
 using System;
 using cafe.Client;
+using cafe.CommandLine;
 using cafe.Shared;
 
 namespace cafe.Options.Chef
@@ -11,12 +12,12 @@ namespace cafe.Options.Chef
         {
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Showing InSpec Status";
         }
 
-        protected override Result RunCore(IProductServer<ProductStatus> client, string[] args)
+        protected override Result RunCore(IProductServer<ProductStatus> client, Argument[] args)
         {
             ShowChefStatusOption.ShowProductStatus(client.GetStatus().Result, "InSpec");
             return Result.Successful();

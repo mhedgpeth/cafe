@@ -10,12 +10,12 @@ namespace cafe.Options.Server
         {
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Starting Cafe in Service Mode as a Windows Service";
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             var cafeServerWindowsService = new CafeServerWindowsService();
             var serviceHost = new Win32ServiceHost(cafeServerWindowsService);

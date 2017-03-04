@@ -10,16 +10,16 @@ namespace cafe.Test.CommandLine
         public void IsSatisfiedBy_ShouldBeTrueIfStringIsExactValue()
         {
             const string value = "value";
-            var specification = OptionValueSpecification.ForExactValue(value);
+            var specification = OptionValueSpecification.ForCommand(value);
 
-            specification.IsSatisfiedBy(value).Should().BeTrue();
+            specification.IsSatisfiedBy(0, Argument.CreateCommand(value)).Should().BeTrue();
         }
 
         [Fact]
         public void IsSatisfied_ShouldBeFalseForValueThatDoesNotMatch()
         {
-            OptionValueSpecification.ForExactValue("something")
-                .IsSatisfiedBy("by a different value")
+            OptionValueSpecification.ForCommand("something")
+                .IsSatisfiedBy(0, Argument.CreateCommand("by a different value"))
                 .Should()
                 .BeFalse("because the value doesn't exactly match");
         }
@@ -27,8 +27,8 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfiedBy_ShouldBeFalseIfExactValueDoesNotMatchButContainsOtherValue()
         {
-            OptionValueSpecification.ForExactValue("scheduler")
-                .IsSatisfiedBy("schedulers")
+            OptionValueSpecification.ForCommand("scheduler")
+                .IsSatisfiedBy(0, Argument.CreateCommand("schedulers"))
                 .Should()
                 .BeFalse("because the values aren't exactly the same");
         }
@@ -36,7 +36,63 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void IsSatisfiedBy_ShouldBeTrueForAnyValue()
         {
-            OptionValueSpecification.ForAnyValue("any value").IsSatisfiedBy("policy").Should().BeTrue();
+            var value = new ValueArgument("value:", "anything");
+            OptionValueSpecification.ForValue("value:", "any value").IsSatisfiedBy(0, value).Should().BeTrue();
+        }
+
+
+        const string Command = "chef";
+
+        [Fact]
+        public void ParseArgument_ShouldParseCommandArgument()
+        {
+            var specification = OptionValueSpecification.ForCommand(Command);
+
+            var argument = specification.ParseArgument(null, Command);
+            AssertArgumentIsCommandArgument(Command, argument);
+        }
+
+        public static void AssertArgumentIsCommandArgument(string command, Argument argument)
+        {
+            var commandArgument = argument as CommandArgument;
+            commandArgument.Should().NotBeNull();
+            commandArgument.Command.Should().Be(command);
+        }
+
+        [Fact]
+        public void ParseArgument_ShouldParseValueArgument()
+        {
+            const string label = "version:";
+            var specification = OptionValueSpecification.ForValue(label, "description");
+
+            const string value = "1.2.3";
+            var argument = specification.ParseArgument(label, value);
+
+            AssertArgumentIsValueArgument(label, value, argument);
+        }
+
+        public static void AssertArgumentIsValueArgument(string label, string value, Argument argument)
+        {
+            var valueArgument = argument as ValueArgument;
+            valueArgument.Should().NotBeNull("because expecting argument to be a value argument");
+            valueArgument.Label.Should().Be(label);
+            valueArgument.Value.Should().Be(value);
+        }
+
+        [Fact]
+        public void ToString_ShouldShowLabel()
+        {
+            OptionValueSpecification.ForValue("version:", "the version")
+                .ToString()
+                .Should()
+                .Be("version: (the version)");
+        }
+
+        [Fact]
+        public void ToString_ShouldHaveBracketsWhenOptional()
+        {
+            var specification = OptionValueSpecification.ForOptionalValue("on:", "server");
+            specification.ToString().Should().Be("[on: (server)]");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace cafe.Options
             _serverFactory = serverFactory;
         }
 
-        protected sealed override Result RunCore(string[] args)
+        protected sealed override Result RunCore(Argument[] args)
         {
             try
             {
@@ -26,11 +26,11 @@ namespace cafe.Options
             catch (Exception ex)
             {
                 Logger.Debug(ex, $"An exception occurred while {ToDescription(args)}");
-                Presenter.ShowMessage("The server is not currently running", Logger);
+                Presenter.ShowMessage("The server is not currently running or cannot be accessed", Logger);
                 return Result.Failure("Could not establish connection with cafe server");
             }
         }
 
-        protected abstract Result RunCore(T client, string[] args);
+        protected abstract Result RunCore(T client, Argument[] args);
     }
 }

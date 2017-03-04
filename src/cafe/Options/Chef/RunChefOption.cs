@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using cafe.Client;
-using cafe.Options.Chef;
+using cafe.CommandLine;
 using cafe.Shared;
 
-namespace cafe.Options
+namespace cafe.Options.Chef
 {
     public class RunChefOption : RunJobOption<IChefServer>
     {
@@ -13,12 +13,12 @@ namespace cafe.Options
         {
         }
 
-        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(IChefServer chefServer, Argument[] args)
         {
             return chefServer.RunChef();
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Running Chef";
         }

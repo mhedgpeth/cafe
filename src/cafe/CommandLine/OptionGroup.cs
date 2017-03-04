@@ -22,24 +22,24 @@ namespace cafe.CommandLine
             _groupSpecification = new OptionSpecification(groupSpecifications);
         }
 
-        public OptionGroup(string group) : this(OptionValueSpecification.ForExactValue(group))
+        public OptionGroup(string group) : this(OptionValueSpecification.ForCommand(group))
         {
         }
 
-        public bool IsSatisfiedBy(params string[] args)
+        public bool IsSatisfiedBy(params Argument[] args)
         {
             return _groupSpecification.IsSatisfiedBy(args) || _childOptions.Keys.Any(s => s.IsSatisfiedBy(args)) ||
                    _childGroups.Any(g => g.IsSatisfiedBy(args));
         }
 
-        public KeyValuePair<OptionSpecification, Option> MatchingOptionPair(params string[] args)
+        public KeyValuePair<OptionSpecification, Option> MatchingOptionPair(params Argument[] args)
         {
             return (from pair in _childOptions
                 where pair.Key.IsSatisfiedBy(args) // || pair.Key.HelpRequested(args)
                 select pair).FirstOrDefault();
         }
 
-        public Option MatchingOption(params string[] args)
+        public Option MatchingOption(params Argument[] args)
         {
             var pair = MatchingOptionPair(args);
             return pair.Equals(default(KeyValuePair<OptionSpecification, Option>)) ? null : pair.Value;
@@ -52,7 +52,7 @@ namespace cafe.CommandLine
 
         public OptionGroup WithOption(Option option, params string[] args)
         {
-            return WithOption(option, args.Select(OptionValueSpecification.ForExactValue).ToArray());
+            return WithOption(option, args.Select(OptionValueSpecification.ForCommand).ToArray());
         }
 
         public OptionGroup WithOption(Option option, params OptionValueSpecification[] valueSpecifications)
@@ -63,36 +63,53 @@ namespace cafe.CommandLine
         }
 
 
-        public int RunProgram(params string[] args)
+        public int RunProgram(params Argument[] arguments)
         {
-            if (IsSatisfiedBy(args))
-            {
-                var result = Run(args);
-                return result.IsSuccess ? 0 : -1;
-            }
-            Presenter.ShowError("No options match the supplied arguments. Run -h to view all options", Logger);
-            return -2;
+            var result = Run(arguments);
+            return result.IsSuccess ? 0 : -1;
         }
 
-        public Result Run(params string[] args)
+        public Argument[] ParseArguments(params string[] args)
         {
-            if (args.Length == 0 || (_groupSpecification.IsSatisfiedBy(args) && _groupSpecification.HelpRequested(args)))
+            var arguments = _groupSpecification.ParseArguments(args);
+            if (arguments != null)
             {
-                ShowHelp();
-                return Result.Successful();
+                return arguments;
             }
+            foreach (var childGroup in _childGroups)
+            {
+                var childArguments = childGroup.ParseArguments(args);
+                if (childArguments != null)
+                {
+                    return childArguments;
+                }
+            }
+            foreach (var childOptionSpecification in _childOptions.Keys)
+            {
+                var optionArguments = childOptionSpecification.ParseArguments(args);
+                if (optionArguments != null)
+                {
+                    return optionArguments;
+                }
+            }
+            return null;
+        }
+
+        public Option FindOption(params Argument[] args)
+        {
             var matchingGroup = _childGroups.FirstOrDefault(g => g.IsSatisfiedBy(args));
             if (matchingGroup != null)
             {
-                return matchingGroup.Run(args);
+                return matchingGroup.FindOption(args);
             }
             var pair = MatchingOptionPair(args);
-            if (pair.Key.HelpRequested(args))
-            {
-                ShowHelp(pair);
-                return Result.Successful();
-            }
-            return pair.Value.Run(args);
+            return pair.Value;
+        }
+
+        public Result Run(params Argument[] args)
+        {
+            var option = FindOption(args);
+            return option.Run(args);
         }
 
         public OptionGroup WithGroup(string groupValue, Action<OptionGroup> groupInitializer)
@@ -100,7 +117,7 @@ namespace cafe.CommandLine
             var specifications =
                 new List<OptionValueSpecification>(_groupSpecification.ValueSpecifications)
                 {
-                    OptionValueSpecification.ForExactValue(groupValue)
+                    OptionValueSpecification.ForCommand(groupValue)
                 };
             var optionGroup = new OptionGroup(specifications.ToArray());
             groupInitializer(optionGroup);
@@ -110,13 +127,12 @@ namespace cafe.CommandLine
 
         public void ShowHelp()
         {
-            if (_groupSpecification.ValueSpecifications.Length > 0)
+            if (_groupSpecification.ValueSpecifications.Length > 0 && _groupSpecification.ToString().Length > 0)
             {
                 Presenter.ShowMessage($"-- {_groupSpecification} --", Logger);
             }
             if (_childGroups.Count > 0)
             {
-                Presenter.ShowMessage($"Showing help for {_childGroups.Count} groups:", Logger);
                 foreach (var childGroup in _childGroups)
                 {
                     childGroup.ShowHelp();
@@ -129,15 +145,15 @@ namespace cafe.CommandLine
 
             foreach (var optionPair in _childOptions)
             {
-                ShowHelp(optionPair);
+                var help = new HelpOption(this, optionPair.Value, optionPair.Key);
+                help.Run();
             }
+
         }
 
-        private static void ShowHelp(KeyValuePair<OptionSpecification, Option> optionPair)
+        public override string ToString()
         {
-            var option = optionPair.Value;
-            Presenter.ShowMessage($"{optionPair.Key} <- {option}", Logger);
-            option.NotifyHelpWasShown();
+            return $"{_groupSpecification} with {_childGroups.Count} groups and {_childOptions.Count} options";
         }
     }
 }

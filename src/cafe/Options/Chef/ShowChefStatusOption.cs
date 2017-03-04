@@ -16,7 +16,7 @@ namespace cafe.Options.Chef
         {
         }
 
-        protected override Result RunCore(IChefServer client, string[] args)
+        protected override Result RunCore(IChefServer client, Argument[] args)
         {
             var status = client.GetStatus().Result;
             ShowProductStatus(status, "Chef");
@@ -33,7 +33,7 @@ namespace cafe.Options.Chef
             Presenter.ShowMessage($"{productName} version: {versionStatus}", Logger);
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return $"Determining Chef Status";
         }

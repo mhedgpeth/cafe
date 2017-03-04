@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
+using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Shared;
 
@@ -19,26 +20,27 @@ namespace cafe.Options.Chef
             _fileSystemCommands = fileSystemCommands;
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
-            return $"Bootstrapping Chef to Policy {FindPolicyName(args)} and Group {FindPolicyGroup(args)}";
+            return $"Bootstrapping Chef to Policy {FindPolicyValue(args)} and Group {FindGroupValue(args)}";
         }
 
-        private static string FindPolicyName(IReadOnlyList<string> args)
+        private static string FindGroupValue(Argument[] args)
         {
-            return args[3];
+            return args.FindValueFromLabel("group:").Value;
         }
 
-        private static string FindPolicyGroup(IReadOnlyList<string> args)
+        private static string FindPolicyValue(Argument[] args)
         {
-            return args[5];
+            return args.FindValueFromLabel("policy:").Value;
         }
 
-        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, string[] args)
+
+        protected override Task<JobRunStatus> RunJobCore(IChefServer productServer, Argument[] args)
         {
-            var config = _fileSystemCommands.ReadAllText(args[7]);
-            var validator = _fileSystemCommands.ReadAllText(args[9]);
-            return productServer.BootstrapChef(config, validator, FindPolicyName(args), FindPolicyGroup(args));
+            var config = _fileSystemCommands.ReadAllText(args.FindValueFromLabel("config:").Value);
+            var validator = _fileSystemCommands.ReadAllText(args.FindValueFromLabel("validator:").Value);
+            return productServer.BootstrapChef(config, validator, FindPolicyValue(args), FindGroupValue(args));
         }
     }
 }

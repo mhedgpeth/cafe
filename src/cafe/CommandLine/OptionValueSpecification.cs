@@ -5,22 +5,19 @@ namespace cafe.CommandLine
     public abstract class OptionValueSpecification
     {
         private readonly string _description;
+        private readonly bool _isRequired;
 
-        protected OptionValueSpecification(string description)
+        protected OptionValueSpecification(string description, bool isRequired = true)
         {
             _description = description;
+            _isRequired = isRequired;
         }
 
-        public abstract bool IsSatisfiedBy(string value);
-
-        public static OptionValueSpecification ForExactValue(string value)
-        {
-            return new MatchingExactValueOptionValueSpecification(value);
-        }
+        public abstract bool IsSatisfiedBy(int position, params Argument[] args);
 
         public static OptionValueSpecification ForVersion()
         {
-            return new MatchingRegexOptionValueSpecification("[version]", new Regex(@"\d+\.\d+\.\d+"));
+            return new MatchingRegularExpressionLabelledValueSpecification("version:", new Regex(@"\d+\.\d+\.\d+"), "the version");
         }
 
         public override string ToString()
@@ -28,9 +25,28 @@ namespace cafe.CommandLine
             return _description;
         }
 
-        public static OptionValueSpecification ForAnyValue(string description)
+        public abstract Argument ParseArgument(string label, string value);
+
+        public static OptionValueSpecification ForCommand(string command)
         {
-            return new MatchingRegexOptionValueSpecification($"[{description}]", new Regex(".*"));
+            return new CommandOptionValueSpecification(command, command);
+        }
+
+        public static OptionValueSpecification ForValue(string label, string description)
+        {
+            return new AnyLabelledValueSpecification(label, description);
+        }
+
+        public static OptionValueSpecification ForOptionalCommand(string command)
+        {
+            return new CommandOptionValueSpecification(command, command, false);
+        }
+
+        public bool IsRequired => _isRequired;
+
+        public static OptionValueSpecification ForOptionalValue(string value, string description)
+        {
+            return new AnyLabelledValueSpecification(value, description, false);
         }
     }
 }

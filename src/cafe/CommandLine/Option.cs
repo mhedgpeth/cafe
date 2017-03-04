@@ -12,21 +12,27 @@ namespace cafe.CommandLine
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
         private readonly string _helpText;
+        private readonly bool _showHelpContext;
 
-        protected Option(string helpText)
+        protected Option(string helpText, bool showHelpContext = true)
         {
             _helpText = helpText;
+            _showHelpContext = showHelpContext;
         }
 
-        public Result Run(params string[] args)
+        public Result Run(params Argument[] args)
         {
             Result result = null;
             var description = ToDescription(args);
             try
             {
-                Presenter.NewLine();
-                Presenter.ShowMessage($"{description}:", Logger);
-                Presenter.NewLine();
+                if (_showHelpContext)
+                {
+                    Presenter.NewLine();
+                    Presenter.ShowMessage($"{description}:", Logger);
+                    Presenter.NewLine();
+
+                }
                 result = RunCore(args);
             }
             catch (AggregateException ae)
@@ -52,8 +58,11 @@ namespace cafe.CommandLine
             }
             finally
             {
-                Presenter.NewLine();
-                Presenter.ShowMessage($"Finished {description} with result: {result}", Logger);
+                if (_showHelpContext)
+                {
+                    Presenter.NewLine();
+                    Presenter.ShowMessage($"Finished {description} with result: {result}", Logger);
+                }
             }
             return result;
         }
@@ -70,9 +79,9 @@ namespace cafe.CommandLine
             return Result.Failure($"An unexpected error occurred while executing this option: {ex.Message}");
         }
 
-        protected abstract string ToDescription(string[] args);
+        protected abstract string ToDescription(Argument[] args);
 
-        protected abstract Result RunCore(string[] args);
+        protected abstract Result RunCore(Argument[] args);
 
         public override string ToString()
         {

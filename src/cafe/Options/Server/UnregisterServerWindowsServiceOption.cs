@@ -14,12 +14,12 @@ namespace cafe.Options.Server
         {
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Unregistering Cafe to run as a Windows Service";
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             new Win32ServiceManager().DeleteService(CafeServerWindowsServiceOptions.ServiceName);
             Presenter.ShowMessage(

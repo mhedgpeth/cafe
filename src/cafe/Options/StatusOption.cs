@@ -1,7 +1,6 @@
 ﻿using System;
 using cafe.Client;
 using cafe.CommandLine;
-using cafe.Options.Chef;
 using cafe.Shared;
 using NLog;
 
@@ -18,17 +17,12 @@ namespace cafe.Options
         {
         }
 
-        protected override Result RunCore(IJobServer schedulerServer, string[] args)
+        protected override Result RunCore(IJobServer schedulerServer, Argument[] args)
         {
             var status = schedulerServer.GetStatus().Result;
             ShowQueuedTasks(status);
             ShowFinishedTasks(status);
             return Result.Successful();
-        }
-
-        private void ShowChefStatus(ChefStatus status)
-        {
-            Presenter.NewLine();
         }
 
         private static void ShowQueuedTasks(JobRunnerStatus status)
@@ -71,7 +65,7 @@ namespace cafe.Options
             }
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Determining Status";
         }

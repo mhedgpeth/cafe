@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using cafe.Client;
+using cafe.CommandLine;
 using cafe.Options.Chef;
 using cafe.Shared;
 
@@ -17,12 +18,12 @@ namespace cafe.Options
             _product = product;
         }
 
-        protected override Task<JobRunStatus> RunJobCore(TProductServerType productServer, string[] args)
+        protected override Task<JobRunStatus> RunJobCore(TProductServerType productServer, Argument[] args)
         {
             return productServer.Install(DownloadProductOption<TProductServerType, TStatusType>.FindVersion(args));
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return $"Installing {_product} {DownloadProductOption<TProductServerType, TStatusType>.FindVersion(args)}";
         }

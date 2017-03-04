@@ -14,7 +14,7 @@ namespace cafe.Options.Server
         {
         }
 
-        protected override Result RunCore(string[] args)
+        protected override Result RunCore(Argument[] args)
         {
             var cafeServerWindowsService = new CafeServerWindowsService();
             cafeServerWindowsService.Start(new string[0], () => { });
@@ -27,7 +27,7 @@ namespace cafe.Options.Server
             return Result.Successful();
         }
 
-        protected override string ToDescription(string[] args)
+        protected override string ToDescription(Argument[] args)
         {
             return "Starting Cafe in Server Mode";
         }
