@@ -96,7 +96,9 @@ And then when you're ready to rejoin the land of sanity, you can simply run:
 ```
 cafe chef resume
 ```
+# Running Remotely
 
+You can either run cafe remotely through Powershell Remoting (where you invoke cafe as a locally run process) or by using the `on: servername` syntax at the end of commands above. You'll need to make sure you have networking set up for it if you go the latter route.
 # Other ideas
 
 Here are some other ideas about what can be done with cafe from demos and discussions:
