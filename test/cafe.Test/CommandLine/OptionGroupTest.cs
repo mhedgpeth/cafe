@@ -98,44 +98,6 @@ namespace cafe.Test.CommandLine
             root.IsSatisfiedBy(ToCommandArguments("inspec", "install")).Should().BeTrue("because the child group should be used");
         }
 
-        [Fact]
-        public void HelpArguments_ShouldShowHelp()
-        {
-            FakeOption versionOption;
-            FakeOption statusOption;
-            var optionGroup = CreateGroupWithOption(out versionOption, out statusOption);
-            var inspecHelpArguments = new[] {"inspec", "-h"};
-
-            bool isSatisfied = optionGroup.IsSatisfiedBy(ToCommandArguments(inspecHelpArguments));
-            var result = optionGroup.Run(ToCommandArguments(inspecHelpArguments));
-
-            isSatisfied.Should().BeTrue();
-            result.IsSuccess.Should().BeTrue();
-            result.IsSuccess.Should().BeTrue("because help was requested; that's legitimate");
-            versionOption.WasHelpShown.Should().BeTrue("because help was requested for the group");
-            statusOption.WasHelpShown.Should().BeTrue("because help was requested for the group");
-        }
-
-        [Fact]
-        public void HelpArgumentInGroup_ShouldOnlyShowHelpForThatGroup()
-        {
-            var inspecVersion = new FakeOption("inspec version");
-            var chefVersion = new FakeOption("chef version");
-            var root = new OptionGroup()
-                .WithGroup("inspec", i => i.WithOption(inspecVersion, "version"))
-                .WithGroup("chef", c => c.WithOption(chefVersion, "version"));
-
-            var inspecHelpArguments = new[] {"inspec", "-h"};
-
-            bool isSatisfied = root.IsSatisfiedBy(ToCommandArguments(inspecHelpArguments));
-            var result = root.Run(ToCommandArguments("inspec", "-h"));
-
-            isSatisfied.Should().BeTrue();
-            result.IsSuccess.Should().BeTrue();
-            inspecVersion.WasHelpShown.Should().BeTrue("because inspec group help was requested");
-            chefVersion.WasHelpShown.Should().BeFalse("because chef group help was not requested");
-        }
-
         private OptionGroup CreateChefRunOption(out FakeOption chefRunOption, out FakeOption chefVersionOption)
         {
             chefRunOption = new FakeOption("run chef");
@@ -174,44 +136,6 @@ namespace cafe.Test.CommandLine
 
             chefRunOption.WasRun.Should().BeFalse();
             chefVersionOption.WasRun.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Parse_ShouldMatchIfHelpIsAskedFor()
-        {
-            FakeOption chefRunOption;
-            FakeOption chefVersionOption;
-            var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
-
-            var returnValue = group.RunProgram(group.ParseArguments("chef", "run", "-h"));
-
-            returnValue.Should().Be(0);
-            chefRunOption.WasRun.Should().BeFalse();
-            chefRunOption.WasHelpShown.Should().BeTrue();
-        }
-
-        [Fact]
-        public void DashH_ShouldShowAllOptions()
-        {
-            AssertArgumentsShouldShowHelpOnAllOptions("-h");
-        }
-
-        private void AssertArgumentsShouldShowHelpOnAllOptions(params string[] args)
-        {
-            FakeOption chefRunOption;
-            FakeOption chefVersionOption;
-            var group = CreateChefRunOption(out chefRunOption, out chefVersionOption);
-
-            @group.RunProgram(group.ParseArguments(args));
-
-            chefRunOption.WasHelpShown.Should().BeTrue("because help was asked for all options");
-            chefVersionOption.WasHelpShown.Should().BeTrue("because help was asked for all options");
-        }
-
-        [Fact]
-        public void NoArguments_ShouldShowHelp()
-        {
-            AssertArgumentsShouldShowHelpOnAllOptions();
         }
     }
 }

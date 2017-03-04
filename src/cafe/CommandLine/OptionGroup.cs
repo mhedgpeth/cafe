@@ -19,9 +19,7 @@ namespace cafe.CommandLine
 
         public OptionGroup(params OptionValueSpecification[] groupSpecifications)
         {
-            _groupSpecification =
-                new OptionSpecification(groupSpecifications).WithAdditionalSpecifications(OptionValueSpecification
-                    .OptionalHelpCommand());
+            _groupSpecification = new OptionSpecification(groupSpecifications);
         }
 
         public OptionGroup(string group) : this(OptionValueSpecification.ForCommand(group))
@@ -59,8 +57,7 @@ namespace cafe.CommandLine
 
         public OptionGroup WithOption(Option option, params OptionValueSpecification[] valueSpecifications)
         {
-            var optionSpecification = _groupSpecification.WithAdditionalSpecifications(valueSpecifications)
-                .WithAdditionalSpecifications(OptionValueSpecification.OptionalHelpCommand());
+            var optionSpecification = _groupSpecification.WithAdditionalSpecifications(valueSpecifications);
             _childOptions.Add(optionSpecification, option);
             return this;
         }
@@ -100,21 +97,12 @@ namespace cafe.CommandLine
 
         public Option FindOption(params Argument[] args)
         {
-            if (args.Length == 0 || (_groupSpecification.IsSatisfiedBy(args) &&
-                                     args.ContainsHelpRequest()))
-            {
-                return new HelpOption(this);
-            }
             var matchingGroup = _childGroups.FirstOrDefault(g => g.IsSatisfiedBy(args));
             if (matchingGroup != null)
             {
                 return matchingGroup.FindOption(args);
             }
             var pair = MatchingOptionPair(args);
-            if (args.ContainsHelpRequest())
-            {
-                return new HelpOption(this, pair.Value, pair.Key);
-            }
             return pair.Value;
         }
 
@@ -139,13 +127,12 @@ namespace cafe.CommandLine
 
         public void ShowHelp()
         {
-            if (_groupSpecification.ValueSpecifications.Length > 0)
+            if (_groupSpecification.ValueSpecifications.Length > 0 && _groupSpecification.ToString().Length > 0)
             {
                 Presenter.ShowMessage($"-- {_groupSpecification} --", Logger);
             }
             if (_childGroups.Count > 0)
             {
-                Presenter.ShowMessage($"Showing help for {_childGroups.Count} groups:", Logger);
                 foreach (var childGroup in _childGroups)
                 {
                     childGroup.ShowHelp();
@@ -161,6 +148,7 @@ namespace cafe.CommandLine
                 var help = new HelpOption(this, optionPair.Value, optionPair.Key);
                 help.Run();
             }
+
         }
 
         public override string ToString()

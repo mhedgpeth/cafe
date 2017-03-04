@@ -12,10 +12,12 @@ namespace cafe.CommandLine
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
 
         private readonly string _helpText;
+        private readonly bool _showHelpContext;
 
-        protected Option(string helpText)
+        protected Option(string helpText, bool showHelpContext = true)
         {
             _helpText = helpText;
+            _showHelpContext = showHelpContext;
         }
 
         public Result Run(params Argument[] args)
@@ -24,9 +26,13 @@ namespace cafe.CommandLine
             var description = ToDescription(args);
             try
             {
-                Presenter.NewLine();
-                Presenter.ShowMessage($"{description}:", Logger);
-                Presenter.NewLine();
+                if (_showHelpContext)
+                {
+                    Presenter.NewLine();
+                    Presenter.ShowMessage($"{description}:", Logger);
+                    Presenter.NewLine();
+
+                }
                 result = RunCore(args);
             }
             catch (AggregateException ae)
@@ -52,8 +58,11 @@ namespace cafe.CommandLine
             }
             finally
             {
-                Presenter.NewLine();
-                Presenter.ShowMessage($"Finished {description} with result: {result}", Logger);
+                if (_showHelpContext)
+                {
+                    Presenter.NewLine();
+                    Presenter.ShowMessage($"Finished {description} with result: {result}", Logger);
+                }
             }
             return result;
         }

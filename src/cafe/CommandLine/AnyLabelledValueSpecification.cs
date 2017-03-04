@@ -7,6 +7,7 @@ namespace cafe.CommandLine
         {
         }
 
+
         protected override bool IsSatisfiedByValue(string value)
         {
             return true;

@@ -1,5 +1,4 @@
 ﻿using cafe.CommandLine;
-using cafe.Test.Options;
 using FluentAssertions;
 using Xunit;
 
@@ -8,8 +7,7 @@ namespace cafe.Test.CommandLine
     public class OptionSpecificationTest
     {
         private static readonly OptionSpecification ChefRunOptionSpecification = new OptionSpecification(
-            OptionValueSpecification.ForCommand("chef"), OptionValueSpecification.ForCommand("run"),
-            OptionValueSpecification.OptionalHelpCommand());
+            OptionValueSpecification.ForCommand("chef"), OptionValueSpecification.ForCommand("run"));
 
         [Fact]
         public void IsSatisfiedBy_ShouldBeSatisfiedByExactArguments()
@@ -17,14 +15,6 @@ namespace cafe.Test.CommandLine
             ChefRunOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "run"))
                 .Should()
                 .BeTrue("because the arguments match exactly");
-        }
-
-        [Fact]
-        public void IsSatisfiedBy_ShouldBeSatisfiedByHelpArguments()
-        {
-            ChefRunOptionSpecification.IsSatisfiedBy(OptionGroupTest.ToCommandArguments("chef", "run", "-h"))
-                .Should()
-                .BeTrue("because the options match and they are asking for help");
         }
 
         [Fact]
@@ -93,7 +83,7 @@ namespace cafe.Test.CommandLine
         [Fact]
         public void ParseArguments_ShouldReturnNullWhenRequiredArgumentsExistButNotInTheSpecification()
         {
-            new OptionSpecification(OptionValueSpecification.OptionalHelpCommand())
+            new OptionSpecification("help")
                 .ParseArguments("chef", "run")
                 .Should()
                 .BeNull("because arguments were given that weren't in the specification");
@@ -117,14 +107,6 @@ namespace cafe.Test.CommandLine
             OptionValueSpecificationTest.AssertArgumentIsCommandArgument("chef", arguments[0]);
             OptionValueSpecificationTest.AssertArgumentIsValueArgument(policyLabel, policyValue, arguments[1]);
             OptionValueSpecificationTest.AssertArgumentIsValueArgument(groupLabel, groupValue, arguments[2]);
-        }
-
-        [Fact]
-        public void ToString_ShouldNotHaveHelpInDescription()
-        {
-            const string command = "inspec";
-            var specification = new OptionSpecification(OptionValueSpecification.ForCommand(command), OptionValueSpecification.ForOptionalCommand("-h"));
-            specification.ToString().Should().Be(command);
         }
     }
 }

@@ -78,5 +78,21 @@ namespace cafe.Test.CommandLine
             valueArgument.Label.Should().Be(label);
             valueArgument.Value.Should().Be(value);
         }
+
+        [Fact]
+        public void ToString_ShouldShowLabel()
+        {
+            OptionValueSpecification.ForValue("version:", "the version")
+                .ToString()
+                .Should()
+                .Be("version: (the version)");
+        }
+
+        [Fact]
+        public void ToString_ShouldHaveBracketsWhenOptional()
+        {
+            var specification = OptionValueSpecification.ForOptionalValue("on:", "server");
+            specification.ToString().Should().Be("[on: (server)]");
+        }
     }
 }

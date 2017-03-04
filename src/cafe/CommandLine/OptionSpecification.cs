@@ -26,7 +26,7 @@ namespace cafe.CommandLine
         public OptionSpecification(params OptionValueSpecification[] valueSpecifications)
         {
             _valueSpecifications = valueSpecifications;
-            foreach (var valueSpecification in _valueSpecifications.Where(v => v.IsRequired))
+            foreach (var valueSpecification in _valueSpecifications)
             {
                 _description += valueSpecification + " ";
             }

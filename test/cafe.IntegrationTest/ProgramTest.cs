@@ -1,4 +1,5 @@
 ﻿using cafe.Client;
+using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Options.Chef;
 using cafe.Options.Server;
@@ -17,12 +18,7 @@ namespace cafe.IntegrationTest
         [Fact]
         public void CreateRootGroup_ShouldParseBootstrapOption()
         {
-            var processExecutor = new ProcessExecutor(() => new FakeProcess());
-            var fakeFileSystem = new FakeFileSystem();
-            var root = Program.CreateRootGroup(new Mock<IClientFactory>().Object, new Mock<ISchedulerWaiter>().Object,
-                new FakeFileSystemCommands(), processExecutor, fakeFileSystem,
-                new ServiceStatusWaiter("waiter", new FakeAutoResetEvent(), new FakeTimerFactory(),
-                    new ServiceStatusProvider(processExecutor, fakeFileSystem)), new FakeEnvironment());
+            var root = CreateRootOptionGroup();
 
             var arguments = root.ParseArguments("chef", "bootstrap", "policy:", "cafe-demo", "group:", "qa", "config:",
                 @"C:\Users\mhedg\.chef\client.rb", "validator:", @"C:\Users\mhedg\.chef\cafe-demo-validator.pem");
@@ -33,6 +29,26 @@ namespace cafe.IntegrationTest
 
             option.Should().NotBeNull("because the arguments match");
             option.Should().BeAssignableTo<BootstrapChefPolicyOption>();
+        }
+
+        private static OptionGroup CreateRootOptionGroup()
+        {
+            var processExecutor = new ProcessExecutor(() => new FakeProcess());
+            var fakeFileSystem = new FakeFileSystem();
+            var root = Program.CreateRootGroup(new Mock<IClientFactory>().Object, new Mock<ISchedulerWaiter>().Object,
+                new FakeFileSystemCommands(), processExecutor, fakeFileSystem,
+                new ServiceStatusWaiter("waiter", new FakeAutoResetEvent(), new FakeTimerFactory(),
+                    new ServiceStatusProvider(processExecutor, fakeFileSystem)), new FakeEnvironment());
+            return root;
+        }
+
+        [Fact]
+        public void CreateRootGroup_ShouldParseStatusOnOption()
+        {
+            var root = CreateRootOptionGroup();
+            var arguments = root.ParseArguments("chef", "status", "on:", "localhost");
+
+            arguments.Should().NotBeNull("because they should match the chef status");
         }
     }
 }

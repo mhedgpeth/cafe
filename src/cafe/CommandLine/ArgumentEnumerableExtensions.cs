@@ -19,11 +19,5 @@ namespace cafe.CommandLine
         {
             return arguments.OfType<CommandArgument>().FirstOrDefault(c => c.Command == command);
         }
-
-        public static bool ContainsHelpRequest(this IEnumerable<Argument> args)
-        {
-            return FindCommand(args, "-h") != null;
-        }
-
     }
 }

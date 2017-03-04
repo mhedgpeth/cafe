@@ -12,7 +12,7 @@ namespace cafe.CommandLine
         private readonly OptionSpecification _specification;
 
         public HelpOption(OptionGroup optionGroup, Option option = null,
-            OptionSpecification specification = null) : base("help")
+            OptionSpecification specification = null) : base("help", false)
         {
             _optionGroup = optionGroup;
             _option = option;

@@ -45,5 +45,12 @@ namespace cafe.Test.CommandLine
                 .Should()
                 .BeFalse("because the value doesn't match the specification value");
         }
+
+        [Fact]
+        public void ParseArgument_ShouldReturnNullIfLabelDoesNotMatch()
+        {
+            var specification = CreateLabeledValueSpecification();
+            specification.ParseArgument("another:", "value").Should().BeNull("because the label doesn't match");
+        }
     }
 }

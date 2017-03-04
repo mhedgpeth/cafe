@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.4.2." + buildNumber;
+var version = "0.5.1." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -127,18 +127,9 @@ Task("RunCafeWithNoArguments")
 
 Task("ShowHelp")
     .Does(() => {
-        RunCafe("-h");
+        RunCafe("help");
     });
 
-Task("ShowChefHelp")
-    .Does(() => {
-        RunCafe("chef -h");
-    });
-
-Task("ShowChefRunHelp")
-    .Does(() => {
-        RunCafe("chef run -h");
-    });
 
 Task("ShowChefStatus")
     .Does(() => {
@@ -282,8 +273,6 @@ public void RunCafe(string argument, params string[] formatParameters)
 Task("AcceptanceTest")
     .IsDependentOn("RunCafeWithNoArguments")
     .IsDependentOn("ShowHelp")
-    .IsDependentOn("ShowChefHelp")
-    .IsDependentOn("ShowChefRunHelp")
     .IsDependentOn("RegisterService")
     .IsDependentOn("InspecDownloadOldVersion")
     .IsDependentOn("InspecInstallOldVersion")

@@ -26,7 +26,7 @@ namespace cafe.Options
             catch (Exception ex)
             {
                 Logger.Debug(ex, $"An exception occurred while {ToDescription(args)}");
-                Presenter.ShowMessage("The server is not currently running", Logger);
+                Presenter.ShowMessage("The server is not currently running or cannot be accessed", Logger);
                 return Result.Failure("Could not establish connection with cafe server");
             }
         }

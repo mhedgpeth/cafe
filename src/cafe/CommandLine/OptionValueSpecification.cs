@@ -42,12 +42,6 @@ namespace cafe.CommandLine
             return new CommandOptionValueSpecification(command, command, false);
         }
 
-        public static OptionValueSpecification OptionalHelpCommand()
-        {
-            const string helpCommand = "-h";
-            return new CommandOptionValueSpecification(helpCommand, helpCommand, false);
-        }
-
         public bool IsRequired => _isRequired;
 
         public static OptionValueSpecification ForOptionalValue(string value, string description)
