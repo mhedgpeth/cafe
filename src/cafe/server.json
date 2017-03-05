@@ -1,4 +1,5 @@
 {
     "ChefInterval": 0,
-    "Port": 59320
+    "Port": 59320,
+    "InstallRoot": "C:"
 }
