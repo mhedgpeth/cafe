@@ -30,7 +30,7 @@ namespace cafe.Server.Controllers
         public static InstallJob CreateInstallJob(string product, FileSystem fileSystem, FileSystemCommandsBoundary commands, string prefix, Func<ProductInstallationMetaData, bool> productMatcher)
         {
             var chefProduct = new ChefProduct(product, new InstalledProductsFinder(),
-                new ProductInstaller(fileSystem, new ProcessExecutor(() => new ProcessBoundary()), commands, prefix),
+                new ProductInstaller(fileSystem, new ProcessExecutor(() => new ProcessBoundary()), commands, prefix, $@"{ServerSettings.Instance.InstallRoot}\opscode"),
                 productMatcher);
             return new InstallJob(chefProduct, SystemClock.Instance);
         }

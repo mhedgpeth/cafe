@@ -18,14 +18,16 @@ namespace cafe.Chef
         private readonly IFileSystem _fileSystem;
         private readonly IFileSystemCommands _commands;
         private readonly string _prefix;
+        private readonly string _installLocation;
         private readonly ProcessExecutor _processExecutor;
 
-        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands, string prefix)
+        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands, string prefix, string installLocation)
         {
             _fileSystem = fileSystem;
             _processExecutor = processExecutor;
             _commands = commands;
             _prefix = prefix;
+            _installLocation = installLocation;
         }
 
         public Result Uninstall(string productCode)
@@ -47,7 +49,7 @@ namespace cafe.Chef
             }
             Logger.Debug($"Installing installer {fullPathToStagedInstaller}");
             var msiexec = FindFullPathToMsiExec();
-            var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /L*V \"logs/installation.log\" /i \"{fullPathToStagedInstaller}\"",
+            var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /L*V \"logs/installation.log\" /i \"{fullPathToStagedInstaller}\" INSTALLLOCATION={_installLocation}",
                 LogInformation, LogError);
             Logger.Debug($"Result of installing {fullPathToStagedInstaller} is {result}");
             return result;
