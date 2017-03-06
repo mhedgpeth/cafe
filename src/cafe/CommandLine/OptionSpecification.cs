@@ -105,7 +105,8 @@ namespace cafe.CommandLine
                 arguments.Add(parsedArgument);
                 currentSpecificationIndex++;
             }
-            return arguments.ToArray();
+            var argumentsArray = arguments.ToArray();
+            return IsSatisfiedBy(argumentsArray) ? argumentsArray : null;
         }
     }
 }
