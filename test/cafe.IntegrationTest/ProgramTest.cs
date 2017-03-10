@@ -50,5 +50,14 @@ namespace cafe.IntegrationTest
 
             arguments.Should().NotBeNull("because they should match the chef status");
         }
+
+        [Fact]
+        public void ParseArguments_ShouldReturnNullIfDownloadVersionNotGiven()
+        {
+            var root = CreateRootOptionGroup();
+            var arguments = root.ParseArguments("chef", "download");
+
+            arguments.Should().BeNull("because the version wasn't specified");
+        }
     }
 }

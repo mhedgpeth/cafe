@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.5.1." + buildNumber;
+var version = "0.5.3." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("project.json");
@@ -69,8 +69,8 @@ Task("Publish")
     {
         Information("Publishing {0}", configuration);
         DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win10-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        // Later: DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "centos.7-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        // Later: DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "ubuntu.16.04-x64", Configuration = configuration, VersionSuffix = buildNumber });
+        DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win7-x64", Configuration = configuration, VersionSuffix = buildNumber });
+        DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win8-x64", Configuration = configuration, VersionSuffix = buildNumber });
     });
 
 var archiveDirectory =  Directory("archive");
@@ -81,6 +81,10 @@ Task("Archive")
         Information("Archiving {0}", configuration);
         CreateDirectory(archiveDirectory);
         Zip(cafeWindowsPublishDirectory, archiveDirectory  + File("cafe-win10-x64-" + version + ".zip"));
+        var windows7 = buildDir + Directory("netcoreapp1.1/win7-x64/publish");
+        Zip(windows7, archiveDirectory  + File("cafe-win7-x64-" + version + ".zip"));
+        var windows8 = buildDir + Directory("netcoreapp1.1/win8-x64/publish");
+        Zip(windows8, archiveDirectory  + File("cafe-win8-x64-" + version + ".zip"));
     });
 
 var cafeWindowsContainerImage = "cafe:windows";

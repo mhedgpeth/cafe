@@ -137,5 +137,34 @@ namespace cafe.Test.CommandLine
             chefRunOption.WasRun.Should().BeFalse();
             chefVersionOption.WasRun.Should().BeTrue();
         }
+
+        [Fact]
+        public void ParseArguments_ShouldReturnNullWhenRequiredLabelArgumentIsNotThere()
+        {
+            var root = CreateChefDownloadGroup();
+
+            var arguments = root.ParseArguments("chef", "download");
+
+            arguments.Should().BeNull("because the version wasn't supplied");
+        }
+
+        [Fact]
+        public void ParseArguments_ShouldReturnNullWhenTooManyArgumentsAreGiven()
+        {
+            var root = CreateChefDownloadGroup();
+
+            var arguments = root.ParseArguments("chef", "download", "version:", "1.2.3", "another:", "something");
+
+            arguments.Should().BeNull("because too many were supplied");
+        }
+
+        private static OptionGroup CreateChefDownloadGroup()
+        {
+            var download = new FakeOption("download chef");
+            var root = new OptionGroup().WithGroup("chef",
+                chefGroup => chefGroup.WithOption(download, OptionValueSpecification.ForCommand("download"),
+                    OptionValueSpecification.ForVersion()));
+            return root;
+        }
     }
 }
