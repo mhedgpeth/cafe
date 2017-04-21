@@ -43,7 +43,7 @@ namespace cafe.Server.Jobs
             return OnRunReady(new JobRun("Run Chef", messagePresenter  => _chefRunner.Run(messagePresenter), _clock));
         }
 
-        public JobRunStatus Bootstrap(IChefBootstrapper bootstrapper)
+        public JobRunStatus Bootstrap(IRunChefPolicy bootstrapper)
         {
             return OnRunReady(new JobRun($"Bootstrapping Chef with {bootstrapper}", messagePresenter => _chefRunner.Run(messagePresenter, bootstrapper), _clock));
         }

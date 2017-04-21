@@ -1,6 +1,6 @@
 ﻿namespace cafe.Chef
 {
-    public interface IChefBootstrapper
+    public interface IRunChefPolicy
     {
         void PrepareEnvironmentForChefRun();
         string[] ArgumentsForChefRun();

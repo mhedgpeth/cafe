@@ -41,7 +41,7 @@ namespace cafe.Test.Server.Jobs
         {
             var chefRunner = new FakeChefRunner();
             var runChefJob = CreateRunChefJobThatRunsJobsImmediately(chefRunner);
-            var bootstrapper = new Mock<IChefBootstrapper>().Object;
+            var bootstrapper = new Mock<IRunChefPolicy>().Object;
 
             runChefJob.Bootstrap(bootstrapper);
 

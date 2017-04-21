@@ -23,7 +23,8 @@ namespace cafe.Chef
 
         public Result Run(params string[] args)
         {
-            var binDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("chef-client.bat", @"C:\opscode\chef\bin");
+            var binDirectory = _fileSystem.FindInstallationDirectoryInPathContaining("chef-client.bat",
+                $@"{ServerSettings.Instance.InstallRoot}\opscode\chef\bin");
             var chefInstallDirectory = Directory.GetParent(binDirectory).FullName;
             var rubyExecutable = RubyExecutableWithin(chefInstallDirectory);
             var chefClientLoaderFile = ChefClientLoaderWithin(chefInstallDirectory);
