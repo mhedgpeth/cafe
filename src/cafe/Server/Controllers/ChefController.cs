@@ -66,10 +66,10 @@ namespace cafe.Server.Controllers
                 CreateChefBootstrapper(config, validator, ChefRunner.ParseRunList(runList)));
         }
 
-        private static ChefBootstrapper CreateChefBootstrapper(string config, string validator,
+        private static IRunChefPolicy CreateChefBootstrapper(string config, string validator,
             BootstrapSettings bootstrapSettings)
         {
-            return new ChefBootstrapper(StructureMapResolver.Container.GetInstance<IFileSystemCommands>(), config,
+            return new BootstrapChefPolicy(StructureMapResolver.Container.GetInstance<IFileSystemCommands>(), config,
                 validator, bootstrapSettings);
         }
 

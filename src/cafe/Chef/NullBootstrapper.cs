@@ -1,12 +1,26 @@
-﻿namespace cafe.Chef
+﻿using System.Collections.Generic;
+
+namespace cafe.Chef
 {
-    public class NullBootstrapper : IChefBootstrapper
+    public class RunChefPolicy : IRunChefPolicy
     {
-        public void PrepareEnvironmentForChefRun()
+        protected static readonly string ChefInstallDirectory = $@"{ServerSettings.Instance.InstallRoot}\chef";
+        protected static readonly string ClientConfigPath = $@"{ChefInstallDirectory}\client.rb";
+
+
+        public virtual void PrepareEnvironmentForChefRun()
         {
+            // nothing to do here
         }
 
         public string[] ArgumentsForChefRun()
+        {
+            var arguments = new List<string> {"-c", ClientConfigPath};
+            arguments.AddRange(AdditionalArgumentsForChefRun());
+            return arguments.ToArray();
+        }
+
+        protected virtual string[] AdditionalArgumentsForChefRun()
         {
             return new string[0];
         }

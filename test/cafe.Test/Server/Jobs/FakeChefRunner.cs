@@ -11,14 +11,14 @@ namespace cafe.Test.Server.Jobs
             return Result.Successful();
         }
 
-        public Result Run(IMessagePresenter presenter, IChefBootstrapper chefBootstrapper)
+        public Result Run(IMessagePresenter presenter, IRunChefPolicy chefBootstrapper)
         {
             WasRun = true;
             Bootstrapper = chefBootstrapper;
             return Result.Successful();
         }
 
-        public IChefBootstrapper Bootstrapper { get; private set; }
+        public IRunChefPolicy Bootstrapper { get; private set; }
 
         public bool WasRun { get; private set; }
     }
