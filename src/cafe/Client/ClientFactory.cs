@@ -39,7 +39,18 @@ namespace cafe.Client
 
         public IProductServer<ProductStatus> RestClientForInspecServer()
         {
-            return CreateRestClientFor<IProductServer<ProductStatus>>("inspec");
+            var serviceEndpoint = "inspec";
+            return CreateGenericProductRestClientFor(serviceEndpoint);
+        }
+
+        private IProductServer<ProductStatus> CreateGenericProductRestClientFor(string serviceEndpoint)
+        {
+            return CreateRestClientFor<IProductServer<ProductStatus>>(serviceEndpoint);
+        }
+
+        public IProductServer<ProductStatus> GenericRestClientForChefServer()
+        {
+            return CreateGenericProductRestClientFor("chef");
         }
     }
 }

@@ -7,5 +7,6 @@ namespace cafe.Client
         IChefServer RestClientForChefServer();
         IJobServer RestClientForJobServer();
         IProductServer<ProductStatus> RestClientForInspecServer();
+        IProductServer<ProductStatus> GenericRestClientForChefServer();
     }
 }
