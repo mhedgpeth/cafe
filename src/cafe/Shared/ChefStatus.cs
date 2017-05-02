@@ -2,11 +2,6 @@ using System;
 
 namespace cafe.Shared
 {
-    public class ProductStatus
-    {
-        public string Version { get; set; }
-    }
-
     public class ChefStatus : ProductStatus
     {
         public bool IsRunning { get; set; }

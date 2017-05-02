@@ -35,5 +35,11 @@ namespace cafe.LocalSystem
             Logger.Debug($"Reading contents from {filename}");
             return File.ReadAllText(filename);
         }
+
+        public void DeleteDirectory(string directory)
+        {
+            Logger.Debug($"Removing directory {directory}");
+            Directory.Delete(directory);
+        }
     }
 }

@@ -147,21 +147,9 @@ namespace cafe
                 })
                 .WithGroup("inspec", inspecGroup =>
                 {
-                    const string inspecProduct = "InSpec";
-                    inspecGroup.WithOption(new ShowInSpecStatusOption(clientFactory.RestClientForInspecServer),
-                        OptionValueSpecification.ForCommand("status"), OnNode());
-                    inspecGroup.WithOption(
-                        new InstallOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
-                            clientFactory.RestClientForInspecServer, schedulerWaiter),
-                        CreateInstallVersionSpecifications());
-                    inspecGroup.WithOption(
-                        new DownloadProductOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
-                            clientFactory.RestClientForInspecServer, schedulerWaiter),
-                        CreateDownloadVersionSpecifications());
-                    inspecGroup.WithOption(
-                        new CheckProductVersionOption("inspec", clientFactory.RestClientForInspecServer),
-                        OptionValueSpecification.ForCommand("version?"),
-                        OptionValueSpecification.ForVersion(), OnNode());
+                    const string inspecProduct = "inspec";
+                    Func<IProductServer<ProductStatus>> productServerFactory = clientFactory.RestClientForCafeProductServer;
+                    AddProductOptionsTo(inspecGroup, inspecProduct, productServerFactory, schedulerWaiter);
                 })
                 .WithGroup("server", serverGroup =>
                 {
@@ -193,11 +181,37 @@ namespace cafe
                         OnNode());
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
+            AddProductOptionsTo(root, "cafe", clientFactory.RestClientForCafeProductServer, schedulerWaiter);
+
             var helpOption = new HelpOption(root);
             root.WithOption(helpOption, "help");
             root.WithDefaultOption(helpOption);
 
             return root;
+        }
+
+        private static void AddProductOptionsTo(OptionGroup productGroup, string productName,
+            Func<IProductServer<ProductStatus>> productServerFactory, ISchedulerWaiter schedulerWaiter)
+        {
+            productGroup.WithOption(new ShowInSpecStatusOption(productServerFactory),
+                OptionValueSpecification.ForCommand("status"), OnNode());
+            productGroup.WithOption(
+                new InstallOption<IProductServer<ProductStatus>, ProductStatus>(productName,
+                    productServerFactory, schedulerWaiter),
+                CreateInstallVersionSpecifications());
+            productGroup.WithOption(
+                new DownloadProductOption<IProductServer<ProductStatus>, ProductStatus>(productName,
+                    productServerFactory, schedulerWaiter),
+                CreateDownloadVersionSpecifications());
+            AddCheckProductVersionTo(productGroup, productName, productServerFactory);
+        }
+
+        private static void AddCheckProductVersionTo(OptionGroup inspecGroup, string productName, Func<IProductServer<ProductStatus>> restClient)
+        {
+            inspecGroup.WithOption(
+                new CheckProductVersionOption(productName, restClient),
+                OptionValueSpecification.ForCommand("version?"),
+                OptionValueSpecification.ForVersion(), OnNode());
         }
 
 

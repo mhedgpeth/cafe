@@ -52,5 +52,10 @@ namespace cafe.Client
         {
             return CreateGenericProductRestClientFor("chef");
         }
+
+        public IProductServer<ProductStatus> RestClientForCafeProductServer()
+        {
+            return CreateGenericProductRestClientFor("cafe");
+        }
     }
 }

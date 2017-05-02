@@ -34,5 +34,9 @@ namespace cafe.Test.LocalSystem
         {
             return string.Empty;
         }
+
+        public void DeleteDirectory(string directory)
+        {
+        }
     }
 }

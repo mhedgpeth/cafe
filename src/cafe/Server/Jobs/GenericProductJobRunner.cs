@@ -2,9 +2,9 @@
 
 namespace cafe.Server.Jobs
 {
-    public class InspecJobRunner : ProductJobRunner<ProductStatus>
+    public class GenericProductJobRunner : ProductJobRunner<ProductStatus>
     {
-        public InspecJobRunner(JobRunner runner, DownloadJob downloadJob, InstallJob installJob) : base(runner,
+        public GenericProductJobRunner(JobRunner runner, DownloadJob downloadJob, InstallJob installJob) : base(runner,
             downloadJob, installJob)
         {
         }
