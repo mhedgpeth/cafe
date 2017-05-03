@@ -49,8 +49,8 @@ namespace cafe.Chef
             var startTime = DateTime.Now.AddMinutes(1).ToString("HH:mm");
             // command SchTasks.exe /SC ONCE /TN Upgrade-Cafe-{version} /TR {upgradeBatchFile} /ST {startTime} /F
             // later: /Z to mark it for deletion
-            _processExecutor.ExecuteAndWaitForExit($"C:\\system32\\SchTasks.exe",
-                "/SC ONCE /TN Upgrade-Cafe-{version} /TR {upgradeBatchFile} /ST {startTime} /F", LogInformation,
+            _processExecutor.ExecuteAndWaitForExit($"C:\\windows\\system32\\SchTasks.exe",
+                $"/Create /SC ONCE /TN Upgrade-Cafe-{version} /TR {upgradeBatchFile} /ST {startTime} /F", LogInformation,
                 LogError);
             Logger.Warn($"Created scheduled task for {startTime} to upgrade cafe to {version}. Cafe will restart and should not be running any tasks.");
             Logger.Info("Considering installation successful, since scheduled task has been set up");

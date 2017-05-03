@@ -1,7 +1,6 @@
-using cafe.CommandLine;
 using cafe.Shared;
 
-namespace cafe.Test.CommandLine
+namespace cafe.CommandLine.Test
 {
     public class FakeOption : Option
     {

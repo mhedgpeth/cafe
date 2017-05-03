@@ -39,7 +39,7 @@ namespace cafe.LocalSystem
         public void DeleteDirectory(string directory)
         {
             Logger.Debug($"Removing directory {directory}");
-            Directory.Delete(directory);
+            Directory.Delete(directory, true);
         }
     }
 }

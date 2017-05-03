@@ -1,10 +1,9 @@
 ﻿using System;
-using cafe.CommandLine;
 using cafe.Shared;
 using FluentAssertions;
 using Xunit;
 
-namespace cafe.Test.CommandLine
+namespace cafe.CommandLine.Test
 {
     public class OptionTest
     {

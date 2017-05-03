@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <VersionPrefix>0.7.0</VersionPrefix>
     <TargetFramework>netcoreapp1.1</TargetFramework>
@@ -10,11 +9,9 @@
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.4;portable-net451+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\cafe\cafe.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20170106-08" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-beta5-build1225" />
@@ -26,5 +23,4 @@
     <PackageReference Include="NLog" Version="5.0.0-beta04" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rc2-final-2016-05-21" />
   </ItemGroup>
-
 </Project>

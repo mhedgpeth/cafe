@@ -49,4 +49,13 @@
     <PackageReference Include="DasMulli.Win32.ServiceUtils" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.0.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cafe.CommandLine\cafe.CommandLine.csproj">
+      <Project>{2564c238-aad2-402a-9a18-b83fd36f3bf5}</Project>
+      <Name>cafe.CommandLine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandLine" />
+  </ItemGroup>
 </Project>

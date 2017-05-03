@@ -25,7 +25,7 @@ namespace cafe
         {
             Directory.SetCurrentDirectory(AssemblyDirectory);
             ConfigureLogging(args);
-            Presenter.ShowApplicationHeading(Logger, args);
+            Presenter.ShowApplicationHeading(Logger, System.Reflection.Assembly.GetEntryAssembly().GetName().Version, args);
             var clientFactory = CreateClientFactory();
             var runner = CreateRunner(clientFactory);
             var arguments = runner.ParseArguments(args);

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cafe.CommandLine\cafe.CommandLine.csproj">
+      <Project>{2564c238-aad2-402a-9a18-b83fd36f3bf5}</Project>
+      <Name>cafe.CommandLine</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions">
+      <Version>4.19.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="Moq">
+      <Version>4.7.9</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>5.0.0-beta07</Version>
+    </PackageReference>
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\cafe.CommandLine\cafe.CommandLine.csproj">
+      <Project>{2564c238-aad2-402a-9a18-b83fd36f3bf5}</Project>
+      <Name>cafe.CommandLine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\cafe\cafe.csproj">
+      <Project>{cb759382-656f-4590-9eb7-eaad5c40afe9}</Project>
+      <Name>cafe</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

@@ -1,8 +1,7 @@
-﻿using cafe.CommandLine;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
-namespace cafe.Test.CommandLine
+namespace cafe.CommandLine.Test
 {
     public class OptionSpecificationTest
     {

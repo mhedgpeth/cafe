@@ -5,9 +5,9 @@ namespace cafe.CommandLine
 {
     public sealed class Presenter
     {
-        public static void ShowApplicationHeading(Logger logger, params string[] args)
+        public static void ShowApplicationHeading(Logger logger, Version version, params string[] args)
         {
-            var message = $"cafe {System.Reflection.Assembly.GetEntryAssembly().GetName().Version} with arguments {string.Join(" ", args)}";
+            var message = $"cafe {version} with arguments {string.Join(" ", args)}";
             logger.Info(message);
             WriteMessage(message, ConsoleColor.DarkYellow);
             Console.Out.WriteLine(); // empty line for readability

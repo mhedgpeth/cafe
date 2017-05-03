@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using cafe.Client;
 using cafe.Shared;
 using NLog;
 
@@ -9,7 +8,7 @@ namespace cafe.CommandLine
 {
     public abstract class Option
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(SchedulerWaiter).FullName);
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(Option).FullName);
 
         private readonly string _helpText;
         private readonly bool _showHelpContext;

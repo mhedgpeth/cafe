@@ -296,6 +296,20 @@ Task("CheckCafeVersion")
         RunCafe("version? {0}", version);
     });
 
+var cafeOldVersion = "0.5.4";
+
+Task("DownloadCafeOldVersion")
+    .Does(() => 
+    {
+        RunCafe("download {0}", cafeOldVersion);
+    });
+
+Task("InstallCafeOldVersion")
+    .Does(() => 
+    {
+        RunCafe("install {0}", cafeOldVersion);
+    });
+
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
