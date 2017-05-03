@@ -9,12 +9,12 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.6.0." + buildNumber;
+var version = "0.7.0." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
-var cafeProject = cafeDirectory + File("project.json");
-var cafeUnitTestProject = Directory("./test/cafe.Test/project.json");
-var cafeIntegrationTestProject = Directory("./test/cafe.IntegrationTest/project.json");
+var cafeProject = cafeDirectory + File("cafe.csproj");
+var cafeUnitTestProject = Directory("./test/cafe.Test/cafe.Test.csproj");
+var cafeIntegrationTestProject = Directory("./test/cafe.IntegrationTest/cafe.IntegrationTest.csproj");
 
 var buildSettings = new DotNetCoreBuildSettings { VersionSuffix = buildNumber, Configuration = configuration };
 
