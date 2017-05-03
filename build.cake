@@ -290,6 +290,12 @@ Task("StartService")
         RunCafe(@"service start");
     });
 
+Task("CheckCafeVersion")
+    .Does(() =>
+    {
+        RunCafe("version? {0}", version);
+    });
+
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
@@ -304,6 +310,7 @@ Task("AcceptanceTest")
     .IsDependentOn("RunCafeWithNoArguments")
     .IsDependentOn("ShowHelp")
     .IsDependentOn("RegisterService")
+    .IsDependentOn("CheckCafeVersion")
     .IsDependentOn("InspecDownloadOldVersion")
     .IsDependentOn("InspecInstallOldVersion")
     .IsDependentOn("InspecCheckOldVersion")

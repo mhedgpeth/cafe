@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-//using System.IO.Compression;
+using System.IO.Compression;
 using System.Reflection;
 using cafe.LocalSystem;
 using cafe.Shared;
@@ -32,9 +32,19 @@ namespace cafe.Chef
             const string cafeStaging = "cafe-staging";
             if (_commands.DirectoryExists(cafeStaging))
             {
+                Logger.Info($"Deleting directory {cafeStaging} to prepare for cafe upgrade");
                 _commands.DeleteDirectory(cafeStaging);
             }
-//            ZipFile.ExtractToDirectory(_resolver.FullPathToStagedInstaller(version), cafeStaging);
+            _commands.CreateDirectory(cafeStaging);
+            var installer = _resolver.FullPathToStagedInstaller(version);
+            if (!_commands.FileExists(installer))
+            {
+                Logger.Error("File is not staged at {installer}. Run download first");
+                return Result.Failure(
+                    $"Could not install cafe {version} because there is no installer staged at {installer}. Run download first.");
+            }
+            Logger.Info($"Extracting cafe installaction at {installer} to {cafeStaging}");
+            ZipFile.ExtractToDirectory(installer, cafeStaging);
             var upgradeBatchFile = Path.GetFullPath("upgrade.bat");
             var startTime = DateTime.Now.AddMinutes(1).ToString("HH:mm");
             // command SchTasks.exe /SC ONCE /TN Upgrade-Cafe-{version} /TR {upgradeBatchFile} /ST {startTime} /F
@@ -43,6 +53,7 @@ namespace cafe.Chef
                 "/SC ONCE /TN Upgrade-Cafe-{version} /TR {upgradeBatchFile} /ST {startTime} /F", LogInformation,
                 LogError);
             Logger.Warn($"Created scheduled task for {startTime} to upgrade cafe to {version}. Cafe will restart and should not be running any tasks.");
+            Logger.Info("Considering installation successful, since scheduled task has been set up");
             return Result.Successful();
         }
 

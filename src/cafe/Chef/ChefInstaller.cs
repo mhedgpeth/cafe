@@ -35,11 +35,14 @@ namespace cafe.Chef
         {
             Logger.Debug($"Uninstalling product {productCode}");
             var msiexec = FindFullPathToMsiExec();
-            return _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
+            var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
+            Logger.Debug($"Finished uninstalling {productCode} with result: {result}");
+            return result;
         }
 
         public Result Install(string version)
         {
+            Logger.Debug($"Installing version {version}");
             var fullPathToStagedInstaller = _downloadUrlResolver.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {

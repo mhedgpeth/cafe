@@ -2,6 +2,7 @@ using System;
 using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
+using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
@@ -10,8 +11,27 @@ namespace cafe.Server.Controllers
     [Route("api/[controller]")]
     public class InspecController : ProductController
     {
-        public InspecController() : base(InspecJobRunner)
+        public InspecController() : base("inspec", InspecJobRunner)
         {
+        }
+
+        [HttpPut("install")]
+        [HttpPut("upgrade")]
+        public JobRunStatus InstallProduct(string version)
+        {
+            return ExecuteFunctionWithErrorHandling(() => DoInstall(version), $"installing {version}");
+        }
+
+        [HttpPut("download")]
+        public JobRunStatus DownloadProduct(string version)
+        {
+            return ExecuteFunctionWithErrorHandling(() => DoDownload(version), $"downloading {version}");
+        }
+
+        [HttpGet("status")]
+        public ProductStatus GetStatus()
+        {
+            return ExecuteFunctionWithErrorHandling(DoGetStatus, "getting status");
         }
 
         private static readonly GenericProductJobRunner InspecJobRunner = CreateJobRunner();
@@ -26,7 +46,8 @@ namespace cafe.Server.Controllers
             var fileSystem = new FileSystem(new EnvironmentBoundary(), commands);
             return new GenericProductJobRunner(StructureMapResolver.Container.GetInstance<JobRunner>(),
                 CreateDownloadJob(fileSystem, productName, downloadUrlResolver),
-                CreateInstallJob(productName, fileSystem, commands, InstalledProductsFinder.IsInspec, downloadUrlResolver));
+                CreateInstallJob(productName, fileSystem, commands, InstalledProductsFinder.IsInspec,
+                    downloadUrlResolver));
         }
 
         public static InstallJob CreateInstallJob(string product, FileSystem fileSystem,

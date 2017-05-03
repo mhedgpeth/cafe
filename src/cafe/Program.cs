@@ -148,7 +148,7 @@ namespace cafe
                 .WithGroup("inspec", inspecGroup =>
                 {
                     const string inspecProduct = "inspec";
-                    Func<IProductServer<ProductStatus>> productServerFactory = clientFactory.RestClientForCafeProductServer;
+                    Func<IProductServer<ProductStatus>> productServerFactory = clientFactory.RestClientForInspecServer;
                     AddProductOptionsTo(inspecGroup, inspecProduct, productServerFactory, schedulerWaiter);
                 })
                 .WithGroup("server", serverGroup =>

@@ -1,3 +1,4 @@
+using System;
 using cafe.Server.Jobs;
 using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -10,34 +11,47 @@ namespace cafe.Server.Controllers
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ProductController).FullName);
 
         private readonly ProductJobRunner<ProductStatus> _jobRunner;
+        private readonly string _productName;
 
-        public ProductController(ProductJobRunner<ProductStatus> jobRunner)
+        public ProductController(string productName, ProductJobRunner<ProductStatus> jobRunner)
         {
+            Logger.Debug($"Initializing controller for {productName}");
+            _productName = productName;
             _jobRunner = jobRunner;
         }
 
-        [HttpPut("install")]
-        [HttpPut("upgrade")]
-        public JobRunStatus InstallChef(string version)
+        protected JobRunStatus DoInstall(string version)
         {
-            Logger.Info($"Scheduling chef {version} to be installed");
+            Logger.Info($"Scheduling {_productName} {version} to be installed");
             return _jobRunner.InstallJob.InstallOrUpgrade(version);
         }
 
-        [HttpPut("download")]
-        public JobRunStatus DownloadChef(string version)
+        protected JobRunStatus DoDownload(string version)
         {
-            Logger.Info($"Scheduling chef {version} to be downloaded");
+            Logger.Info($"Scheduling {_productName} {version} to be downloaded");
             return _jobRunner.DownloadJob.Download(version);
         }
 
-        [HttpGet("status")]
-        public ProductStatus GetStatus()
+        protected ProductStatus DoGetStatus()
         {
-            Logger.Info("Getting chef status");
+            Logger.Info($"Getting {_productName} status");
             var status = _jobRunner.ToStatus();
-            Logger.Debug($"Status for chef is {status}");
+            Logger.Debug($"Status for {_productName} is {status}");
             return status;
         }
+
+        protected T ExecuteFunctionWithErrorHandling<T>(Func<T> func, string description)
+        {
+            try
+            {
+                return func();
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Exception thrown while {description}: {e}");
+                throw;
+            }
+        }
+
     }
 }

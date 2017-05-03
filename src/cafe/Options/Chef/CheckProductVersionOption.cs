@@ -21,7 +21,7 @@ namespace cafe.Options.Chef
 
         protected override string ToDescription(Argument[] args)
         {
-            return $"Checks if chef is on version {FindVersion(args)}";
+            return $"Checks if {_productName} is on version {FindVersion(args)}";
         }
 
         private static string FindVersion(IEnumerable<Argument> args)

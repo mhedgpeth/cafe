@@ -1,16 +1,37 @@
-using System;
 using cafe.Chef;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
+using cafe.Shared;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 
 namespace cafe.Server.Controllers
 {
     [Route("api/[controller]")]
     public class CafeController : ProductController
     {
-        public CafeController() : base(CafeJobRunner)
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(CafeController).FullName);
+
+        public CafeController() : base("cafe", CafeJobRunner)
         {
+        }
+
+        [HttpPut("install")]
+        [HttpPut("upgrade")]
+        public JobRunStatus InstallProduct(string version)
+        {
+            return ExecuteFunctionWithErrorHandling(() => DoInstall(version), $"installing {version}");
+        }
+
+        [HttpPut("download")]
+        public JobRunStatus DownloadProduct(string version)
+        {
+            return ExecuteFunctionWithErrorHandling(() => DoDownload(version), $"downloading {version}");
+        }
+        [HttpGet("status")]
+        public ProductStatus GetStatus()
+        {
+            return ExecuteFunctionWithErrorHandling(DoGetStatus, "getting status");
         }
 
         private static readonly GenericProductJobRunner CafeJobRunner = CreateJobRunner();
@@ -38,7 +59,9 @@ namespace cafe.Server.Controllers
                     return identifier;
                 }
             }
-            throw new InvalidOperationException("Runtime identifier not found in cafe.deps.json");
+            Logger.Warn(
+                "Runtime identifier not found in cafe.deps.json, so we are assuming this is running on windows 10");
+            return "win10";
         }
     }
 }

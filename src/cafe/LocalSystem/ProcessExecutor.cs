@@ -47,9 +47,9 @@ namespace cafe.LocalSystem
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-                Logger.Info("Chef started; waiting for exit");
+                Logger.Info($"Process {filename} with arguments {processArguments} started; waiting for exit");
                 process.WaitForExit();
-                Logger.Info($"Chef exited at {process.ExitTime} with status of {process.ExitCode}");
+                Logger.Info($"Process {filename} exited at {process.ExitTime} with status of {process.ExitCode}");
                 return process.ExitCode == 0
                     ? Result.Successful()
                     : Result.Failure($"Process {process} exited with code {process.ExitCode}");
