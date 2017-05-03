@@ -1,7 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <VersionPrefix>0.8.0</VersionPrefix>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <AssemblyName>cafe.Updater</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>cafe.Updater</PackageId>
+    <RuntimeIdentifiers>win10-x64;win7-x64;win8-x64</RuntimeIdentifiers>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Update="nlog.config;updater.json">

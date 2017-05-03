@@ -13,7 +13,11 @@ var version = "0.8.0." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("cafe.csproj");
+var cafeUpdaterDirectory = Directory("./src/cafe.Updater");
+var cafeUpdaterProject = cafeUpdaterDirectory + File("cafe.Updater.csproj");
+var cafeUpdaterBuildDir = cafeUpdaterDirectory + Directory("bin") + Directory(configuration);
 var cafeUnitTestProject = Directory("./test/cafe.Test/cafe.Test.csproj");
+var cafeCommandLineUnitTestProject = Directory("./test/cafe.CommandLine.Test/cafe.CommandLine.Test.csproj");
 var cafeIntegrationTestProject = Directory("./test/cafe.IntegrationTest/cafe.IntegrationTest.csproj");
 
 var buildSettings = new DotNetCoreBuildSettings { VersionSuffix = buildNumber, Configuration = configuration };
@@ -25,6 +29,8 @@ var buildSettings = new DotNetCoreBuildSettings { VersionSuffix = buildNumber, C
 // Define directories.
 var buildDir = Directory("./src/cafe/bin") + Directory(configuration);
 
+var stagingDirectory = Directory("staging");
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -34,12 +40,15 @@ Task("Clean")
 {
     CleanDirectory(buildDir);
     CleanDirectory(archiveDirectory);
+    CleanDirectory(cafeUpdaterBuildDir);
+    CleanDirectory(stagingDirectory);
 });
 
 Task("Restore")
     .Does(() =>
 {
     DotNetCoreRestore(cafeProject);
+    DotNetCoreRestore(cafeUpdaterProject);
 });
 
 Task("Build")
@@ -47,14 +56,18 @@ Task("Build")
     .Does(() =>
 {
     DotNetCoreBuild(cafeProject, buildSettings);
+    DotNetCoreBuild(cafeUpdaterProject, buildSettings);
 });
 
 Task("UnitTest")
     .Does(() =>
     {
-        DotNetCoreRestore(cafeUnitTestProject);      
+        DotNetCoreRestore(cafeUnitTestProject);
+        DotNetCoreRestore(cafeCommandLineUnitTestProject);      
         DotNetCoreBuild(cafeUnitTestProject, buildSettings);
+        DotNetCoreBuild(cafeCommandLineUnitTestProject, buildSettings);
         DotNetCoreTest(cafeUnitTestProject);
+        DotNetCoreTest(cafeCommandLineUnitTestProject);
     });
 
 Task("IntegrationTest")
@@ -69,24 +82,57 @@ Task("Publish")
     .Does(() => 
     {
         Information("Publishing {0}", configuration);
-        DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win10-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win7-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "win8-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        // Later: DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "centos.7-x64", Configuration = configuration, VersionSuffix = buildNumber });
-        // Later: DotNetCorePublish(cafeProject, new DotNetCorePublishSettings { Runtime = "ubuntu.16.04-x64", Configuration = configuration, VersionSuffix = buildNumber });
+        PublishProject(cafeProject);
+        PublishProject(cafeUpdaterProject);
     });
 
+public void PublishProject(string project) 
+{
+    DotNetCorePublish(project, new DotNetCorePublishSettings { Runtime = "win10-x64", Configuration = configuration, VersionSuffix = buildNumber });
+    DotNetCorePublish(project, new DotNetCorePublishSettings { Runtime = "win7-x64", Configuration = configuration, VersionSuffix = buildNumber });
+    DotNetCorePublish(project, new DotNetCorePublishSettings { Runtime = "win8-x64", Configuration = configuration, VersionSuffix = buildNumber });
+}
+
+
 var archiveDirectory =  Directory("archive");
+
+Task("Stage")
+    .Does(() =>
+    {
+        StageRelease("win10");
+        StageRelease("win7");
+        StageRelease("win8");
+    });
+
+public void StageRelease(string runtimeIdentifier) 
+{
+    CreateDirectory(stagingDirectory);
+    var versionStagingDirectory = stagingDirectory + Directory("cafe-" + runtimeIdentifier + "-x64-" + version);
+    CreateDirectory(versionStagingDirectory);
+    var updaterStagingDirectory = versionStagingDirectory + Directory("updater");
+    CreateDirectory(updaterStagingDirectory);
+
+    var cafeParentDirectory = buildDir + Directory("netcoreapp1.1");
+    
+    CopyDirectory(cafeParentDirectory + Directory(runtimeIdentifier + "-x64") + Directory("publish"), versionStagingDirectory);
+    CopyDirectory(cafeUpdaterBuildDir + Directory("netcoreapp1.1") + Directory(runtimeIdentifier + "-x64") + Directory("publish"), updaterStagingDirectory);
+}
 
 Task("Archive")
     .Does(() => 
     {
         Information("Archiving {0}", configuration);
         CreateDirectory(archiveDirectory);
-        Zip(cafeWindowsPublishDirectory, archiveDirectory  + File("cafe-win10-x64-" + version + ".zip"));
-        Zip(buildDir + Directory("netcoreapp1.1/win7-x64/publish"), archiveDirectory  + File("cafe-win7-x64-" + version + ".zip"));
-        Zip(buildDir + Directory("netcoreapp1.1/win8-x64/publish"), archiveDirectory  + File("cafe-win8-x64-" + version + ".zip"));
+        ZipStagedRelease("win10");
+        ZipStagedRelease("win7");
+        ZipStagedRelease("win8");
     });
+
+public void ZipStagedRelease(string runtimeIdentifier)
+{
+    var archiveName = "cafe-" + runtimeIdentifier + "-x64-" + version;
+    Zip(stagingDirectory + Directory(archiveName), archiveDirectory + File(archiveName + ".zip"));    
+}
 
 var cafeWindowsContainerImage = "cafe:windows";
 
@@ -112,6 +158,7 @@ Task("IncrementalBuild")
     .IsDependentOn("UnitTest")
     .IsDependentOn("IntegrationTest")
     .IsDependentOn("Publish")
+    .IsDependentOn("Stage")
     .IsDependentOn("Archive");
 
 Task("FullBuild")
@@ -310,6 +357,12 @@ Task("InstallCafeOldVersion")
         RunCafe("install {0}", cafeOldVersion);
     });
 
+Task("CafeUpdaterRegister")
+    .Does(() =>
+    {
+
+    });
+
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
@@ -319,6 +372,17 @@ public void RunCafe(string argument, params string[] formatParameters)
   Information("Exit code: {0}", exitCode);
   if (exitCode < 0) throw new Exception(string.Format("cafe.exe exited with code: {0}", exitCode));
 }
+
+public void RunCafeUpdater(string argument, params string[] formatParameters) 
+{
+  var arguments = string.Format(argument, formatParameters);
+  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(cafeWindowsPublishDirectory);
+  Information("Running cafe.Updater.exe from {0}", cafeWindowsPublishDirectory);
+  var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.Updater.exe"), processSettings);
+  Information("Exit code: {0}", exitCode);
+  if (exitCode < 0) throw new Exception(string.Format("cafe.Updater.exe exited with code: {0}", exitCode));
+}
+
 
 Task("AcceptanceTest")
     .IsDependentOn("RunCafeWithNoArguments")

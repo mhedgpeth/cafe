@@ -25,7 +25,7 @@ Project("{9D1B732F-CAE8-4B24-A2C7-F928DAA33C06}") = "cafe.Updater", "src\cafe.Up
 EndProject
 Project("{4422FE0B-623B-428B-8CCD-5722413B162C}") = "cafe.CommandLine", "src\cafe.CommandLine\cafe.CommandLine.csproj", "{2564C238-AAD2-402A-9A18-B83FD36F3BF5}"
 EndProject
-Project("{07CD08B4-4789-414B-93E1-0F276B0B825C}") = "cafe.CommandLine.Test", "tests\cafe.CommandLine.Test\cafe.CommandLine.Test.csproj", "{C53286A1-FCD9-4642-B91F-87B2C6E35AB5}"
+Project("{07CD08B4-4789-414B-93E1-0F276B0B825C}") = "cafe.CommandLine.Test", "test\cafe.CommandLine.Test\cafe.CommandLine.Test.csproj", "{C53286A1-FCD9-4642-B91F-87B2C6E35AB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
