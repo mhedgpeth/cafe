@@ -1,4 +1,5 @@
-﻿using cafe.Shared;
+﻿using cafe.CommandLine;
+using cafe.Shared;
 
 namespace cafe.Chef
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
-using cafe.Shared;
 using NLog;
 
 namespace cafe.CommandLine

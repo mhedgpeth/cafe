@@ -1,4 +1,4 @@
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public interface IEnvironment
     {

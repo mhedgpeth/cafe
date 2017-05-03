@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace cafe.Shared
+namespace cafe.CommandLine
 {
     public class Result
     {

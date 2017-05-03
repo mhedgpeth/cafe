@@ -1,4 +1,4 @@
-namespace cafe.Options.Server
+namespace cafe.CommandLine.Options
 {
     public enum ServiceStatus
     {

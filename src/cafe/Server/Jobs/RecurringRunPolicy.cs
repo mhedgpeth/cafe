@@ -1,6 +1,6 @@
 ﻿
 using System;
-using cafe.Server.Scheduling;
+using cafe.CommandLine.LocalSystem;
 using NLog;
 using NodaTime;
 

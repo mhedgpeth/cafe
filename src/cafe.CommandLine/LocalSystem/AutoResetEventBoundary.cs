@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace cafe.Client
+namespace cafe.CommandLine.LocalSystem
 {
     public class AutoResetEventBoundary : IAutoResetEvent
     {

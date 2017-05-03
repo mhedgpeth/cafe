@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using cafe.LocalSystem;
+using cafe.CommandLine.Options;
 using NLog;
 
-namespace cafe.Options.Server
+namespace cafe.CommandLine.LocalSystem
 {
     public class ServiceStatusProvider
     {
-        private static readonly Logger Logger = LogManager.GetLogger(typeof(CafeWindowsServiceStatusOption).FullName);
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ServiceStatusProvider).FullName);
 
         private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystem _fileSystem;

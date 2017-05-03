@@ -6,7 +6,7 @@ using cafe.Shared;
 using NLog;
 using NLog.Fluent;
 
-namespace cafe.Options
+namespace cafe.Options.Chef
 {
     public class ChangeChefRunningStatusOption : ServerConnectionOption<IChefServer>
     {

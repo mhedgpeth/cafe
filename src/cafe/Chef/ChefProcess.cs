@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Shared;
 using NLog;

@@ -5,7 +5,7 @@ using cafe.Test.Chef;
 using FluentAssertions;
 using Xunit;
 
-namespace cafe.Test.CommandLine
+namespace cafe.Test.Options
 {
     public class TaskStatusPresenterTest
     {

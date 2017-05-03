@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 
 namespace cafe.Test.LocalSystem

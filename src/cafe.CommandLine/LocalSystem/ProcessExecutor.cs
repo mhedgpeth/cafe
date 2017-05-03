@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using cafe.Shared;
 using NLog;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public class ProcessExecutor
     {

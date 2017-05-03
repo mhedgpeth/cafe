@@ -1,7 +1,7 @@
 ﻿using System;
 using NodaTime;
 
-namespace cafe.Server.Scheduling
+namespace cafe.CommandLine.LocalSystem
 {
     public interface ITimerFactory
     {

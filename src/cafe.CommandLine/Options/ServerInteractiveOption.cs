@@ -1,35 +1,38 @@
 ﻿using System;
 using System.Threading;
-using cafe.CommandLine;
-using cafe.Shared;
+using DasMulli.Win32.ServiceUtils;
 using NLog;
 
-namespace cafe.Options.Server
+namespace cafe.CommandLine.Options
 {
     public class ServerInteractiveOption : Option
     {
+        private readonly string _application;
+        private readonly Func<IWin32Service> _windowsServiceCreator;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(ServerInteractiveOption).FullName);
 
-        public ServerInteractiveOption() : base("Starts cafe in server mode to be run on the console")
+        public ServerInteractiveOption(string application, Func<IWin32Service> windowsServiceCreator) : base($"Starts {application} in server mode to be run on the console")
         {
+            _application = application;
+            _windowsServiceCreator = windowsServiceCreator;
         }
 
         protected override Result RunCore(Argument[] args)
         {
-            var cafeServerWindowsService = new CafeServerWindowsService();
-            cafeServerWindowsService.Start(new string[0], () => { });
+            var windowsService = _windowsServiceCreator();
+            windowsService.Start(new string[0], () => { });
             Presenter.ShowMessage("Running interactively, press ctrl+c to stop", Logger);
             // don't use Console.ReadLine because it interferes with
             // console redirection done to keep an eye on processes
             // that this kicks off
             new AutoResetEvent(false).WaitOne();
-            cafeServerWindowsService.Stop();
+            windowsService.Stop();
             return Result.Successful();
         }
 
         protected override string ToDescription(Argument[] args)
         {
-            return "Starting Cafe in Server Mode";
+            return $"Starting {_application} in Server Mode";
         }
     }
 }

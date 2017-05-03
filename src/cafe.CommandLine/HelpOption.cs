@@ -1,4 +1,3 @@
-using cafe.Shared;
 using NLog;
 
 namespace cafe.CommandLine

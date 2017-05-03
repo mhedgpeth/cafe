@@ -1,4 +1,5 @@
-﻿using cafe.Shared;
+﻿using cafe.CommandLine;
+using cafe.Shared;
 using FluentAssertions;
 using Xunit;
 

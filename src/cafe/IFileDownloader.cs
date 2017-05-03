@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using cafe.CommandLine;
 using cafe.Shared;
 
 namespace cafe

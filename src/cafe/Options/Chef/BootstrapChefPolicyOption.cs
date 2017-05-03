@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using cafe.Client;
 using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Shared;
 

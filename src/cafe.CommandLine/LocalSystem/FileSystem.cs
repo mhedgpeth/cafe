@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using NLog;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public class FileSystem : IFileSystem
     {

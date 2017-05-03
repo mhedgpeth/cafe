@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32;
 using NLog;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public class EnvironmentBoundary : IEnvironment
     {

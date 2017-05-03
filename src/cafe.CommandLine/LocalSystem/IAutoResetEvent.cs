@@ -1,6 +1,6 @@
 using System;
 
-namespace cafe.Client
+namespace cafe.CommandLine.LocalSystem
 {
     public interface IAutoResetEvent
     {

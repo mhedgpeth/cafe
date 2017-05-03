@@ -2,7 +2,7 @@
 using System.Threading;
 using NodaTime;
 
-namespace cafe.Server.Scheduling
+namespace cafe.CommandLine.LocalSystem
 {
     public class TimerFactory : ITimerFactory
     {

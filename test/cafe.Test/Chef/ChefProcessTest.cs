@@ -1,10 +1,11 @@
 ﻿using System;
 using cafe.Chef;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Test.LocalSystem;
 using FluentAssertions;
 using Xunit;
-using ProcessExecutor = cafe.LocalSystem.ProcessExecutor;
+using ProcessExecutor = cafe.CommandLine.LocalSystem.ProcessExecutor;
 
 namespace cafe.Test.Chef
 {

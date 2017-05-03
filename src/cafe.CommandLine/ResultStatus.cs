@@ -1,4 +1,4 @@
-namespace cafe.Shared
+namespace cafe.CommandLine
 {
     public enum ResultStatus
     {

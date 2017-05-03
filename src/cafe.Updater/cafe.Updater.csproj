@@ -4,9 +4,23 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="nlog.config;updater.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\cafe.CommandLine\cafe.CommandLine.csproj">
       <Project>{2564c238-aad2-402a-9a18-b83fd36f3bf5}</Project>
       <Name>cafe.CommandLine</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Options" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DasMulli.Win32.ServiceUtils">
+      <Version>1.0.1</Version>
+    </PackageReference>
   </ItemGroup>
 </Project>

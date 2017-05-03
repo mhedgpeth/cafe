@@ -1,10 +1,8 @@
 ﻿using System.IO;
-using cafe.CommandLine;
-using cafe.LocalSystem;
-using cafe.Shared;
+using cafe.CommandLine.LocalSystem;
 using NLog;
 
-namespace cafe.Options.Server
+namespace cafe.CommandLine.Options
 {
     public class ChangeStateForCafeWindowsServiceOption : Option
     {
@@ -16,16 +14,18 @@ namespace cafe.Options.Server
         private readonly ProcessExecutor _processExecutor;
         private readonly IFileSystem _fileSystem;
         private readonly ServiceStatusWaiter _serviceStatusWaiter;
+        private readonly string _serviceName;
 
         private ChangeStateForCafeWindowsServiceOption(string command, ServiceStatus waitFor,
             ProcessExecutor processExecutor, IFileSystem fileSystem,
-            ServiceStatusWaiter serviceStatusWaiter) : base($"{command} service")
+            ServiceStatusWaiter serviceStatusWaiter, string serviceName) : base($"{command} service")
         {
             _command = command;
             _waitFor = waitFor;
             _processExecutor = processExecutor;
             _fileSystem = fileSystem;
             _serviceStatusWaiter = serviceStatusWaiter;
+            _serviceName = serviceName;
         }
 
         protected override string ToDescription(Argument[] args)
@@ -37,19 +37,18 @@ namespace cafe.Options.Server
         {
             var descriptions = ServiceStatusProvider.DescribeWindowsStatuses();
             var waitForDescription = descriptions[_waitFor];
-            string serviceName = CafeServerWindowsServiceOptions.ServiceName;
             var fullPath =
                 _fileSystem.FindInstallationDirectoryInPathContaining(ServiceStatusProvider
                     .ServiceControllerExecutable, @"C:\windows\System32");
-            Presenter.ShowMessage($"Executing command to {_command} the service {serviceName}", Logger);
+            Presenter.ShowMessage($"Executing command to {_command} the service {_serviceName}", Logger);
             _processExecutor.ExecuteAndWaitForExit(
                 Path.Combine(fullPath, ServiceStatusProvider.ServiceControllerExecutable),
-                $"{_command} {serviceName}",
+                $"{_command} {_serviceName}",
                 LogInformation, LogError);
-            Presenter.ShowMessage($"Waiting for {serviceName} to be {waitForDescription}", Logger);
+            Presenter.ShowMessage($"Waiting for {_serviceName} to be {waitForDescription}", Logger);
             var status = _serviceStatusWaiter.WaitFor(_waitFor);
             var statusDescription = descriptions[status];
-            Presenter.ShowMessage($"Service {serviceName} status is now {statusDescription}", Logger);
+            Presenter.ShowMessage($"Service {_serviceName} status is now {statusDescription}", Logger);
             return status == _waitFor
                 ? Result.Successful()
                 : Result.Failure(
@@ -67,17 +66,17 @@ namespace cafe.Options.Server
         }
 
         public static ChangeStateForCafeWindowsServiceOption StartCafeWindowsServiceOption(
-            ProcessExecutor processExecutor, IFileSystem fileSystem, ServiceStatusWaiter serviceStatusWaiter)
+            ProcessExecutor processExecutor, IFileSystem fileSystem, ServiceStatusWaiter serviceStatusWaiter, string serviceName)
         {
             return new ChangeStateForCafeWindowsServiceOption("start", ServiceStatus.Running, processExecutor,
-                fileSystem, serviceStatusWaiter);
+                fileSystem, serviceStatusWaiter, serviceName);
         }
 
         public static ChangeStateForCafeWindowsServiceOption StopCafeWindowsServiceOption(
-            ProcessExecutor processExecutor, IFileSystem fileSystem, ServiceStatusWaiter serviceStatusWaiter)
+            ProcessExecutor processExecutor, IFileSystem fileSystem, ServiceStatusWaiter serviceStatusWaiter, string serviceName)
         {
             return new ChangeStateForCafeWindowsServiceOption("stop", ServiceStatus.Stopped, processExecutor,
-                fileSystem, serviceStatusWaiter);
+                fileSystem, serviceStatusWaiter, serviceName);
         }
     }
 }

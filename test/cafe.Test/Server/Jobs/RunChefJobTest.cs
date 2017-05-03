@@ -1,7 +1,6 @@
 ﻿using cafe.Chef;
 using cafe.Server.Jobs;
 using cafe.Test.Chef;
-using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using Moq;
 using Xunit;

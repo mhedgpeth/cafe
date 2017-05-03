@@ -1,4 +1,5 @@
 using cafe.Chef;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;
@@ -42,7 +43,7 @@ namespace cafe.Server.Controllers
             var commands = new FileSystemCommandsBoundary();
             var fileSystem = new FileSystem(new EnvironmentBoundary(), commands);
             var resolver = new CafeDownloadUrlResolver(FindRuntimeIdentifier(commands));
-            var cafeInstaller = new CafeInstaller(commands, resolver, new ProcessExecutor(() => new ProcessBoundary()));
+            var cafeInstaller = new CafeInstaller(commands, resolver, ServerSettings.Instance.UpdaterDirectory);
             return new GenericProductJobRunner(StructureMapResolver.Container.GetInstance<JobRunner>(),
                 InspecController.CreateDownloadJob(fileSystem, product, resolver),
                 InspecController.CreateInstallJob(cafeInstaller));

@@ -40,7 +40,7 @@ namespace cafe.CommandLine.Test
         }
 
 
-        const string Command = "chef";
+        private const string Command = "chef";
 
         [Fact]
         public void ParseArgument_ShouldParseCommandArgument()

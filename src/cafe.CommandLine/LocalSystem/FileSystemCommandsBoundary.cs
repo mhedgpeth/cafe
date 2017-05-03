@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using NLog;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public class FileSystemCommandsBoundary : IFileSystemCommands
     {

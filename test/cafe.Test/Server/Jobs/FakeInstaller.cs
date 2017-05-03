@@ -1,5 +1,6 @@
 ﻿using System;
 using cafe.Chef;
+using cafe.CommandLine;
 using cafe.Shared;
 
 namespace cafe.Test.Server.Jobs

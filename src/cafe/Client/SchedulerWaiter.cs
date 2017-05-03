@@ -1,5 +1,6 @@
 ﻿using System;
-using cafe.Server.Scheduling;
+using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
 using cafe.Shared;
 using NLog;
 using NLog.Fluent;

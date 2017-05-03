@@ -1,20 +1,20 @@
-﻿using cafe.CommandLine;
-using cafe.LocalSystem;
-using cafe.Shared;
+﻿using cafe.CommandLine.LocalSystem;
 using NLog;
 
-namespace cafe.Options.Server
+namespace cafe.CommandLine.Options
 {
     public class CafeWindowsServiceStatusOption : Option
     {
+        private readonly string _serviceName;
         private static readonly Logger Logger = LogManager.GetLogger(typeof(CafeWindowsServiceStatusOption).FullName);
 
         private readonly ServiceStatusProvider _serviceStatusProvider;
 
 
-        public CafeWindowsServiceStatusOption(ProcessExecutor processExecutor, IFileSystem fileSystem)
+        public CafeWindowsServiceStatusOption(ProcessExecutor processExecutor, IFileSystem fileSystem, string serviceName)
             : base("gets the status of the cafe windows service")
         {
+            _serviceName = serviceName;
             _serviceStatusProvider = new ServiceStatusProvider(processExecutor, fileSystem);
         }
 
@@ -25,9 +25,8 @@ namespace cafe.Options.Server
 
         protected override Result RunCore(Argument[] args)
         {
-            var serviceName = CafeServerWindowsServiceOptions.ServiceName;
-            var status = _serviceStatusProvider.DetermineStatusDescription(serviceName);
-            Presenter.ShowMessage($"{serviceName} status is {status}", Logger);
+            var status = _serviceStatusProvider.DetermineStatusDescription(_serviceName);
+            Presenter.ShowMessage($"{_serviceName} status is {status}", Logger);
             return Result.Successful();
         }
     }

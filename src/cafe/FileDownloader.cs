@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using cafe.CommandLine;
 using cafe.Shared;
 using NLog;
 
@@ -17,7 +18,7 @@ namespace cafe
             return DownloadAsync(downloadLink, file).GetAwaiter().GetResult();
         }
 
-        public async Task<Result> DownloadAsync(Uri downloadLink, string file)
+        private static async Task<Result> DownloadAsync(Uri downloadLink, string file)
         {
             using (var httpClient = new HttpClient {Timeout = TimeSpan.FromMinutes(10)})
             {
@@ -26,7 +27,7 @@ namespace cafe
                 )
                 {
                     const int bufferSize = 4096;
-                    var response = (await httpClient.SendAsync(request));
+                    var response = await httpClient.SendAsync(request);
                     if (response.StatusCode == HttpStatusCode.NotFound)
                     {
                         Logger.Info($"File at {downloadLink} does not exist");

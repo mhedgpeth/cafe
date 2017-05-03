@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public interface IProcess : IDisposable {
         void Start();

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
-using cafe.CommandLine;
 using Newtonsoft.Json;
 using NLog;
 
-namespace cafe
+namespace cafe.CommandLine
 {
     public class SettingsReader
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(SettingsReader).FullName);
+
         public static T Read<T>(string type, string file) where T : new()
         {
             var returnValue = new T();
@@ -33,6 +33,5 @@ namespace cafe
             }
             return returnValue;
         }
-
     }
 }

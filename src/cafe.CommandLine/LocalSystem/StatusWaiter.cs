@@ -1,10 +1,9 @@
 using System;
-using cafe.Server.Scheduling;
 using NLog;
 using NLog.Fluent;
 using NodaTime;
 
-namespace cafe.Client
+namespace cafe.CommandLine.LocalSystem
 {
     public abstract class StatusWaiter<T>
     {

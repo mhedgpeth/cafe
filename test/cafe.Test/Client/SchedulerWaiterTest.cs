@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using cafe.Client;
+using cafe.CommandLine.LocalSystem;
 using cafe.Shared;
 using cafe.Test.Chef;
-using cafe.Test.Server.Scheduling;
+using cafe.Test.Server.Jobs;
 using FluentAssertions;
 using Moq;
 using Xunit;

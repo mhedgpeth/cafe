@@ -1,3 +1,4 @@
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 
 namespace cafe.Test.Chef

@@ -5,7 +5,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace cafe.Test.CommandLine
+namespace cafe.Test.Options
 {
     public class SchedulerStatusOptionTest
     {

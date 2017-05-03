@@ -1,4 +1,5 @@
 ﻿using cafe.Chef;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;

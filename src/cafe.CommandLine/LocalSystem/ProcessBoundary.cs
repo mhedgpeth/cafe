@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using NLog;
 
-namespace cafe.LocalSystem
+namespace cafe.CommandLine.LocalSystem
 {
     public class ProcessBoundary : IProcess
     {

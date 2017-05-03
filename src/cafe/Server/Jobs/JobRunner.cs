@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using cafe.Server.Scheduling;
+using cafe.CommandLine.LocalSystem;
 using cafe.Shared;
 using NLog;
 using NodaTime;
