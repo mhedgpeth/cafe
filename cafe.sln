@@ -1,26 +1,25 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.0.0
-MinimumVisualStudioVersion = 10.0.0.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26114.2
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{469A828A-38A9-47E4-88B3-326A06DF91E9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CAA87EA8-D45F-4C96-BEE5-C6AE433DBF3B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "cafe", "src\cafe\cafe.xproj", "{CB759382-656F-4590-9EB7-EAAD5C40AFE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafe", "src\cafe\cafe.csproj", "{CB759382-656F-4590-9EB7-EAAD5C40AFE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{0EE1B77E-2913-46A7-B95F-756FB1724D69}"
-ProjectSection(SolutionItems) = preProject
-	global.json = global.json
-	README.md = README.md
-	TODO.md = TODO.md
-	build.cake = build.cake
-	build.ps1 = build.ps1
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		TODO.md = TODO.md
+		build.cake = build.cake
+		build.ps1 = build.ps1
+	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "cafe.Test", "test\cafe.Test\cafe.Test.xproj", "{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafe.Test", "test\cafe.Test\cafe.Test.csproj", "{1131AAB9-3EBD-4C0F-B3FE-067E45B51FC9}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "cafe.IntegrationTest", "test\cafe.IntegrationTest\cafe.IntegrationTest.xproj", "{A211CEE8-747D-4149-8CBA-385AA3F994BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafe.IntegrationTest", "test\cafe.IntegrationTest\cafe.IntegrationTest.csproj", "{A211CEE8-747D-4149-8CBA-385AA3F994BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

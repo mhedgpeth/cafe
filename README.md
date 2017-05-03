@@ -110,3 +110,7 @@ Here are some other ideas about what can be done with cafe from demos and discus
 * All agents listen to a central server that provides direction on what to do
 * When chef crashes, let's retry running it to avoid downtime
 * Register an event with the process to say shut down if Azure needs to reconfigure the box - needs more discussion
+
+# Development
+
+Cafe is built with .NET Core SDK 1.0.3 using cake.
