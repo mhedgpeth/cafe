@@ -1,4 +1,5 @@
-﻿using cafe.CommandLine;
+﻿using System.IO;
+using cafe.CommandLine;
 using cafe.CommandLine.LocalSystem;
 using cafe.CommandLine.Options;
 using DasMulli.Win32.ServiceUtils;
@@ -17,13 +18,18 @@ namespace cafe.Updater
             const string application = "cafe.Updater";
 
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
+
             IWin32Service ServiceFactory() => new CafeUpdaterWindowsService(new CafeInstaller(
                 new FileSystemCommandsBoundary(), processExecutor,
                 UpdaterSettings.Instance.CafeApplicationDirectory));
 
             var runner = new OptionGroup()
-                .WithDefaultOption(new ServerInteractiveOption(application, ServiceFactory))
-                .WithOption(new ServerWindowsServiceOption(application, ServiceFactory), "--run-as-service")
+                .WithGroup("server", serverGroup =>
+                {
+                    serverGroup.WithDefaultOption(new ServerInteractiveOption(application, ServiceFactory));
+                    serverGroup.WithOption(new ServerWindowsServiceOption(application, ServiceFactory),
+                        "--run-as-service");
+                })
                 .WithGroup("service",
                     serviceGroup =>
                     {
@@ -55,7 +61,7 @@ namespace cafe.Updater
         private static void ConfigureLogging()
         {
             const string file = "nlog.config";
-            LogManager.Configuration = new XmlLoggingConfiguration(file, false);
+            LogManager.Configuration = new XmlLoggingConfiguration(Path.GetFullPath(file), false);
             Logger.Info($"Logging set up based on {file}");
         }
     }

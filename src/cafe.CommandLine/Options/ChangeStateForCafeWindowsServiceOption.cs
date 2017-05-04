@@ -30,7 +30,7 @@ namespace cafe.CommandLine.Options
 
         protected override string ToDescription(Argument[] args)
         {
-            return "Starting Cafe Windows Service";
+            return $"Starting {_serviceName} Windows Service";
         }
 
         protected override Result RunCore(Argument[] args)

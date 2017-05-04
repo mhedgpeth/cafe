@@ -22,7 +22,7 @@ namespace cafe.CommandLine.Options
 
         protected override string ToDescription(Argument[] args)
         {
-            return "Registering Cafe to run as a Windows Service";
+            return $"Registering {_serviceName} to run as a Windows Service";
         }
 
         protected override Result RunCore(Argument[] args)

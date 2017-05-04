@@ -20,7 +20,7 @@ namespace cafe.CommandLine.Options
 
         protected override string ToDescription(Argument[] args)
         {
-            return "Determining Cafe Windows Service Status";
+            return $"Determining {_serviceName} Windows Service Status";
         }
 
         protected override Result RunCore(Argument[] args)
