@@ -136,6 +136,7 @@ Here's how it works:
   * `cafe.Updater` unzips the file to the parent directory (the `cafe` installation directory)
   * `cafe.Updater` starts the `cafe` service
 
+[Note: this is not implemented yet.]
 To update the `cafe.Updater` itself, you'll need to follow these steps:
 
 1. Run `cafe updater download 0.8.0`. This will be the `cafe` version and will stage the same exact file. In fact `cafe download 0.8.0` and `cafe updater 0.8.0` should do the same thing
