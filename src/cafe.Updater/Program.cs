@@ -4,6 +4,7 @@ using System.Reflection;
 using cafe.CommandLine;
 using cafe.CommandLine.LocalSystem;
 using cafe.CommandLine.Options;
+using cafe.Updater.Options;
 using DasMulli.Win32.ServiceUtils;
 using NLog;
 using NLog.Config;
@@ -43,7 +44,10 @@ namespace cafe.Updater
                                 fileSystem), application);
                         ServiceOptionInitializer.AddServiceOptionsTo(serviceGroup, serviceStatusWaiter, processExecutor,
                             fileSystem, application, "cafe Updater", "updates cafe");
-                    });
+                    })
+                .WithOption(new WaitForInstallOption(new FileSystemCommandsBoundary()), OptionValueSpecification.ForCommand("wait"),
+                    OptionValueSpecification.ForValue("installer:", "the name of the installer file that should be processed by the updater"));
+
 
             var arguments = runner.ParseArguments(args);
             if (arguments != null)

@@ -303,12 +303,14 @@ Task("BootstrapPolicy")
     });
 
 Task("RegisterService")
+    .IsDependentOn("CafeUpdaterRegister")
     .Does(() =>
     {
         RunCafe(@"service register");
     });
 
 Task("UnregisterService")
+    .IsDependentOn("CafeUpdaterUnregister")
     .Does(() =>
     {
         RunCafe(@"service unregister");
@@ -327,6 +329,7 @@ Task("ResumeChef")
     });
 
 Task("StopService")
+    .IsDependentOn("CafeUpdaterStopService")
     .Does(() =>
     {
         RunCafe(@"service stop");
@@ -334,6 +337,7 @@ Task("StopService")
 
 
 Task("StartService")
+    .IsDependentOn("CafeUpdaterStartService")
     .Does(() =>
     {
         RunCafe(@"service start");
@@ -383,13 +387,24 @@ Task("CafeUpdaterStopService")
         RunCafeUpdater("service stop");
     });
 
-Task("UpgradeToSameVersion")
+var windows10Release = "cafe-win10-x64-" + version;
+var windows10ReleaseZipFile = File(windows10Release + ".zip");
+
+Task("StageUpgrade")
     .Does(() =>
     {
-        var windows10Release = "cafe-win10-x64-" + version;
-        var zipFile = File(windows10Release + ".zip");
-        CopyFile(archiveDirectory + zipFile, stagingDirectory + Directory(windows10Release) + Directory("updater") + Directory("staging") + zipFile);
+        CopyFile(archiveDirectory + windows10ReleaseZipFile, stagingDirectory + Directory(windows10Release) + Directory("updater") + Directory("staging") + windows10ReleaseZipFile);
     });
+
+Task("WaitForUpgradeToFinish")
+    .Does(() => 
+    {
+        RunCafeUpdater("wait installer: {0}", windows10ReleaseZipFile);
+    });
+
+Task("UpgradeToSameVersion")
+    .IsDependentOn("StageUpgrade")
+    .IsDependentOn("WaitForUpgradeToFinish");
 
 
 public void RunCafe(string argument, params string[] formatParameters) 
@@ -439,6 +454,7 @@ Task("AcceptanceTest")
     .IsDependentOn("RunChef")
     .IsDependentOn("PauseChef")
     .IsDependentOn("ResumeChef")
+    .IsDependentOn("UpgradeToSameVersion")
     .IsDependentOn("StopService")
     .IsDependentOn("UnregisterService");
 

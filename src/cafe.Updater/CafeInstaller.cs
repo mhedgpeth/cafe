@@ -4,7 +4,6 @@ using System.IO.Compression;
 using cafe.CommandLine;
 using cafe.CommandLine.LocalSystem;
 using NLog;
-using NLog.Fluent;
 
 namespace cafe.Updater
 {
