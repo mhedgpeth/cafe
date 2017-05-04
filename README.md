@@ -110,3 +110,47 @@ Here are some other ideas about what can be done with cafe from demos and discus
 * All agents listen to a central server that provides direction on what to do
 * When chef crashes, let's retry running it to avoid downtime
 * Register an event with the process to say shut down if Azure needs to reconfigure the box - needs more discussion
+
+# Upgrading Cafe
+
+## The Simple Way
+
+To upgrade cafe, simply stop the service with `cafe service stop`, copy all binaries into your cafe installation, then start the service with `cafe service start`.
+
+## The Complicated Way
+
+The problem with this is that it's difficult to automate. If you try to automate this process from within cafe itself, it can't because it can't stop itself.
+
+Enter the `cafe.Updater`. This application is completely separate from `cafe` and so can update it without endangering the cafe application itself.
+
+Here's how it works:
+
+1. `cafe.Updater` is installed with `cafe` itself in a folder called `updater`.
+2. Run `cafe.Updater` as a service by running the commands `cafe.Updater service register` and `cafe.Updater service start`
+3. Download a particular update of `cafe` by running `cafe download 0.8.0`. This will stage your cafe zip file in your local `staging` folder
+4. Now run `cafe install 0.8.0`. This will:
+  * Copy the cafe zip install file to the `updater/staging` folder
+  * `cafe.Updater` will notice this file arrived and will start its update
+  * `cafe.Updater` will wait 30 seconds so the install can finish replying back to its client
+  * `cafe.Updater` stops the `cafe` service
+  * `cafe.Updater` unzips the file to the parent directory (the `cafe` installation directory)
+  * `cafe.Updater` starts the `cafe` service
+
+To update the `cafe.Updater` itself, you'll need to follow these steps:
+
+1. Run `cafe updater download 0.8.0`. This will be the `cafe` version and will stage the same exact file. In fact `cafe download 0.8.0` and `cafe updater 0.8.0` should do the same thing
+2. Run `cafe updater install 0.8.0`. This will:
+  * Unzip the cafe installation to a temporary location
+  * Stop the `cafe.Updater` service by running `cafe.Updater service stop`
+  * Copy all files from `updater` inside of the install package into the `updater` folder
+  * Start the `cafe.Updater` service by running `cafe.Updater service start`
+
+## The Easy Way
+
+[Note that this is currently in progress]
+
+The `cafe` [cookbook](https://github.com/mhedgpeth/cafe-cookbook) will handle all of this for you. In fact, this complexity exists so that you can manage cafe during a chef run while also avoiding updating yourself while you're running.
+
+# Development
+
+Cafe is built with .NET Core SDK 1.0.3 using cake.

@@ -1,8 +1,8 @@
 ﻿using System;
 using cafe.Chef;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
-using cafe.Server.Scheduling;
 using NodaTime;
 using StructureMap;
 
@@ -20,13 +20,11 @@ namespace cafe.Server
                 config.Scan(scanner =>
                 {
                     scanner.AssemblyContainingType(typeof(ChefJobRunner));
+                    scanner.AssemblyContainingType<TimerFactory>();
                     scanner.WithDefaultConventions();
                 });
 
                 config.For<ChefJobRunner>().Singleton();
-
-                config.For<InspecJobRunner>().Singleton();
-
 
                 config.For<RunChefJob>().Singleton();
                 config.For<ChefProduct>().Singleton();

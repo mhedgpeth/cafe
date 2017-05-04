@@ -1,7 +1,7 @@
 ﻿using System;
-using cafe.Server.Scheduling;
+using cafe.Server.Jobs;
 
-namespace cafe.Test.Server.Scheduling
+namespace cafe.Test.Server.Jobs
 {
     public class FakeActionExecutor : IActionExecutor
     {

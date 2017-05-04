@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Shared;
 using NLog;
@@ -17,29 +19,33 @@ namespace cafe.Chef
 
         private readonly IFileSystem _fileSystem;
         private readonly IFileSystemCommands _commands;
-        private readonly string _prefix;
         private readonly string _installLocation;
+        private readonly IDownloadUrlResolver _downloadUrlResolver;
         private readonly ProcessExecutor _processExecutor;
 
-        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands, string prefix, string installLocation)
+        public ProductInstaller(IFileSystem fileSystem, ProcessExecutor processExecutor, IFileSystemCommands commands,
+            string installLocation, IDownloadUrlResolver downloadUrlResolver)
         {
             _fileSystem = fileSystem;
             _processExecutor = processExecutor;
             _commands = commands;
-            _prefix = prefix;
             _installLocation = installLocation;
+            _downloadUrlResolver = downloadUrlResolver;
         }
 
         public Result Uninstall(string productCode)
         {
             Logger.Debug($"Uninstalling product {productCode}");
             var msiexec = FindFullPathToMsiExec();
-            return _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
+            var result = _processExecutor.ExecuteAndWaitForExit(msiexec, $"/qn /x {productCode}", LogInformation, LogError);
+            Logger.Debug($"Finished uninstalling {productCode} with result: {result}");
+            return result;
         }
 
         public Result Install(string version)
         {
-            var fullPathToStagedInstaller = Downloader.FullPathToStagedInstaller(version, _prefix);
+            Logger.Debug($"Installing version {version}");
+            var fullPathToStagedInstaller = _downloadUrlResolver.FullPathToStagedInstaller(version);
             if (!_commands.FileExists(fullPathToStagedInstaller))
             {
                 Logger.Warn(

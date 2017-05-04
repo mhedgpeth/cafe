@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using cafe.LocalSystem;
-using NuGet.Packaging;
 
 namespace cafe.Test.Chef
 {
@@ -8,7 +7,10 @@ namespace cafe.Test.Chef
     {
         public FakeInstalledProductsFinder(params ProductInstallationMetaData[] metaData)
         {
-            InstalledProducts.AddRange(metaData);
+            foreach (var element in metaData)
+            {
+                InstalledProducts.Add(element);
+            }
         }
 
         public IEnumerable<ProductInstallationMetaData> GetInstalledProducts()

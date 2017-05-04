@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 
 namespace cafe.Test.LocalSystem
@@ -33,6 +34,10 @@ namespace cafe.Test.LocalSystem
         public string ReadAllText(string filename)
         {
             return string.Empty;
+        }
+
+        public void DeleteDirectory(string directory)
+        {
         }
     }
 }

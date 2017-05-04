@@ -1,4 +1,6 @@
-﻿namespace cafe
+﻿using cafe.CommandLine;
+
+namespace cafe
 {
     public class ClientSettings
     {

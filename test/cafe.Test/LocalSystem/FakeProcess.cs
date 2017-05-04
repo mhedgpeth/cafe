@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 
 namespace cafe.Test.LocalSystem

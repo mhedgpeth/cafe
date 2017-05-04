@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using cafe.CommandLine;
+using FluentAssertions;
 using Xunit;
 
 namespace cafe.Test
@@ -25,12 +26,12 @@ namespace cafe.Test
         [Fact]
         public void LogConfigurationFile_ShouldBeServerForServerRunAsServiceArguments()
         {
-            AssertLogConfigurationFileIs(Program.ServerLoggingConfigurationFile, "server", "--run-as-service");
+            AssertLogConfigurationFileIs(LoggingInitializer.ServerLoggingConfigurationFile, "server", "--run-as-service");
         }
 
         private void AssertLogConfigurationFileIs(string expectedConfigFile, params string[] args)
         {
-            Program.LoggingConfigurationFileFor(args).Should().Be(expectedConfigFile);
+            LoggingInitializer.LoggingConfigurationFileFor(args).Should().Be(expectedConfigFile);
         }
     }
 }

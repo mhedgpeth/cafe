@@ -1,4 +1,5 @@
 ﻿using cafe.Chef;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using cafe.Server.Jobs;
 using cafe.Shared;
@@ -21,10 +22,12 @@ namespace cafe.Server.Controllers
             const string prefix = "chef-client";
             var product = "chef";
 
+            var chefDownloadUrlResolver = new ChefDownloadUrlResolver(product, prefix, "2012r2");
             return new ChefJobRunner(StructureMapResolver.Container.GetInstance<JobRunner>(),
-                InspecController.CreateDownloadJob(fileSystem, product, prefix, "2012r2"),
-                InspecController.CreateInstallJob(product, fileSystem, commands, prefix, InstalledProductsFinder.IsChefClient),
-            StructureMapResolver.Container.GetInstance<RunChefJob>());
+                InspecController.CreateDownloadJob(fileSystem, product, chefDownloadUrlResolver),
+                InspecController.CreateInstallJob(product, fileSystem, commands, InstalledProductsFinder.IsChefClient,
+                    chefDownloadUrlResolver),
+                StructureMapResolver.Container.GetInstance<RunChefJob>());
         }
 
 

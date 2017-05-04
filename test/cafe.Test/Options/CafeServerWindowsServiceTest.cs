@@ -2,7 +2,6 @@
 using cafe.Options.Server;
 using cafe.Server.Jobs;
 using cafe.Test.Server.Jobs;
-using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using NodaTime;
 using Xunit;

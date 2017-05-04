@@ -4,12 +4,14 @@ using System.Linq;
 using System.Reflection;
 using cafe.Client;
 using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
+using cafe.CommandLine.Options;
 using cafe.LocalSystem;
 using cafe.Options;
 using cafe.Options.Chef;
 using cafe.Options.Server;
-using cafe.Server.Scheduling;
 using cafe.Shared;
+using DasMulli.Win32.ServiceUtils;
 using NLog;
 using NLog.Config;
 
@@ -18,14 +20,12 @@ namespace cafe
     public class Program
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Program).FullName);
-        public const string ServerLoggingConfigurationFile = "nlog-server.config";
-        private const string ClientLoggingConfigurationFile = "nlog-client.config";
 
         public static int Main(string[] args)
         {
             Directory.SetCurrentDirectory(AssemblyDirectory);
-            ConfigureLogging(args);
-            Presenter.ShowApplicationHeading(Logger, args);
+            LoggingInitializer.ConfigureLogging(args);
+            Presenter.ShowApplicationHeading(Logger, Assembly.GetEntryAssembly().GetName().Version, args);
             var clientFactory = CreateClientFactory();
             var runner = CreateRunner(clientFactory);
             var arguments = runner.ParseArguments(args);
@@ -60,13 +60,6 @@ namespace cafe
             }
         }
 
-        private static void ConfigureLogging(params string[] args)
-        {
-            var file = LoggingConfigurationFileFor(args);
-            LogManager.Configuration = new XmlLoggingConfiguration(file, false);
-            Logger.Info($"Logging set up based on {file}");
-        }
-
         private static OptionGroup CreateRunner(IClientFactory clientFactory)
         {
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForJobServer,
@@ -78,7 +71,7 @@ namespace cafe
             var fileSystem = new FileSystem(environment, fileSystemCommands);
             var serviceStatusWaiter = new ServiceStatusWaiter("waiting for service status",
                 new AutoResetEventBoundary(), new TimerFactory(),
-                new ServiceStatusProvider(processExecutor, fileSystem));
+                new ServiceStatusProvider(processExecutor, fileSystem), CafeServerWindowsServiceOptions.ServiceName);
             // all options available
 
             var root = CreateRootGroup(clientFactory, schedulerWaiter, fileSystemCommands, processExecutor, fileSystem,
@@ -147,40 +140,26 @@ namespace cafe
                 })
                 .WithGroup("inspec", inspecGroup =>
                 {
-                    const string inspecProduct = "InSpec";
-                    inspecGroup.WithOption(new ShowInSpecStatusOption(clientFactory.RestClientForInspecServer),
-                        OptionValueSpecification.ForCommand("status"), OnNode());
-                    inspecGroup.WithOption(
-                        new InstallOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
-                            clientFactory.RestClientForInspecServer, schedulerWaiter),
-                        CreateInstallVersionSpecifications());
-                    inspecGroup.WithOption(
-                        new DownloadProductOption<IProductServer<ProductStatus>, ProductStatus>(inspecProduct,
-                            clientFactory.RestClientForInspecServer, schedulerWaiter),
-                        CreateDownloadVersionSpecifications());
-                    inspecGroup.WithOption(
-                        new CheckProductVersionOption("inspec", clientFactory.RestClientForInspecServer),
-                        OptionValueSpecification.ForCommand("version?"),
-                        OptionValueSpecification.ForVersion(), OnNode());
+                    const string inspecProduct = "inspec";
+                    Func<IProductServer<ProductStatus>> productServerFactory = clientFactory.RestClientForInspecServer;
+                    AddProductOptionsTo(inspecGroup, inspecProduct, productServerFactory, schedulerWaiter);
                 })
                 .WithGroup("server", serverGroup =>
                 {
-                    serverGroup.WithDefaultOption(new ServerInteractiveOption());
-                    serverGroup.WithOption(new ServerWindowsServiceOption(), "--run-as-service");
+                    const string application = "cafe";
+                    Func<IWin32Service> serviceCreator = () => new CafeServerWindowsService();
+                    serverGroup.WithDefaultOption(new ServerInteractiveOption(application, serviceCreator));
+                    serverGroup.WithOption(new ServerWindowsServiceOption(application, serviceCreator),
+                        "--run-as-service");
                 })
-                .WithGroup("service", serviceGroup =>
-                {
-                    serviceGroup.WithOption(new RegisterServerWindowsServiceOption(), "register");
-                    serviceGroup.WithOption(new UnregisterServerWindowsServiceOption(), "unregister");
-                    serviceGroup.WithOption(ChangeStateForCafeWindowsServiceOption.StartCafeWindowsServiceOption(
-                        processExecutor, fileSystem,
-                        serviceStatusWaiter), "start");
-                    serviceGroup.WithOption(ChangeStateForCafeWindowsServiceOption.StopCafeWindowsServiceOption(
-                        processExecutor, fileSystem,
-                        serviceStatusWaiter), "stop");
-                    serviceGroup.WithOption(new CafeWindowsServiceStatusOption(processExecutor, fileSystem),
-                        "status");
-                })
+                .WithGroup("service",
+                    serviceGroup =>
+                    {
+                        ServiceOptionInitializer.AddServiceOptionsTo(serviceGroup, serviceStatusWaiter, processExecutor,
+                            fileSystem, CafeServerWindowsServiceOptions.ServiceName,
+                            CafeServerWindowsServiceOptions.ServiceDisplayName,
+                            CafeServerWindowsServiceOptions.ServiceDescription);
+                    })
                 .WithGroup("job", statusGroup =>
                 {
                     var statusOption = new StatusOption(clientFactory.RestClientForJobServer);
@@ -193,11 +172,39 @@ namespace cafe
                         OnNode());
                 })
                 .WithOption(new InitOption(AssemblyDirectory, environment), "init");
+            AddProductOptionsTo(root, "cafe", clientFactory.RestClientForCafeProductServer, schedulerWaiter);
+
             var helpOption = new HelpOption(root);
             root.WithOption(helpOption, "help");
             root.WithDefaultOption(helpOption);
 
             return root;
+        }
+
+
+        private static void AddProductOptionsTo(OptionGroup productGroup, string productName,
+            Func<IProductServer<ProductStatus>> productServerFactory, ISchedulerWaiter schedulerWaiter)
+        {
+            productGroup.WithOption(new ShowInSpecStatusOption(productServerFactory),
+                OptionValueSpecification.ForCommand("status"), OnNode());
+            productGroup.WithOption(
+                new InstallOption<IProductServer<ProductStatus>, ProductStatus>(productName,
+                    productServerFactory, schedulerWaiter),
+                CreateInstallVersionSpecifications());
+            productGroup.WithOption(
+                new DownloadProductOption<IProductServer<ProductStatus>, ProductStatus>(productName,
+                    productServerFactory, schedulerWaiter),
+                CreateDownloadVersionSpecifications());
+            AddCheckProductVersionTo(productGroup, productName, productServerFactory);
+        }
+
+        private static void AddCheckProductVersionTo(OptionGroup inspecGroup, string productName,
+            Func<IProductServer<ProductStatus>> restClient)
+        {
+            inspecGroup.WithOption(
+                new CheckProductVersionOption(productName, restClient),
+                OptionValueSpecification.ForCommand("version?"),
+                OptionValueSpecification.ForVersion(), OnNode());
         }
 
 
@@ -224,11 +231,6 @@ namespace cafe
                 OptionValueSpecification.ForVersion(),
                 OnNode()
             };
-        }
-
-        public static string LoggingConfigurationFileFor(string[] args)
-        {
-            return args.FirstOrDefault() == "server" ? ServerLoggingConfigurationFile : ClientLoggingConfigurationFile;
         }
     }
 }

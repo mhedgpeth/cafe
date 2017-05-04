@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <VersionPrefix>0.8.0</VersionPrefix>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <AssemblyName>cafe.Updater</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>cafe.Updater</PackageId>
+    <RuntimeIdentifiers>win10-x64;win7-x64;win8-x64</RuntimeIdentifiers>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="nlog-client.config;nlog-server.config;updater.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cafe.CommandLine\cafe.CommandLine.csproj">
+      <Project>{2564c238-aad2-402a-9a18-b83fd36f3bf5}</Project>
+      <Name>cafe.CommandLine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Options" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DasMulli.Win32.ServiceUtils">
+      <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>5.0.0-beta07</Version>
+    </PackageReference>
+    <PackageReference Include="NodaTime">
+      <Version>2.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+</Project>

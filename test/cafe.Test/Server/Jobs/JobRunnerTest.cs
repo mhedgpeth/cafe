@@ -1,7 +1,6 @@
 ﻿using System;
+using cafe.CommandLine.LocalSystem;
 using cafe.Server.Jobs;
-using cafe.Server.Scheduling;
-using cafe.Test.Server.Scheduling;
 using FluentAssertions;
 using Xunit;
 

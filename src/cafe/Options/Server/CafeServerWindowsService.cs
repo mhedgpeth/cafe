@@ -1,8 +1,8 @@
 using System.IO;
 using cafe.CommandLine;
+using cafe.CommandLine.LocalSystem;
 using cafe.Server;
 using cafe.Server.Jobs;
-using cafe.Server.Scheduling;
 using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

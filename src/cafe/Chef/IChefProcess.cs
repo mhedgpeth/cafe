@@ -1,4 +1,5 @@
 using System;
+using cafe.CommandLine;
 using cafe.Shared;
 
 namespace cafe.Chef

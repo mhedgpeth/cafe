@@ -1,5 +1,6 @@
 {
     "ChefInterval": 0,
     "Port": 59320,
-    "InstallRoot": "C:"
+    "InstallRoot": "C:",
+    "UpdaterDirectory": "updater"
 }

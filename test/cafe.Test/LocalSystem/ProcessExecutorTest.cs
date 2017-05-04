@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using cafe.CommandLine.LocalSystem;
 using cafe.LocalSystem;
 using FluentAssertions;
 using Moq;

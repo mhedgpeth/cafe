@@ -1,10 +1,13 @@
-﻿namespace cafe
+﻿using cafe.CommandLine;
+
+namespace cafe
 {
     public class ServerSettings
     {
         public int ChefInterval { get; set; }
         public int Port { get; set; } = DefaultPort;
         public string InstallRoot { get; set; } = @"C:";
+        public string UpdaterDirectory { get; set; } = "updater";
 
         public const int DefaultPort = 59320;
 

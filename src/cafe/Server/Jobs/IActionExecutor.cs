@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace cafe.Server.Scheduling
+namespace cafe.Server.Jobs
 {
     public interface IActionExecutor
     {

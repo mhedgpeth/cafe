@@ -1,9 +1,9 @@
 ﻿using System;
-using cafe.Server.Scheduling;
+using cafe.CommandLine.LocalSystem;
 using Moq;
 using NodaTime;
 
-namespace cafe.Test.Server.Scheduling
+namespace cafe.Test.Server.Jobs
 {
     public class FakeTimerFactory : ITimerFactory
     {

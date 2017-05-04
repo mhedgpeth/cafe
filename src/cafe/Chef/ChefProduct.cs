@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using cafe.CommandLine;
 using cafe.LocalSystem;
 using cafe.Shared;
 using NLog;

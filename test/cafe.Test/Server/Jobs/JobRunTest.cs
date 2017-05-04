@@ -1,7 +1,7 @@
 ﻿using System;
+using cafe.CommandLine;
 using cafe.Server.Jobs;
 using cafe.Shared;
-using cafe.Test.Server.Scheduling;
 using cafe.Test.Shared;
 using FluentAssertions;
 using NodaTime;

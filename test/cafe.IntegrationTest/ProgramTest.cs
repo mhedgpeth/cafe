@@ -1,12 +1,13 @@
 ﻿using cafe.Client;
 using cafe.CommandLine;
-using cafe.LocalSystem;
+using cafe.CommandLine.LocalSystem;
+using cafe.CommandLine.Options;
 using cafe.Options.Chef;
 using cafe.Options.Server;
 using cafe.Test.Chef;
 using cafe.Test.Client;
 using cafe.Test.LocalSystem;
-using cafe.Test.Server.Scheduling;
+using cafe.Test.Server.Jobs;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -38,7 +39,7 @@ namespace cafe.IntegrationTest
             var root = Program.CreateRootGroup(new Mock<IClientFactory>().Object, new Mock<ISchedulerWaiter>().Object,
                 new FakeFileSystemCommands(), processExecutor, fakeFileSystem,
                 new ServiceStatusWaiter("waiter", new FakeAutoResetEvent(), new FakeTimerFactory(),
-                    new ServiceStatusProvider(processExecutor, fakeFileSystem)), new FakeEnvironment());
+                    new ServiceStatusProvider(processExecutor, fakeFileSystem), "cafe"), new FakeEnvironment());
             return root;
         }
 
