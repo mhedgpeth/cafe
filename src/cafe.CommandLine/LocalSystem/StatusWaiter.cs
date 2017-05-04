@@ -7,7 +7,7 @@ namespace cafe.CommandLine.LocalSystem
 {
     public abstract class StatusWaiter<T>
     {
-        private static readonly Logger Logger = LogManager.GetLogger("cafe.Client.StatusWaiter");
+        private static readonly Logger Logger = LogManager.GetLogger("cafe.CommandLine.LocalSystem.StatusWaiter");
 
         private readonly string _taskDescription;
         private readonly IAutoResetEvent _autoResetEvent;
@@ -42,7 +42,7 @@ namespace cafe.CommandLine.LocalSystem
                 _currentStatus = RetrieveCurrentStatus();
                 if (IsCurrentStatusCompleted(_currentStatus))
                 {
-                    Log.Info($"Task {_taskDescription} has completed with status {_currentStatus} so moving forward");
+                    Logger.Info($"Task {_taskDescription} has completed with status {_currentStatus} so moving forward");
                     _autoResetEvent.Set();
                 }
             }

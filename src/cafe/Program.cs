@@ -20,13 +20,11 @@ namespace cafe
     public class Program
     {
         private static readonly Logger Logger = LogManager.GetLogger(typeof(Program).FullName);
-        public const string ServerLoggingConfigurationFile = "nlog-server.config";
-        private const string ClientLoggingConfigurationFile = "nlog-client.config";
 
         public static int Main(string[] args)
         {
             Directory.SetCurrentDirectory(AssemblyDirectory);
-            ConfigureLogging(args);
+            LoggingInitializer.ConfigureLogging(args);
             Presenter.ShowApplicationHeading(Logger, Assembly.GetEntryAssembly().GetName().Version, args);
             var clientFactory = CreateClientFactory();
             var runner = CreateRunner(clientFactory);
@@ -60,13 +58,6 @@ namespace cafe
                 string path = Uri.UnescapeDataString(uri.Path);
                 return Path.GetDirectoryName(path);
             }
-        }
-
-        private static void ConfigureLogging(params string[] args)
-        {
-            var file = LoggingConfigurationFileFor(args);
-            LogManager.Configuration = new XmlLoggingConfiguration(file, false);
-            Logger.Info($"Logging set up based on {file}");
         }
 
         private static OptionGroup CreateRunner(IClientFactory clientFactory)
@@ -240,11 +231,6 @@ namespace cafe
                 OptionValueSpecification.ForVersion(),
                 OnNode()
             };
-        }
-
-        public static string LoggingConfigurationFileFor(string[] args)
-        {
-            return args.FirstOrDefault() == "server" ? ServerLoggingConfigurationFile : ClientLoggingConfigurationFile;
         }
     }
 }

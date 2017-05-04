@@ -104,6 +104,8 @@ Task("Stage")
         StageRelease("win8");
     });
 
+var windows10StagingDirectory = stagingDirectory + Directory("cafe-win10-x64-" + version);
+
 public void StageRelease(string runtimeIdentifier) 
 {
     CreateDirectory(stagingDirectory);
@@ -360,25 +362,54 @@ Task("InstallCafeOldVersion")
 Task("CafeUpdaterRegister")
     .Does(() =>
     {
-
+        RunCafeUpdater("service register");
     });
+
+Task("CafeUpdaterUnregister")
+    .Does(() =>
+    {
+        RunCafeUpdater("service unregister");
+    });
+
+Task("CafeUpdaterStartService")
+    .Does(() =>
+    {
+        RunCafeUpdater("service start");
+    });
+
+Task("CafeUpdaterStopService")
+    .Does(() =>
+    {
+        RunCafeUpdater("service stop");
+    });
+
+Task("UpgradeToSameVersion")
+    .Does(() =>
+    {
+        var windows10Release = "cafe-win10-x64-" + version;
+        var zipFile = File(windows10Release + ".zip");
+        CopyFile(archiveDirectory + zipFile, stagingDirectory + Directory(windows10Release) + Directory("updater") + Directory("staging") + zipFile);
+    });
+
 
 public void RunCafe(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
-  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(cafeWindowsPublishDirectory);
-  Information("Running cafe.exe from {0}", cafeWindowsPublishDirectory);
-  var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.exe"), processSettings);
+  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(windows10StagingDirectory);
+  Information("Running cafe.exe from {0}", windows10StagingDirectory);
+  var exitCode = StartProcess(windows10StagingDirectory + File("cafe.exe"), processSettings);
   Information("Exit code: {0}", exitCode);
   if (exitCode < 0) throw new Exception(string.Format("cafe.exe exited with code: {0}", exitCode));
 }
 
+var windows10UpdaterStagingDirectory = windows10StagingDirectory + Directory("updater");
+
 public void RunCafeUpdater(string argument, params string[] formatParameters) 
 {
   var arguments = string.Format(argument, formatParameters);
-  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(cafeWindowsPublishDirectory);
-  Information("Running cafe.Updater.exe from {0}", cafeWindowsPublishDirectory);
-  var exitCode = StartProcess(cafeWindowsPublishDirectory + File("cafe.Updater.exe"), processSettings);
+  var processSettings =  new ProcessSettings { Arguments = arguments}.UseWorkingDirectory(windows10UpdaterStagingDirectory);
+  Information("Running cafe.Updater.exe from {0}", windows10UpdaterStagingDirectory);
+  var exitCode = StartProcess(windows10UpdaterStagingDirectory + File("cafe.Updater.exe"), processSettings);
   Information("Exit code: {0}", exitCode);
   if (exitCode < 0) throw new Exception(string.Format("cafe.Updater.exe exited with code: {0}", exitCode));
 }

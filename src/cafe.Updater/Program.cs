@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using cafe.CommandLine;
 using cafe.CommandLine.LocalSystem;
 using cafe.CommandLine.Options;
@@ -14,7 +16,8 @@ namespace cafe.Updater
 
         public static int Main(string[] args)
         {
-            ConfigureLogging();
+            Directory.SetCurrentDirectory(AssemblyDirectory);
+            LoggingInitializer.ConfigureLogging(args);
             const string application = "cafe.Updater";
 
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
@@ -58,11 +61,16 @@ namespace cafe.Updater
             }
         }
 
-        private static void ConfigureLogging()
+        private static string AssemblyDirectory
         {
-            const string file = "nlog.config";
-            LogManager.Configuration = new XmlLoggingConfiguration(Path.GetFullPath(file), false);
-            Logger.Info($"Logging set up based on {file}");
+            get
+            {
+                string codeBase = Assembly.GetEntryAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
         }
+
     }
 }

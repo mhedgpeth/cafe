@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using cafe.CommandLine;
 using cafe.CommandLine.LocalSystem;
@@ -22,26 +23,60 @@ namespace cafe.Updater
             _cafeApplicationDirectory = cafeApplicationDirectory;
         }
 
+        private const string StagingExtractedDirectory = "staging-extracted";
+
         public Result InstallOrUpgrade(string file)
         {
-            var stopResult = DoCafeService("stop");
-            if (stopResult.IsFailed)
+            try
             {
-                Log.Error("Could not stop cafe service, so upgrade failed");
-                return stopResult;
+                Logger.Info($"Deleting extracted directory {StagingExtractedDirectory} if it exists");
+                if (_commands.DirectoryExists(StagingExtractedDirectory))
+                {
+                    _commands.DeleteDirectory(StagingExtractedDirectory);
+                }
+                Logger.Debug($"Creating staging extracted directory {StagingExtractedDirectory}");
+                _commands.CreateDirectory(StagingExtractedDirectory);
+
+                Logger.Info("Stopping cafe service so an upgrade can occur.");
+                var stopResult = DoCafeService("stop");
+                if (stopResult.IsFailed)
+                {
+                    Logger.Error("Could not stop cafe service, so upgrade failed");
+                    return stopResult;
+                }
+
+                // extract to staged directory
+                Logger.Info($"Extracting cafe installaction at {file} to {StagingExtractedDirectory}");
+                ZipFile.ExtractToDirectory(file, StagingExtractedDirectory);
+
+                Logger.Info($"Copying all files to cafe install directory at {_cafeApplicationDirectory}");
+                foreach (var applicationFile in Directory.GetFiles(StagingExtractedDirectory, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    if (applicationFile.Contains("server.json"))
+                    {
+                        Logger.Debug("Not copying server.json");
+                        continue;
+                    }
+                    Logger.Info($"Copying {applicationFile} to cafe application directory at {_cafeApplicationDirectory}");
+                    File.Copy(applicationFile, Path.Combine(_cafeApplicationDirectory, Path.GetFileName(applicationFile)), true);
+                }
+
+                Logger.Info("Finished copying files. Starting service");
+                var startResult = DoCafeService("start");
+                if (startResult.IsFailed)
+                {
+                    Logger.Error("Could not restart cafe service, so upgrade failed");
+                    return startResult;
+                }
+                Logger.Info("Finished starting service. Upgrade was successful.");
+                return Result.Successful();
+
             }
-
-            // extract to staged directory
-            Logger.Info($"Extracting cafe installaction at {file} to {_cafeApplicationDirectory}");
-            ZipFile.ExtractToDirectory(file, _cafeApplicationDirectory);
-
-            var startResult = DoCafeService("start");
-            if (startResult.IsFailed)
+            catch (Exception e)
             {
-                Log.Error("Could not restart cafe service, so upgrade failed");
-                return startResult;
+                Logger.Error($"Unexpected exception while upgrading {file}: {e}");
+                return Result.Failure("Unexpected exception while upgrading");
             }
-            return Result.Successful();
         }
 
         private void StopCafeService()
@@ -58,13 +93,18 @@ namespace cafe.Updater
 
         private static void LogError(object sender, string e)
         {
-            Logger.Info("Starting cafe service");
-            Logger.Error(e);
+            if (!string.IsNullOrEmpty(e))
+            {
+                Logger.Error(e);
+            }
         }
 
         private static void LogInformation(object sender, string e)
         {
-            Logger.Info(e);
+            if (!string.IsNullOrEmpty(e))
+            {
+                Logger.Info(e);
+            }
         }
     }
 }
