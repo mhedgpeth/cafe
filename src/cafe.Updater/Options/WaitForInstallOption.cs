@@ -41,7 +41,7 @@ namespace cafe.Updater.Options
                 else
                 {
                     Presenter.ShowMessage("Installer has not yet been processed, Waiting for 5 seconds.", Logger);
-                    Thread.Sleep(TimeSpan.FromSeconds(5)));
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
                 }
             }
             return installComplete
