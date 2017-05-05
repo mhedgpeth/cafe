@@ -14,10 +14,10 @@ namespace cafe.Server.Controllers
         private readonly JobRunner _jobRunner = StructureMapResolver.Container.GetInstance<JobRunner>();
 
         [HttpGet("{id}")]
-        public JobRunStatus GetJobRunStatus(Guid id)
+        public JobRunStatus GetJobRunStatus(Guid id, int previousIndex)
         {
             Logger.Info($"Getting status of task with id {id}");
-            var status = _jobRunner.FindStatusById(id);
+            var status = _jobRunner.FindStatusById(id, previousIndex);
             Logger.Debug($"Status for task {id} is {status}");
             return status;
         }

@@ -19,21 +19,21 @@ namespace cafe.Client
         private IJobServer _jobServer;
         private JobRunStatus _originalStatus;
         private readonly Func<IJobServer> _jobServerProvider;
-        private readonly JobRunStatusPresenter _jobRunStatusPresenter;
+        private readonly IMessagePresenter _messagePresenter;
+        private int _previousMessageIndex = 0;
 
 
         public SchedulerWaiter(Func<IJobServer> jobServerProvider, IAutoResetEvent autoResetEvent,
-            ITimerFactory timerFactory, JobRunStatusPresenter jobRunStatusPresenter)
+            ITimerFactory timerFactory, IMessagePresenter messagePresenter)
             : base("status", autoResetEvent, timerFactory)
         {
             _jobServerProvider = jobServerProvider;
-            _jobRunStatusPresenter = jobRunStatusPresenter;
+            _messagePresenter = messagePresenter;
         }
 
         public JobRunStatus WaitForTaskToComplete(JobRunStatus status)
         {
             _originalStatus = status;
-            _jobRunStatusPresenter.BeginPresenting(status);
             return Wait();
         }
 
@@ -53,10 +53,16 @@ namespace cafe.Client
             JobRunStatus currentStatus;
             try
             {
-                Log.Debug($"Fetching current status for task {taskId}");
-                currentStatus = _jobServer.GetJobRunStatus(taskId).Result;
-                Log.Debug($"Task {taskId} has status of {currentStatus}");
-                _jobRunStatusPresenter.PresentAnyChangesTo(currentStatus);
+                Logger.Debug($"Fetching current status for task {taskId} with previous index of {_previousMessageIndex}");
+                currentStatus = _jobServer.GetJobRunStatus(taskId, _previousMessageIndex).Result;
+                _previousMessageIndex = currentStatus.CurrentMessageIndex;
+                Logger.Debug($"Task {taskId} has status of {currentStatus}");
+                Logger.Debug($"Showing all {currentStatus.Messages.Length} messages");
+                foreach (var statusMessage in currentStatus.Messages)
+                {
+                    Logger.Debug($"Message: {statusMessage}");
+                    _messagePresenter.ShowMessage(statusMessage);
+                }
             }
             catch (Exception ex)
             {

@@ -64,7 +64,7 @@ namespace cafe
         {
             var schedulerWaiter = new SchedulerWaiter(clientFactory.RestClientForJobServer,
                 new AutoResetEventBoundary(), new TimerFactory(),
-                new JobRunStatusPresenter(new PresenterMessagePresenter()));
+                new PresenterMessagePresenter());
             var processExecutor = new ProcessExecutor(() => new ProcessBoundary());
             var environment = new EnvironmentBoundary();
             var fileSystemCommands = new FileSystemCommandsBoundary();

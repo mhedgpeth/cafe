@@ -71,7 +71,7 @@ namespace cafe.Test.Server.Jobs
             var jobRun = new FakeJobRun();
             runner.Enqueue(jobRun);
 
-            var status = runner.FindStatusById(jobRun.Id);
+            var status = runner.FindStatusById(jobRun.Id, 0);
 
             status.Id.Should().Be(jobRun.Id);
         }
@@ -85,7 +85,7 @@ namespace cafe.Test.Server.Jobs
             runner.ProcessQueue();
             runner.ProcessQueue();
 
-            var status = runner.FindStatusById(task.Id);
+            var status = runner.FindStatusById(task.Id, 0);
 
             status.Id.Should().Be(task.Id);
         }
@@ -94,7 +94,7 @@ namespace cafe.Test.Server.Jobs
         public void FindStatusById_ShouldReturnNullIfTaskNotFound()
         {
             CreateJobRunner()
-                .FindStatusById(Guid.NewGuid())
+                .FindStatusById(Guid.NewGuid(), 0)
                 .Should()
                 .BeNull("because a task with that id hasn't yet been scheduled");
         }

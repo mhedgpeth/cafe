@@ -9,6 +9,6 @@ namespace cafe.Server.Jobs
         bool IsFinishedRunning { get; }
         bool IsRunning { get; }
         Guid Id { get; }
-        JobRunStatus ToStatus();
+        JobRunStatus ToStatus(int? previousIndex = null);
     }
 }

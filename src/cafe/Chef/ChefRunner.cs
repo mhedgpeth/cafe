@@ -1,11 +1,14 @@
 ﻿using System;
 using cafe.CommandLine;
 using cafe.Shared;
+using NLog;
 
 namespace cafe.Chef
 {
     public class ChefRunner : IChefRunner
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(ChefRunner).FullName);
+
         private readonly Func<IChefProcess> _processCreator;
 
         public ChefRunner(Func<IChefProcess> processCreator)
@@ -25,6 +28,7 @@ namespace cafe.Chef
             var process = _processCreator();
             process.LogEntryReceived += (sender, entry) =>
             {
+                Logger.Debug($"Received log message from chef run: {entry.Entry}");
                 presenter.ShowMessage(entry.Entry);
                 entry.Log();
             };

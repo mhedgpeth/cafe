@@ -27,7 +27,7 @@ namespace cafe.Options
             bool success = Guid.TryParse(idArgument, out id);
             if (success)
             {
-                var status = server.GetJobRunStatus(id).Result;
+                var status = server.GetJobRunStatus(id, 0).Result;
                 Presenter.ShowMessage($"Job Run status for {status.Description} ({id}):", Logger);
                 Presenter.ShowMessage($"State: {status.State}", Logger);
                 Presenter.ShowMessage($"Started: {status.StartTime?.ToLocalTime()}", Logger);

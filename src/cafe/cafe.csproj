@@ -57,7 +57,4 @@
       <Name>cafe.CommandLine</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CommandLine" />
-  </ItemGroup>
 </Project>
