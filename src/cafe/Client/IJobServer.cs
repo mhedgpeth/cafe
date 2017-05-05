@@ -11,6 +11,6 @@ namespace cafe.Client
         Task<JobRunnerStatus> GetStatus();
 
         [Get("{id}")]
-        Task<JobRunStatus> GetJobRunStatus([Path]Guid id);
+        Task<JobRunStatus> GetJobRunStatus([Path]Guid id, int previousIndex);
     }
 }

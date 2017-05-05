@@ -15,13 +15,17 @@ namespace cafe.Shared
         public string CurrentMessage { get; set; }
         public bool IsNotRun => State == JobRunState.NotRun;
         public bool IsRunning => State == JobRunState.Running;
+        public int CurrentMessageIndex { get; set; }
+        public int? PreviousMessageIndex { get; set; }
+        public string[] Messages { get; set; }
 
         public TimeSpan? Duration
         {
             get
             {
                 if (StartTime.HasValue && FinishTime.HasValue) return FinishTime.Value.Subtract(StartTime.Value);
-                if (StartTime.HasValue) return SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Subtract(StartTime.Value);
+                if (StartTime.HasValue)
+                    return SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Subtract(StartTime.Value);
                 return null;
             }
         }
@@ -61,22 +65,28 @@ namespace cafe.Shared
                 StartTime = StartTime,
                 FinishTime = FinishTime,
                 Result = Result,
-                CurrentMessage = CurrentMessage
+                CurrentMessage = CurrentMessage,
+                CurrentMessageIndex = CurrentMessageIndex,
+                PreviousMessageIndex = PreviousMessageIndex,
+                Messages = Messages
             };
         }
+
 
         protected bool Equals(JobRunStatus other)
         {
             return Id.Equals(other.Id) && string.Equals(Description, other.Description) && State == other.State &&
                    StartTime.Equals(other.StartTime) && FinishTime.Equals(other.FinishTime) &&
-                   Equals(Result, other.Result) && string.Equals(CurrentMessage, other.CurrentMessage);
+                   Equals(Result, other.Result) && string.Equals(CurrentMessage, other.CurrentMessage) &&
+                   CurrentMessageIndex == other.CurrentMessageIndex &&
+                   PreviousMessageIndex == other.PreviousMessageIndex && Equals(Messages, other.Messages);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((JobRunStatus) obj);
         }
 
@@ -91,6 +101,8 @@ namespace cafe.Shared
                 hashCode = (hashCode * 397) ^ FinishTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Result != null ? Result.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (CurrentMessage != null ? CurrentMessage.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ CurrentMessageIndex;
+                hashCode = (hashCode * 397) ^ (Messages != null ? Messages.GetHashCode() : 0);
                 return hashCode;
             }
         }

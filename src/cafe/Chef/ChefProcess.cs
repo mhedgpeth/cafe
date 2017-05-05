@@ -56,6 +56,7 @@ namespace cafe.Chef
         {
             if (!string.IsNullOrEmpty(e))
             {
+                Logger.Debug($"Chef error: {e}");
                 OnLogEntryReceived(ChefLogEntry.CriticalError(e));
             }
         }
@@ -66,6 +67,7 @@ namespace cafe.Chef
             {
                 try
                 {
+                    Logger.Debug($"Chef info: {e}");
                     OnLogEntryReceived(ChefLogEntry.Parse(e));
                 }
                 catch (Exception exception)

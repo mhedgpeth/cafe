@@ -182,5 +182,22 @@ namespace cafe.Test.Server.Jobs
             jobRun.Result.Should()
                 .BeSameAs(result, $"because the underlying action result was {result}");
         }
+
+        [Fact]
+        public void ToStatus_ShouldProvidePreviousMessages()
+        {
+            var jobRun = CreateJobRun();
+            jobRun.ShowMessage("first");
+            jobRun.ShowMessage("second");
+            jobRun.ShowMessage("third");
+            jobRun.ShowMessage("fourth");
+
+            var status = jobRun.ToStatus(1);
+            status.PreviousMessageIndex.Should().Be(1);
+            status.CurrentMessageIndex.Should().Be(3);
+            status.Messages.Length.Should().Be(2);
+            status.Messages[0].Should().Be("third");
+            status.Messages[1].Should().Be("fourth");
+        }
     }
 }

@@ -22,7 +22,8 @@ namespace cafe.Test.Server.Jobs
 
         public JobRunState CurrentState { get; set; }
         public Guid Id { get; } = Guid.NewGuid();
-        public JobRunStatus ToStatus()
+
+        public JobRunStatus ToStatus(int? previousIndex = null)
         {
             return new JobRunStatus() { Id = Id};
         }

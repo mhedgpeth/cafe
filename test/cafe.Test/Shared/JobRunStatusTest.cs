@@ -128,5 +128,23 @@ namespace cafe.Test.Shared
             status.Duration.HasValue.Should().BeTrue("because the task has finished");
             status.Duration.Value.TotalSeconds.Should().Be(120);
         }
+
+        [Fact]
+        public void Copy_ShouldCopyCurrentMessageIndex()
+        {
+            var status = JobRunStatus.Create("with message index");
+            status.CurrentMessage = "great times";
+            status.CurrentMessageIndex = 22;
+            status.PreviousMessageIndex = 20;
+            status.Messages = new[] {"good times", "great times"};
+
+            var copy = status.Copy();
+
+            copy.CurrentMessageIndex.Should().Be(22);
+            copy.PreviousMessageIndex.Should().Be(20);
+            copy.Messages.Length.Should().Be(2);
+            copy.Messages[0].Should().Be("good times");
+            copy.Messages[1].Should().Be("great times");
+        }
     }
 }

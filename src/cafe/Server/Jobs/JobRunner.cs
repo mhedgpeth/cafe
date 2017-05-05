@@ -61,14 +61,14 @@ namespace cafe.Server.Jobs
             ProcessQueue();
         }
 
-        public JobRunStatus FindStatusById(Guid id)
+        public JobRunStatus FindStatusById(Guid id, int previousIndex)
         {
             Logger.Debug(
                 $"Searching for task {id} within {_queuedRuns.Count} queued tasks and {_finishedTasks.Count} finished tasks");
             var task = _queuedRuns.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                var queuedStatus = task.ToStatus();
+                var queuedStatus = task.ToStatus(previousIndex);
                 Logger.Debug($"Found active status {queuedStatus} for id {id}");
                 return queuedStatus;
             }
