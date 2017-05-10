@@ -1,12 +1,15 @@
 ﻿using System;
 using cafe.Chef;
 using cafe.Shared;
+using NLog;
 using NodaTime;
 
 namespace cafe.Server.Jobs
 {
     public class RunChefJob : Job
     {
+        private static readonly Logger Logger = LogManager.GetLogger(typeof(RunChefJob).FullName);
+
         private readonly IChefRunner _chefRunner;
         private readonly IClock _clock;
         private RunPolicy _runPolicy;
@@ -23,6 +26,12 @@ namespace cafe.Server.Jobs
             get { return _runPolicy; }
             set
             {
+                if (_runPolicy != null)
+                {
+                    Logger.Debug($"Removing policy {_runPolicy} from Chef");
+                    _runPolicy.Due -= ProcessPolicyDue;
+                }
+                Logger.Debug($"Adding policy {value} for Chef");
                 value.Due += ProcessPolicyDue;
                 _runPolicy = value;
             }
