@@ -129,6 +129,22 @@ namespace cafe.Test.Server.Jobs
             wasRunReady.Should().BeTrue("because the previous run already ran, we're ready to run again");
         }
 
+        [Fact]
+        public void Due_ShouldNotFireWhenAnotherPolicyIsUsed()
+        {
+            var policy = new FakeRunPolicy();
+            var runChefJob = CreateRunChefJob(runPolicy: policy);
+
+            bool wasRunReady = false;
+            runChefJob.RunReady += (sender, run) => wasRunReady = true;
+
+            runChefJob.RunPolicy = new FakeRunPolicy();
+
+            policy.FireDue();
+
+            wasRunReady.Should().BeFalse("because a different policy is in place now");
+        }
+
 
     }
 }

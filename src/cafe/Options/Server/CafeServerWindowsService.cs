@@ -45,11 +45,32 @@ namespace cafe.Options.Server
                     }
                 });
 
+            Initialize();
+
+            ReactToChangesToServerConfiguration();
+
+            _webHost.Start();
+        }
+
+        private static void ReactToChangesToServerConfiguration()
+        {
+            FileSystemWatcher watcher = new FileSystemWatcher(".") {Filter = "server.json"};
+            watcher.Changed += OnServerConfigurationChanged;
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private static void OnServerConfigurationChanged(object sender, FileSystemEventArgs args)
+        {
+            Presenter.ShowMessage("Server configuration changed, so resetting Chef Interval", Logger);
+            ServerSettings.Reload();
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
             Initialize(StructureMapResolver.Container.GetInstance<RunChefJob>(), ServerSettings.Instance.ChefInterval,
                 StructureMapResolver.Container.GetInstance<ITimerFactory>(),
                 StructureMapResolver.Container.GetInstance<IClock>());
-
-            _webHost.Start();
         }
 
         public static void Initialize(RunChefJob runChefJob, int chefIntervalInSeconds, ITimerFactory timerFactory,
