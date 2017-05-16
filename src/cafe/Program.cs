@@ -126,7 +126,7 @@ namespace cafe
                             schedulerWaiter);
                     chefGroup.WithOption(installChefOption, CreateInstallVersionSpecifications());
                     chefGroup.WithOption(installChefOption, OptionValueSpecification.ForCommand("upgrade"),
-                        OptionValueSpecification.ForVersion(), OnNode());
+                        OptionValueSpecification.ForVersion(), OnNode(), ReturnImmediatelyOrDelayed());
                     chefGroup.WithOption(
                         ChangeChefRunningStatusOption.CreatePauseChefOption(restClientForChefServerFactory),
                         OptionValueSpecification.ForCommand("pause"), OnNode());
@@ -208,6 +208,11 @@ namespace cafe
         }
 
 
+        private static OptionValueSpecification ReturnImmediatelyOrDelayed()
+        {
+            return OptionValueSpecification.ForOptionalValue("return:", "immediately or afterFinished (default)");
+        }
+
         private static OptionValueSpecification OnNode()
         {
             return OptionValueSpecification.ForOptionalValue("on:", "node");
@@ -229,7 +234,8 @@ namespace cafe
             {
                 OptionValueSpecification.ForCommand("install"),
                 OptionValueSpecification.ForVersion(),
-                OnNode()
+                OnNode(),
+                ReturnImmediatelyOrDelayed()
             };
         }
     }

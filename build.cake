@@ -9,7 +9,7 @@ var target = Argument("target", "FullBuild");
 var configuration = Argument("configuration", "Debug");
 var buildNumber = Argument("buildNumber", "0");
 
-var version = "0.9.1." + buildNumber;
+var version = "0.9.2." + buildNumber;
 
 var cafeDirectory = Directory("./src/cafe");
 var cafeProject = cafeDirectory + File("cafe.csproj");
@@ -264,11 +264,19 @@ Task("ChefDownloadOldVersion")
         RunCafe("chef download {0}", oldChefVersion);
     });
 
+Task("ChefInstallOldVersionReturnImmediately")
+    .Does(() =>
+    {
+        RunCafe("chef install {0} return: immediately", oldChefVersion);
+    });
+
+
 Task("ChefInstallOldVersion")
     .Does(() =>
     {
         RunCafe("chef install {0}", oldChefVersion);
     });
+
 
 Task("ChefCheckOldVersion")
     .Does(() =>
@@ -440,6 +448,7 @@ Task("AcceptanceTest")
     .IsDependentOn("InspecCheckOldVersion")
     .IsDependentOn("ChefDownloadOldVersion")
     .IsDependentOn("ChefInstallOldVersion")
+    .IsDependentOn("ChefInstallOldVersionReturnImmediately")
     .IsDependentOn("ChefCheckOldVersion")
     .IsDependentOn("BootstrapPolicy")
     .IsDependentOn("ShowChefStatus")

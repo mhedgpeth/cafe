@@ -22,9 +22,17 @@ namespace cafe.Options.Chef
         protected sealed override Result RunCore(T client, Argument[] args)
         {
             var status = RunJobCore(client, args).Result;
-            var finalStatus = _schedulerWaiter.WaitForTaskToComplete(status);
-            Logger.Info($"Finished running {finalStatus.Description}");
-            return finalStatus.Result;
+            if (!args.HasArgumentLabeled("return:") || args.FindValueFromLabel("return:").Value != "immediately")
+            {
+                var finalStatus = _schedulerWaiter.WaitForTaskToComplete(status);
+                Logger.Info($"Finished running {finalStatus.Description}");
+                return finalStatus.Result;
+            }
+            else
+            {
+                Logger.Info("This job is configured not to wait for a response, so returning core status");
+                return status.Result;
+            }
         }
 
         protected abstract Task<JobRunStatus> RunJobCore(T productServer, Argument[] args);
