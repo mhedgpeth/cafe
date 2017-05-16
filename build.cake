@@ -267,7 +267,7 @@ Task("ChefDownloadOldVersion")
 Task("ChefInstallOldVersionReturnImmediately")
     .Does(() =>
     {
-        RunCafe("chef install {0} return: immediately", oldChefVersion);
+        RunCafe("chef install {0} on: localhost return: immediately", oldChefVersion);
     });
 
 

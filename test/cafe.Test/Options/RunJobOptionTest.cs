@@ -44,7 +44,7 @@ namespace cafe.Test.Options
         public JobRunStatus WaitForTaskToComplete(JobRunStatus status)
         {
             Waited = true;
-            return status;
+            return new JobRunStatus() { Result = Result.Successful() };
         }
 
         public bool Waited { get; set; }
@@ -70,7 +70,7 @@ namespace cafe.Test.Options
 
         public Task<JobRunStatus> RunChef()
         {
-            return Task<JobRunStatus>.FromResult(new JobRunStatus() { Result = Result.Successful() });
+            return Task<JobRunStatus>.FromResult(new JobRunStatus());
         }
 
         public Task<JobRunStatus> BootstrapChef(string config, string validator, string policyName, string policyGroup)

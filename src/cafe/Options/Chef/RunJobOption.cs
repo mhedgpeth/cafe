@@ -30,8 +30,8 @@ namespace cafe.Options.Chef
             }
             else
             {
-                Logger.Info("This job is configured not to wait for a response, so returning core status");
-                return status.Result;
+                Logger.Info("This job is configured not to wait for a response, so returning passed");
+                return status.Result != null ? status.Result : Result.Successful();
             }
         }
 
