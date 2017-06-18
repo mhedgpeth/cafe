@@ -13,6 +13,11 @@ namespace cafe.Test.Chef
             _installedProductsFinder = installedProductsFinder;
         }
 
+        public bool IsStaged(string version)
+        {
+            return IsStagedValue;
+        }
+
         public Result Uninstall(string productCode)
         {
             _installedProductsFinder.InstalledProducts.Clear();
@@ -30,5 +35,6 @@ namespace cafe.Test.Chef
         }
 
         public string VersionInstalled { get; private set; }
+        public bool IsStagedValue { get; set; } = true;
     }
 }

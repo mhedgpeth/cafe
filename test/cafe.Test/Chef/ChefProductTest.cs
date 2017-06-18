@@ -50,7 +50,13 @@ namespace cafe.Test.Chef
 
         private ChefProduct CreateChefProduct(FakeInstalledProductsFinder finder)
         {
-            return new ChefProduct("chef", finder, new FakeProductInstaller(finder), InstalledProductsFinder.IsChefClient);
+            var fakeProductInstaller = new FakeProductInstaller(finder);
+            return CreateChefProduct(finder, fakeProductInstaller);
+        }
+
+        private static ChefProduct CreateChefProduct(FakeInstalledProductsFinder finder, FakeProductInstaller fakeProductInstaller)
+        {
+            return new ChefProduct("chef", finder, fakeProductInstaller, InstalledProductsFinder.IsChefClient);
         }
 
         [Fact]
@@ -76,6 +82,19 @@ namespace cafe.Test.Chef
                 .Be(chefInstallationMetaData.Parent,
                     "because since the product is already installed, we should uninstall it");
             installer.VersionInstalled.Should().Be(versionInstalled);
+        }
+
+        [Fact]
+        public void InstallOrUpgrade_ShouldFailWhenNotStaged()
+        {
+            var finder = CreateProductsFinderWithChefInstalled();
+            var fakeProductInstaller = new FakeProductInstaller(finder);
+            fakeProductInstaller.IsStagedValue = false;
+            var product = CreateChefProduct(finder, fakeProductInstaller);
+
+            var result = product.InstallOrUpgrade("15.1.2", new FakeMessagePresenter());
+
+            result.IsFailed.Should().BeTrue("because the product isn't staged");
         }
     }
 }
