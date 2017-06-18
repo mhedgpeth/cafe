@@ -9,6 +9,7 @@ namespace cafe.Chef
 {
     public interface IProductInstaller
     {
+        bool IsStaged(string version);
         Result Uninstall(string productCode);
         Result Install(string version);
     }
@@ -42,11 +43,18 @@ namespace cafe.Chef
             return result;
         }
 
+
+        public bool IsStaged(string version)
+        {
+            var fullPathToStagedInstaller = StagedInstallerFor(version);
+            return _commands.FileExists(fullPathToStagedInstaller);
+        }
+        
         public Result Install(string version)
         {
             Logger.Debug($"Installing version {version}");
-            var fullPathToStagedInstaller = _downloadUrlResolver.FullPathToStagedInstaller(version);
-            if (!_commands.FileExists(fullPathToStagedInstaller))
+            var fullPathToStagedInstaller = StagedInstallerFor(version);
+            if (!IsStaged(version))
             {
                 Logger.Warn(
                     $"No file for version {version} was staged at {fullPathToStagedInstaller}. Either download it or stage it another way");
@@ -59,6 +67,12 @@ namespace cafe.Chef
                 LogInformation, LogError);
             Logger.Debug($"Result of installing {fullPathToStagedInstaller} is {result}");
             return result;
+        }
+
+        private string StagedInstallerFor(string version)
+        {
+            var fullPathToStagedInstaller = _downloadUrlResolver.FullPathToStagedInstaller(version);
+            return fullPathToStagedInstaller;
         }
 
         private string FindFullPathToMsiExec()

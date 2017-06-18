@@ -43,6 +43,12 @@ namespace cafe.Chef
 
         public Result InstallOrUpgrade(string version, IMessagePresenter presenter)
         {
+            if (!_installer.IsStaged(version))
+            {
+                var errorMessage = $"Could not install {_name} {version} because it is not yet staged. Stage it first, then install it.";
+                presenter.ShowMessage(errorMessage);
+                return Result.Failure(errorMessage);
+            }
             var productInstallerMetaData = FindProductInstallationMetaData();
             bool isInstalled = productInstallerMetaData != null;
             if (isInstalled)
