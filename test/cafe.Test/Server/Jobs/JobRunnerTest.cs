@@ -127,5 +127,31 @@ namespace cafe.Test.Server.Jobs
                 .BeTrue(
                     "because scheduling a scheduled task should immediately process it to make manually submitted tasks faster");
         }
+
+        [Fact]
+        public void Pause_ShouldNotProcessNewJobs()
+        {
+            var task = new FakeJobRun();
+            var runner = CreateJobRunner();
+            
+            runner.Pause();
+            
+            runner.Enqueue(task);
+
+            task.WasRunCalled.Should().BeFalse("because the runner is paused");
+        }
+
+        [Fact]
+        public void Resume_ShouldStartProcessingJobsAgain()
+        {
+            var task = new FakeJobRun();
+            var runner = CreateJobRunner();
+
+            runner.Pause();
+            runner.Enqueue(task);
+            runner.Resume();
+
+            task.WasRunCalled.Should().BeTrue("because runner resumed");
+        }
     }
 }

@@ -48,7 +48,8 @@ namespace cafe.Options.Server
             Initialize();
 
             ReactToChangesToServerConfiguration();
-
+            ReactToChangesToChefClientRunning();
+            
             _webHost.Start();
         }
 
@@ -57,6 +58,30 @@ namespace cafe.Options.Server
             FileSystemWatcher watcher = new FileSystemWatcher(".") {Filter = "server.json"};
             watcher.Changed += OnServerConfigurationChanged;
             watcher.EnableRaisingEvents = true;
+        }
+
+        private static void ReactToChangesToChefClientRunning()
+        {
+            var clientRunningFile = "chef-client-running.pid";
+            var clientRunningFolder = $"{ServerSettings.Instance.InstallRoot}/chef/cache";
+            Logger.Info($"Listening for chef client to be running by listening for pid file {clientRunningFile} in {clientRunningFolder}");
+            FileSystemWatcher watcher = new FileSystemWatcher(clientRunningFolder) { Filter = clientRunningFile };
+            watcher.Created += PauseRunner;
+            watcher.Deleted += ResumeRunner;
+        }
+
+        private static void ResumeRunner(object sender, FileSystemEventArgs e)
+        {
+            var runner = StructureMapResolver.Container.GetInstance<JobRunner>();
+            Logger.Info($"Since file {e.FullPath} has been deleted and therefore the chef client has stopped running, resuming processing of jobs");
+            runner.Pause();
+        }
+
+        private static void PauseRunner(object sender, FileSystemEventArgs e)
+        {
+            var runner = StructureMapResolver.Container.GetInstance<JobRunner>();
+            Logger.Info($"Since file {e.FullPath} has been created and therefore the chef client is running, pausing any processing of jobs so we don't interfere with Chef's activities");
+            runner.Pause();
         }
 
         private static void OnServerConfigurationChanged(object sender, FileSystemEventArgs args)

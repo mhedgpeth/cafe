@@ -29,6 +29,11 @@ namespace cafe.Server.Jobs
             Logger.Debug("Processing tasks for scheduler");
             lock (_processLocker) // since queues are being manipulated here, don't let this happen multiple times
             {
+                if (IsPaused)
+                {
+                    Logger.Debug("Since this runner is paused, jobs will not be processed");
+                    return;
+                }
                 if (_queuedRuns.Count == 0)
                 {
                     Logger.Debug("There is nothing to do right now");
@@ -97,5 +102,20 @@ namespace cafe.Server.Jobs
         {
             _timer.Dispose();
         }
+
+        public void Pause()
+        {
+            Logger.Info("Pausing processing jobs");
+            IsPaused = true;
+        }
+
+        public void Resume()
+        {
+            Logger.Info("Resuming processing jobs");
+            IsPaused = false;
+            ProcessQueue();
+        }
+        
+        public bool IsPaused { get; private set; }
     }
 }
