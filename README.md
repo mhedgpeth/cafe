@@ -77,7 +77,7 @@ We probably want to schedule Chef to run every 30 minutes or so. To do this we e
     "ChefInterval": 1800,
     "Port": 59320
 }
-```
+```   
 
 And restart the cafe service:
 
