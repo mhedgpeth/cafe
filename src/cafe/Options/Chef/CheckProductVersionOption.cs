@@ -31,15 +31,22 @@ namespace cafe.Options.Chef
 
         protected override Result RunCore(IProductServer<ProductStatus> client, Argument[] args)
         {
-            var taskStatus = client.GetStatus();
+            var actualVersion = GetVersion(client);
             var expectedVersion = FindVersion(args);
-            var productStatus = taskStatus.Result;
-            var actualVersion = productStatus.Version;
             Logger.Info($"{_productName} is on version {actualVersion}. Expected version is {expectedVersion}");
-            return expectedVersion == actualVersion
+            return VersionMatcher.DoVersionsMatch(expectedVersion, actualVersion)
                 ? Result.Successful()
                 : Result.Failure(
                     $"Expecting {_productName} to be on version {expectedVersion} but instead it is on version {actualVersion}");
         }
+
+        public static string GetVersion(IProductServer<ProductStatus> client)
+        {
+            var taskStatus = client.GetStatus();
+            var productStatus = taskStatus.Result;
+            var actualVersion = productStatus.Version;
+            return actualVersion;
+        }
+
     }
 }

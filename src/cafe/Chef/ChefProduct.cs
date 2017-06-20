@@ -53,6 +53,11 @@ namespace cafe.Chef
             bool isInstalled = productInstallerMetaData != null;
             if (isInstalled)
             {
+                if (VersionMatcher.DoVersionsMatch(version, InstalledVersion.ToString()))
+                {
+                    presenter.ShowMessage($"Since {productInstallerMetaData.DisplayName} is already installed at the same version, we won't install it");
+                    return Result.Successful();
+                }
                 presenter.ShowMessage(
                     $"Since {productInstallerMetaData.DisplayName} is already installed, uninstalling it");
                 var uninstallResult = _installer.Uninstall(ProductCode);
